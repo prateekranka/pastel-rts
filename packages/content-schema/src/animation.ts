@@ -1,6 +1,5 @@
 import {
   isRecord,
-  requireFiniteNumber,
   requireNonNegativeInt,
   requirePositiveInt,
   requireSafeAssetPath,
@@ -32,16 +31,29 @@ export type FallbackAnimationRules = {
   missingDirection?: string;
 };
 
+export type AnimationValidationOptions = {
+  /** Units require a move clip. Buildings may omit it. Default true. */
+  requireMove?: boolean;
+};
+
 export type AnimationDef = {
   clips: {
     idle: SpriteClip;
-    move: SpriteClip;
+    move?: SpriteClip;
   };
   directions: DirectionCount;
   directionOrder?: readonly string[];
   mirrored?: boolean;
   mirroredDirectionMap?: Readonly<Record<string, string>>;
   fallbackRules?: FallbackAnimationRules;
+};
+
+/** Unit archetypes always include idle and move after validation. */
+export type UnitAnimationDef = AnimationDef & {
+  clips: {
+    idle: SpriteClip;
+    move: SpriteClip;
+  };
 };
 
 export function resolveFrameIndexes(frames: SpriteFrameRef): number[] {
@@ -137,6 +149,7 @@ export function validateAnimationDef(
   value: unknown,
   totalFrames: number,
   defaultAssetPath?: string,
+  options?: AnimationValidationOptions,
 ): AnimationDef {
   if (!isRecord(value)) {
     throw new Error('animation is required');
@@ -150,10 +163,17 @@ export function validateAnimationDef(
   if (!isRecord(clipsValue)) {
     throw new Error('animation.clips is required');
   }
+  const requireMove = options?.requireMove ?? true;
   const idle = validateSpriteClip(clipsValue['idle'], 'animation.clips.idle', totalFrames, defaultAssetPath);
-  const move = validateSpriteClip(clipsValue['move'], 'animation.clips.move', totalFrames, defaultAssetPath);
+  const clips: AnimationDef['clips'] = { idle };
+  const moveValue = clipsValue['move'];
+  if (moveValue !== undefined) {
+    clips.move = validateSpriteClip(moveValue, 'animation.clips.move', totalFrames, defaultAssetPath);
+  } else if (requireMove) {
+    throw new Error('animation.clips.move is required');
+  }
   const animation: AnimationDef = {
-    clips: { idle, move },
+    clips,
     directions,
   };
   const directionOrderValue = value['directionOrder'];

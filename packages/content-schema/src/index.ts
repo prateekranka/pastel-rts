@@ -43,10 +43,12 @@ export {
   validateSpriteClip,
   type AnimClipId,
   type AnimationDef,
+  type AnimationValidationOptions,
   type DirectionCount,
   type FallbackAnimationRules,
   type SpriteClip,
   type SpriteFrameRef,
+  type UnitAnimationDef,
 } from './animation';
 
 export {
@@ -86,6 +88,8 @@ export {
 
 export {
   COMMAND_PROTOCOL_VERSION,
+  COMMAND_SCHEMA_VERSION,
+  MOVE_FORMATION_KINDS,
   validateCommandEnvelope,
   validateCommandPayload,
   type CommandEnvelopeV1,
@@ -94,6 +98,8 @@ export {
   type CommandRejectReason,
   type CommandResult,
   type CommandResultStatus,
+  type MoveFormation,
+  type MoveFormationKind,
   type MovePayload,
   type PlaceBuildingPayload,
   type RemoveBuildingPayload,
@@ -101,5 +107,21 @@ export {
   type SpawnUnitPayload,
   type StopPayload,
 } from './commands';
+
+export {
+  DEFAULT_CHUNK_SIZE,
+  DEFAULT_MAP_CELLS,
+  MAP_SCHEMA_VERSION,
+  validateMapDef,
+  type MapDef,
+} from './map';
+
+export {
+  SCENARIO_SCHEMA_VERSION,
+  validateScenarioDef,
+  type ScenarioBuildingSpawn,
+  type ScenarioDef,
+  type ScenarioUnitSpawn,
+} from './scenario';
 
 export { canonicalize } from './contentHash';

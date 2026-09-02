@@ -1,8 +1,18 @@
 import type { CellCoord, SubunitCoord, Tick } from './coords';
 import type { EntityId } from './ids';
-import { isRecord, requireContentId, requireFiniteNumber, requireInt, requireNonNegativeInt, requireString } from './validation';
+import { isRecord, requireContentId, requireInt, requireNonNegativeInt, requireString } from './validation';
 
+/** Wire protocol version. User-spec name `schemaVersion` is accepted as an alias. */
 export const COMMAND_PROTOCOL_VERSION = 1 as const;
+export const COMMAND_SCHEMA_VERSION = COMMAND_PROTOCOL_VERSION;
+
+export const MOVE_FORMATION_KINDS = ['none', 'line', 'box'] as const;
+export type MoveFormationKind = (typeof MOVE_FORMATION_KINDS)[number];
+
+export type MoveFormation = {
+  kind: MoveFormationKind;
+  spacingSubunits?: number;
+};
 
 export type CommandKind =
   | 'spawnUnit'
@@ -28,6 +38,7 @@ export type MovePayload = {
   kind: 'move';
   entityIds: EntityId[];
   destination: SubunitCoord;
+  formation?: MoveFormation;
 };
 
 export type StopPayload = {
@@ -58,7 +69,11 @@ export type CommandPayload =
 export type CommandEnvelopeV1 = {
   protocolVersion: typeof COMMAND_PROTOCOL_VERSION;
   commandId: string;
+  /** Same-tick ordering. Lower sequence applies first. */
+  sequence: number;
   issuedAtTick: Tick;
+  /** Tick the worker should apply the command. Must be >= issuedAtTick. */
+  executeTick: Tick;
   playerId: string;
   kind: CommandKind;
   payload: CommandPayload;
@@ -86,26 +101,46 @@ export function validateCommandEnvelope(value: unknown): CommandEnvelopeV1 {
   if (!isRecord(value)) {
     throw new Error('Command envelope must be an object');
   }
-  if (value['protocolVersion'] !== COMMAND_PROTOCOL_VERSION) {
-    throw new Error(`Unsupported protocolVersion: ${String(value['protocolVersion'])}`);
+  const protocolVersion = value['protocolVersion'];
+  const schemaVersion = value['schemaVersion'];
+  if (protocolVersion === undefined && schemaVersion === undefined) {
+    throw new Error('protocolVersion is required');
+  }
+  if (protocolVersion !== undefined && protocolVersion !== COMMAND_PROTOCOL_VERSION) {
+    throw new Error(`Unsupported protocolVersion: ${String(protocolVersion)}`);
+  }
+  if (schemaVersion !== undefined && schemaVersion !== COMMAND_SCHEMA_VERSION) {
+    throw new Error(`Unsupported schemaVersion: ${String(schemaVersion)}`);
   }
   const commandId = requireString(value['commandId'], 'commandId');
+  const sequence = requireNonNegativeInt(value['sequence'], 'sequence');
   const issuedAtTick = requireNonNegativeInt(value['issuedAtTick'], 'issuedAtTick');
+  const executeTick = requireNonNegativeInt(value['executeTick'], 'executeTick');
+  if (executeTick < issuedAtTick) {
+    throw new Error('executeTick must be >= issuedAtTick');
+  }
   const playerId = requireString(value['playerId'], 'playerId');
-  const kind = value['kind'];
-  if (typeof kind !== 'string') {
+  const kindValue = value['kind'];
+  const typeValue = value['type'];
+  const kindRaw = kindValue ?? typeValue;
+  if (typeof kindRaw !== 'string') {
     throw new Error('kind is required');
   }
-  const payload = validateCommandPayload(value['payload'], kind);
-  if (payload.kind !== kind) {
+  if (kindValue !== undefined && typeValue !== undefined && kindValue !== typeValue) {
+    throw new Error('type must match kind');
+  }
+  const payload = validateCommandPayload(value['payload'], kindRaw);
+  if (payload.kind !== kindRaw) {
     throw new Error('payload.kind must match envelope kind');
   }
   return {
     protocolVersion: COMMAND_PROTOCOL_VERSION,
     commandId,
+    sequence,
     issuedAtTick,
+    executeTick,
     playerId,
-    kind: kind as CommandKind,
+    kind: kindRaw as CommandKind,
     payload,
   };
 }
@@ -167,11 +202,35 @@ function validateMovePayload(value: Record<string, unknown>): MovePayload {
   if (entityIdsValue.length === 0) {
     throw new Error('entityIds must not be empty');
   }
-  return {
+  const payload: MovePayload = {
     kind: 'move',
     entityIds: entityIdsValue.map((entry) => parseEntityId(entry)),
     destination: parseSubunitCoord(value['destination'], 'destination'),
   };
+  const formation = parseOptionalFormation(value['formation']);
+  if (formation !== undefined) {
+    payload.formation = formation;
+  }
+  return payload;
+}
+
+function parseOptionalFormation(value: unknown): MoveFormation | undefined {
+  if (value === undefined) {
+    return undefined;
+  }
+  if (!isRecord(value)) {
+    throw new Error('formation must be an object');
+  }
+  const kind = value['kind'];
+  if (typeof kind !== 'string' || !(MOVE_FORMATION_KINDS as readonly string[]).includes(kind)) {
+    throw new Error('formation.kind must be none, line, or box');
+  }
+  const formation: MoveFormation = { kind: kind as MoveFormationKind };
+  const spacingSubunits = value['spacingSubunits'];
+  if (spacingSubunits !== undefined) {
+    formation.spacingSubunits = requireNonNegativeInt(spacingSubunits, 'formation.spacingSubunits');
+  }
+  return formation;
 }
 
 function validateStopPayload(value: Record<string, unknown>): StopPayload {

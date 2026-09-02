@@ -123,6 +123,16 @@ describe('unit archetype v2', () => {
     ).toThrow(/asset path/i);
   });
 
+  it('rejects a unit archetype that omits the move clip', () => {
+    const { move: _move, ...idleOnly } = validUnitArchetype.animation.clips;
+    expect(() =>
+      validateUnitArchetype({
+        ...validUnitArchetype,
+        animation: { ...validUnitArchetype.animation, clips: idleOnly },
+      }),
+    ).toThrow(/move/i);
+  });
+
   it('rejects invalid faction IDs', () => {
     expect(() =>
       validateUnitArchetype({
@@ -138,6 +148,20 @@ describe('building archetype v2', () => {
     const building = validateBuildingArchetype(validBuildingArchetype);
     expect(building.id).toBe('gravemark-bastion');
     expect(building.footprint).toEqual({ kind: 'rect', cellsW: 2, cellsH: 2 });
+  });
+
+  it('accepts a building with idle-only animation', () => {
+    const building = validateBuildingArchetype({
+      ...validBuildingArchetype,
+      animation: {
+        directions: 1,
+        clips: {
+          idle: { frames: { indexes: [0] }, fps: 1, looping: true },
+        },
+      },
+    });
+    expect(building.animation?.clips.idle.fps).toBe(1);
+    expect(building.animation?.clips.move).toBeUndefined();
   });
 
   it('rejects invalid footprint', () => {
@@ -176,14 +200,20 @@ describe('pack v2 migration and hash', () => {
     const pack = upgradePackV1ToV2({
       schemaVersion: 1,
       id: 'dev-pack',
-      units: [v1Manifest, { ...v1Manifest, id: 'shade-hunter', faction: 'opposing' }],
+      units: [
+        v1Manifest,
+        { ...v1Manifest, id: 'shade-hunter', faction: 'opposing' },
+        { ...v1Manifest, id: 'stone-marker', faction: 'neutral' },
+      ],
     });
     expect(pack.schemaVersion).toBe(2);
     expect(pack.units[0]?.factionId).toBe('sunweaver');
     expect(pack.units[1]?.factionId).toBe('gravemark');
+    expect(pack.units[2]?.factionId).toBe('neutral');
     expect(pack.factions.map((faction) => faction.id)).toEqual(['sunweaver', 'gravemark', 'neutral']);
     expect(pack.units[0]?.movement.speedSubunitsPerTick).toBe(64);
     expect(pack.units[0]?.animation.directions).toBe(1);
+    expect(pack.units[0]?.animation.clips.move).toBeDefined();
     validateUnitManifest(v1Manifest);
   });
 
@@ -224,5 +254,11 @@ describe('pack v2 migration and hash', () => {
     });
     expect(packA.contentHash).toBe(packB.contentHash);
     expect(computeContentHash(packA)).toBe(packA.contentHash);
+  });
+
+  it('is independent of object key insertion order', () => {
+    const first = computeContentHash({ z: 1, a: { c: 3, b: 2 }, n: [1, 2] });
+    const second = computeContentHash({ n: [1, 2], a: { b: 2, c: 3 }, z: 1 });
+    expect(first).toBe(second);
   });
 });

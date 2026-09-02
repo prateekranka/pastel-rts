@@ -1,4 +1,4 @@
-import type { AnimationDef } from './animation';
+import type { AnimationDef, UnitAnimationDef } from './animation';
 import { validateAnimationDef, countSpriteSheetFrames } from './animation';
 import { computeContentHash, createInitialRevision as createInitialRevisionHelper, normalizeRevision } from './contentHash';
 import type { PixelBounds, UnitAnchor, UnitManifest, UnitFaction } from './unitManifest';
@@ -92,7 +92,7 @@ export type UnitArchetype = {
   shadow?: ShadowDef;
   selectionRadius: number;
   collisionRadius: number;
-  animation: AnimationDef;
+  animation: UnitAnimationDef;
   movement: UnitMovementDef;
   tags?: string[];
 };
@@ -197,7 +197,7 @@ export function validateUnitArchetype(value: unknown): UnitArchetype {
   if (totalFrames <= 0) {
     throw new Error('Invalid sprite sheet layout');
   }
-  const animation = validateAnimationDef(value['animation'], totalFrames, assetPath);
+  const animation = requireUnitAnimation(value['animation'], totalFrames, assetPath);
   const movement = parseUnitMovement(value['movement']);
   const archetype: UnitArchetype = {
     schemaVersion: UNIT_ARCHETYPE_SCHEMA_VERSION,
@@ -301,7 +301,7 @@ export function validateBuildingArchetype(value: unknown): BuildingArchetype {
       spacing.x,
       spacing.y,
     );
-    building.animation = validateAnimationDef(animationValue, totalFrames, assetPath);
+    building.animation = validateAnimationDef(animationValue, totalFrames, assetPath, { requireMove: false });
   }
   const tags = parseOptionalTags(value['tags']);
   if (tags !== undefined) {
@@ -426,6 +426,21 @@ function upgradeUnitManifestToArchetype(manifest: UnitManifest): UnitArchetype {
       footprintCategory: 'unit-1x1',
     },
     ...(tags !== undefined ? { tags } : {}),
+  };
+}
+
+function requireUnitAnimation(value: unknown, totalFrames: number, defaultAssetPath: string): UnitAnimationDef {
+  const animation = validateAnimationDef(value, totalFrames, defaultAssetPath, { requireMove: true });
+  const move = animation.clips.move;
+  if (move === undefined) {
+    throw new Error('animation.clips.move is required');
+  }
+  return {
+    ...animation,
+    clips: {
+      idle: animation.clips.idle,
+      move,
+    },
   };
 }
 
