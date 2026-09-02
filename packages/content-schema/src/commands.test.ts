@@ -85,6 +85,63 @@ describe('command envelope validation', () => {
     }
   });
 
+  it('accepts formation facingMilli', () => {
+    const envelope = validateCommandEnvelope({
+      protocolVersion: 1,
+      commandId: 'lab-move-facing',
+      sequence: 2,
+      issuedAtTick: 4,
+      executeTick: 4,
+      playerId: 'lab-local',
+      kind: 'move',
+      payload: {
+        kind: 'move',
+        entityIds: [{ index: 0, generation: 1 }],
+        destination: { x: 2048, z: 3072 },
+        formation: { kind: 'line', spacingSubunits: 512, facingMilli: 1571 },
+      },
+    });
+    expect(envelope.payload.kind).toBe('move');
+    if (envelope.payload.kind === 'move') {
+      expect(envelope.payload.formation?.facingMilli).toBe(1571);
+    }
+  });
+
+  it('accepts faction overrides on spawn and place', () => {
+    const spawn = validateCommandEnvelope({
+      ...spawnEnvelope,
+      payload: {
+        kind: 'spawnUnit',
+        archetypeId: 'sunweaver-scout',
+        position: { x: 1024, z: 2048 },
+        factionId: 'gravemark',
+      },
+    });
+    expect(spawn.payload.kind).toBe('spawnUnit');
+    if (spawn.payload.kind === 'spawnUnit') {
+      expect(spawn.payload.factionId).toBe('gravemark');
+    }
+    const place = validateCommandEnvelope({
+      protocolVersion: 1,
+      commandId: 'lab-place',
+      sequence: 0,
+      issuedAtTick: 0,
+      executeTick: 0,
+      playerId: 'lab-local',
+      kind: 'placeBuilding',
+      payload: {
+        kind: 'placeBuilding',
+        archetypeId: 'gravemark-bastion',
+        originCell: { cx: 2, cz: 3 },
+        factionId: 'sunweaver',
+      },
+    });
+    expect(place.payload.kind).toBe('placeBuilding');
+    if (place.payload.kind === 'placeBuilding') {
+      expect(place.payload.factionId).toBe('sunweaver');
+    }
+  });
+
   it('rejects an unknown formation kind', () => {
     expect(() =>
       validateCommandEnvelope({

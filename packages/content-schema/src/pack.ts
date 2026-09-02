@@ -116,6 +116,7 @@ export type BuildingArchetype = {
   entrancePoint?: Vec2;
   rallyPoint?: Vec2;
   animation?: AnimationDef;
+  shadow?: ShadowDef;
   tags?: string[];
 };
 
@@ -307,7 +308,21 @@ export function validateBuildingArchetype(value: unknown): BuildingArchetype {
   if (tags !== undefined) {
     building.tags = tags;
   }
+  const shadow = parseOptionalShadow(value['shadow']);
+  if (shadow !== undefined) {
+    building.shadow = shadow;
+  }
   return building;
+}
+
+function assertUniqueIds(entries: ReadonlyArray<{ id: string }>, kind: 'unit' | 'building'): void {
+  const seen = new Set<string>();
+  for (const entry of entries) {
+    if (seen.has(entry.id)) {
+      throw new Error(`Duplicate ${kind} id: ${entry.id}`);
+    }
+    seen.add(entry.id);
+  }
 }
 
 export function validatePackV2(value: unknown): PackV2 {
@@ -325,11 +340,13 @@ export function validatePackV2(value: unknown): PackV2 {
     throw new Error('units must be an array');
   }
   const units = unitsValue.map((entry) => validateUnitArchetype(entry));
+  assertUniqueIds(units, 'unit');
   const buildingsValue = value['buildings'];
   if (!Array.isArray(buildingsValue)) {
     throw new Error('buildings must be an array');
   }
   const buildings = buildingsValue.map((entry) => validateBuildingArchetype(entry));
+  assertUniqueIds(buildings, 'building');
   const packWithoutHash: Omit<PackV2, 'contentHash'> = {
     schemaVersion: PACK_V2_SCHEMA_VERSION,
     id,

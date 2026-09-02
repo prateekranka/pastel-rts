@@ -1,5 +1,7 @@
 import type { CellCoord, SubunitCoord, Tick } from './coords';
 import type { EntityId } from './ids';
+import type { FactionId } from './pack';
+import { requireFactionId } from './pack';
 import { isRecord, requireContentId, requireInt, requireNonNegativeInt, requireString } from './validation';
 
 /** Wire protocol version. User-spec name `schemaVersion` is accepted as an alias. */
@@ -12,6 +14,8 @@ export type MoveFormationKind = (typeof MOVE_FORMATION_KINDS)[number];
 export type MoveFormation = {
   kind: MoveFormationKind;
   spacingSubunits?: number;
+  /** Formation facing in milliradians. Defaults to 0 (+Z) when omitted. */
+  facingMilli?: number;
 };
 
 export type CommandKind =
@@ -27,6 +31,8 @@ export type SpawnUnitPayload = {
   archetypeId: string;
   position: SubunitCoord;
   headingMilli?: number;
+  /** Overrides the archetype faction when a scenario reuses a unit. */
+  factionId?: FactionId;
 };
 
 export type RemoveEntityPayload = {
@@ -51,6 +57,8 @@ export type PlaceBuildingPayload = {
   archetypeId: string;
   originCell: CellCoord;
   headingMilli?: number;
+  /** Overrides the archetype faction when a scenario reuses a building. */
+  factionId?: FactionId;
 };
 
 export type RemoveBuildingPayload = {
@@ -184,6 +192,10 @@ function validateSpawnUnitPayload(value: Record<string, unknown>): SpawnUnitPayl
   if (headingMilli !== undefined) {
     payload.headingMilli = requireInt(headingMilli, 'headingMilli');
   }
+  const factionId = value['factionId'];
+  if (factionId !== undefined) {
+    payload.factionId = requireFactionId(factionId, 'factionId');
+  }
   return payload;
 }
 
@@ -230,6 +242,10 @@ function parseOptionalFormation(value: unknown): MoveFormation | undefined {
   if (spacingSubunits !== undefined) {
     formation.spacingSubunits = requireNonNegativeInt(spacingSubunits, 'formation.spacingSubunits');
   }
+  const facingMilli = value['facingMilli'];
+  if (facingMilli !== undefined) {
+    formation.facingMilli = requireInt(facingMilli, 'formation.facingMilli');
+  }
   return formation;
 }
 
@@ -256,6 +272,10 @@ function validatePlaceBuildingPayload(value: Record<string, unknown>): PlaceBuil
   const headingMilli = value['headingMilli'];
   if (headingMilli !== undefined) {
     payload.headingMilli = requireInt(headingMilli, 'headingMilli');
+  }
+  const factionId = value['factionId'];
+  if (factionId !== undefined) {
+    payload.factionId = requireFactionId(factionId, 'factionId');
   }
   return payload;
 }

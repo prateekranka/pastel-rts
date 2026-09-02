@@ -261,4 +261,27 @@ describe('pack v2 migration and hash', () => {
     const second = computeContentHash({ n: [1, 2], a: { b: 2, c: 3 }, z: 1 });
     expect(first).toBe(second);
   });
+
+  it('rejects duplicate unit and building ids', () => {
+    expect(() =>
+      validatePackV2({
+        schemaVersion: 2,
+        id: 'fixture-pack',
+        revision: '1',
+        factions: [{ id: 'sunweaver', displayName: 'Sunweaver' }],
+        units: [validUnitArchetype, { ...validUnitArchetype, displayName: 'Copy' }],
+        buildings: [validBuildingArchetype],
+      }),
+    ).toThrow(/Duplicate unit id/i);
+    expect(() =>
+      validatePackV2({
+        schemaVersion: 2,
+        id: 'fixture-pack',
+        revision: '1',
+        factions: [{ id: 'sunweaver', displayName: 'Sunweaver' }],
+        units: [validUnitArchetype],
+        buildings: [validBuildingArchetype, { ...validBuildingArchetype, displayName: 'Copy' }],
+      }),
+    ).toThrow(/Duplicate building id/i);
+  });
 });
