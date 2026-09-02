@@ -1,38 +1,63 @@
 # Milestone 0 architecture
 
-Milestone 0 is intentionally a platform and frame-budget proof, not a game-rules prototype.
+Milestone 0 is a platform and frame-budget proof, not a game-rules prototype.
 
 ## Runtime boundaries
 
-- **SwiftUI** owns app lifecycle, future menus, local storage, haptics, and the `WKWebView` host.
-- **Three.js** owns the complete live match surface, camera, touch input, rendering, stress simulation, and in-match diagnostics.
-- The native bridge transports only coarse events. No per-frame entity state crosses the bridge.
+- **SwiftUI** owns app lifecycle, future menus/navigation, local storage, haptics, and the `WKWebView` host. It must not render a live match HUD or sync entity state every frame.
+- **Three.js (game-web)** owns the complete live match surface: battlefield, camera, touch, stress simulation, renderer switching, and in-match diagnostics.
+- The native bridge transports **coarse** events only: `gameReady`, `requestHaptic`, `performanceReport`, `runtimeError` (JS→Swift) and `pause`, `resume`, `setDeveloperConfiguration` (Swift→JS).
+
+## Repository layout
+
+The original scaffold only listed `apps/game-web`. Milestone 0 keeps **npm workspaces** and adds packages around that runtime:
+
+```
+apps/game-web          Vite + Three.js match runtime
+apps/foundry           Content Foundry (PNG → unit proxy)
+apps/ios-shell         XcodeGen SwiftUI WKWebView shell
+packages/content-schema Shared unit-manifest validation
+tools/content-server   Local HTTP+SSE writer for content/dev-pack
+content/dev-pack       On-disk development content pack
+```
 
 ## Map scale
 
 - Logical map: `160 × 160` cells.
-- Render/pathfinding chunks: `16 × 16` cells.
-- Chunk grid: `10 × 10`.
-- Default camera preset: `70-percent`, sized so a landscape iPad sees only a portion of the complete battlefield.
+- Chunks: `16 × 16` cells, `10 × 10` grid.
+- Terrain is **one mesh per chunk**, not one mesh per tile.
+- Default camera preset: `70-percent` (~44 cells of ground AABB width; height follows viewport aspect, ~28 cells on a typical landscape iPad aspect).
+- The map is larger than the viewport; pan reveals more terrain. Look-at is clamped so the battlefield cannot be lost.
 
-## Milestone 0 stress population
+## Stress population
 
-- 120 combat-unit placeholders.
-- 40 worker placeholders.
-- 30 building placeholders.
-- 200 instanced environment props.
+Default dense scene:
 
-The normal scene is already a stress scene. A `2x` mode doubles those counts for short profiling runs.
+- 120 combat-unit placeholders
+- 40 worker placeholders
+- 30 building placeholders
+- 200 instanced environment props
 
-## Rendering strategy
+`2x-stress` / `maximum-population` double those counts. `idle-base` is a lighter preset. `visual-capture` freezes motion for Playwright.
 
-- Orthographic fixed-isometric camera.
-- Chunked terrain meshes with frustum culling.
-- Instanced unit, worker, building, crystal, mushroom, and monolith batches.
-- WebGL is the default renderer.
-- WebGPU is a benchmark path selected with `?renderer=webgpu`; initialization failure falls back to WebGL and is shown in the diagnostics overlay.
-- Render pixel ratio is capped and can be adjusted without changing CSS-size UI.
+## Simulation and render threads
+
+- Simulation runs at a fixed **20 Hz in a Web Worker**.
+- The main thread renders at display refresh and interpolates compact `Float32Array` snapshots.
+- No SharedArrayBuffer / COOP-COEP is required.
+- Pause on `document.hidden` and on native `pause`; resume does not fast-forward missed ticks.
+
+## Rendering
+
+- Fixed isometric `OrthographicCamera` (no yaw/pitch from the player).
+- Instanced sprite-like quads from a generated nearest-neighbour atlas with padding.
+- `WebGLRenderer` is the baseline. `WebGPURenderer` is a developer-selected benchmark (`?renderer=webgpu`); init failure falls back to WebGL and is shown in diagnostics.
+- Default DPR cap is 1.5; presets are 1.0, 1.25, 1.5, and native.
+
+## Content pipeline
+
+Content Foundry uploads one transparent PNG, auto-detects opaque bounds, authors a versioned unit manifest, and POSTs to the local content server. The server writes `content/dev-pack/units/<id>/` and broadcasts over SSE. game-web loads the PNG from disk via `/dev-content` (Vite proxy) and hot-reloads proxy meshes. Blob URLs are not the source of truth.
 
 ## Performance reporting
 
-The runtime records frame-time samples, simulation time, draw calls, triangle count, entity counts, renderer kind, render scale, viewport, user agent, and elapsed time. Reports can be downloaded in a browser or passed to Swift as `performanceReport` events.
+Diagnostics record FPS, 1% low, frame-time percentiles, sim tick duration, snapshot latency, draw calls, triangles, visible chunks/units, renderer, DPR, CSS viewport, backing-buffer size, and elapsed time. Soak mode defaults to **20 minutes** (`SOAK_DURATION_MS`). Tests may pass `?soakMs=` for a short run. Reports include `physicalValidationStatus: awaiting-physical-validation` until a device filing replaces that process.
