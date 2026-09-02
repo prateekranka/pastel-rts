@@ -1,38 +1,42 @@
-# Physical iPad QA checklist (Milestone 0)
+# iPad physical-device checklist
 
-Target device: **11-inch iPad**. Landscape. Do not copy numbers from a Mac, Simulator, or desktop browser into a “device” report.
+Status: **awaiting physical validation.** Do not record FPS or pass/fail
+from this environment — there is no attached iPad here.
 
-Status for this repository until a device run is filed: **awaiting physical validation**.
+Use a production web bundle (`npm run build` then `npm run ios:sync-web`) and
+the current Xcode project. Confirm the WKWebView loads `index.html` from the
+app bundle, not a LAN URL, unless you are deliberately iterating on the Vite
+dev server.
 
-## Before the session
+## Milestone 0 (still required)
 
-- [ ] Install Xcode, XcodeGen (`brew install xcodegen`), Node 22 (`nvm use`).
-- [ ] `npm ci && npm run build && npm run ios:sync-web`
-- [ ] `(cd apps/ios-shell && xcodegen generate && open PastelRTS.xcodeproj)`
-- [ ] Connect the physical iPad. Trust the computer. Select the iPad as the run destination.
-- [ ] Confirm **Release** (or a local-device run that loads **bundled** files, not a remote production URL).
-- [ ] Record **device temperature at start** (warm/cool to the touch is enough if no sensor app).
-- [ ] Record **battery %** and whether it is **charging**.
-- [ ] Confirm **Low Power Mode is off**.
-- [ ] Note **renderer mode** (WebGL default; optionally retry WebGPU from the diagnostics HUD / developer panel).
-- [ ] After launch, copy **viewport CSS size**, **backing-buffer size**, and **DPR** from the diagnostics HUD. Do not type an iPad model’s marketing resolution from memory.
+- [ ] Cold start on iPad (Safari and WKWebView) without a laptop on the LAN
+- [ ] 160×160 map, 70-percent default zoom, Pointer Events, WebGL (and WebGPU if available)
+- [ ] HUD visible; pinch-zoom and two-finger pan; 40-unit dense battle still runs
+- [ ] Haptic on first tap (existing M0 `requestHaptic`)
+- [ ] No per-frame bridge spam
 
-## Runtime checks
+## Milestone 1 — Interaction Lab (`?mode=interaction-lab`)
 
-- [ ] 5-minute **dense-battle** observation (HUD open). Note rolling FPS, 1% low, frame time.
-- [ ] 20-minute **soak** (`benchmark=20-minute-soak` or HUD “Start 20-min soak”). No continuous finger input; periodic camera motion is automatic.
-- [ ] Camera **pan** (one finger) and **pinch zoom**; confirm 70-percent default and snap-to-stop after pinch.
-- [ ] **Background / resume**: Home out for ~10s, return. Sim should not leap forward.
-- [ ] **Memory-growth observation**: Xcode Memory Gauge or Instruments over the soak. Object/mesh counts must not climb without bound. Idle diagnostics sample arrays are capped; full series exist only during an active soak/report.
-- [ ] **Saved performance report**: JSON downloaded in Safari/WKWebView or written under the app Documents `performance-reports/` folder. Confirm it contains timestamp, UA, viewport, DPR, renderer.
-- [ ] **Sprite shimmer inspection**: pan/zoom slowly across instanced proxies; nearest-neighbour atlas should stay crisp at zoom stops without crawling seams.
+- [ ] Tap a unit to select; selection ring visible
+- [ ] Double-tap selects nearby units of the same type
+- [ ] Lasso (pointer drag on empty ground while not in pan mode) selects multiple units
+- [ ] One-finger pan on empty ground does **not** issue a move command
+- [ ] Two-finger pinch does **not** issue a move command
+- [ ] Tap selected + tap empty terrain issues a move (haptic `move`)
+- [ ] Hold-drag on terrain with a group selected previews a formation, then commits
+- [ ] Formation destinations are distinct (units do not stack on one cell)
+- [ ] Minimap click/drag recenters the camera
+- [ ] Army Rail lists selected units
+- [ ] Building palette: place and remove a blocker; units replan around it
+- [ ] ~40 units move together without the UI locking the main thread
+- [ ] Idle vs move sprite animation (directional), not idle-glide
+- [ ] Haptics: selection, move, place, invalid (coarse `requestHaptic` only)
+- [ ] Replay inspector / save scenario from Army Rail (if using Foundry pack)
+- [ ] Perf HUD / `reportPerf` after a 40-unit move — **record numbers on device, do not invent**
 
-## Final status
+## After a session
 
-- [ ] Pass
-- [ ] Fail (attach report JSON + notes)
-- [ ] **Awaiting physical validation** (default until the boxes above are actually run on device)
-
-## Honesty rule
-
-If the iPad was unavailable, leave the box **awaiting physical validation**. Never invent FPS, thermals, or memory numbers.
+Attach: iOS version, iPad model, Safari vs WKWebView, renderer (WebGL/WebGPU),
+and any FPS / frame-time numbers **measured on hardware**. Update this file
+and `docs/milestone-1.md` Physical status.
