@@ -169,6 +169,30 @@ describe('NavigationService pathfinding', () => {
     const second = nav.nextWaypoint(entity, first!);
     expect(second).toEqual(cellCenter(2, 0));
   });
+
+  it('replans from the unit current position rather than the original request from', () => {
+    const nav = new NavigationService(8, 8);
+    const entity = createEntityId(40, 1);
+    nav.requestPath(entity, cellCenter(0, 0), cellCenter(7, 0));
+    nav.nextWaypoint(entity, cellCenter(3, 0));
+    nav.setBlocked(0, 0, true);
+    const path = nav.getPath(entity);
+    expect(path?.status).toBe('found');
+    expect(path?.cells[0]).toEqual({ cx: 3, cz: 0 });
+  });
+
+  it('blocks only masked footprint cells', () => {
+    const nav = new NavigationService(8, 8);
+    const mask = [
+      [true, false],
+      [true, true],
+    ];
+    nav.setFootprintBlocked({ cx: 2, cz: 2 }, 2, 2, true, mask);
+    expect(nav.isWalkable(2, 2)).toBe(false);
+    expect(nav.isWalkable(3, 2)).toBe(true);
+    expect(nav.isWalkable(2, 3)).toBe(false);
+    expect(nav.isWalkable(3, 3)).toBe(false);
+  });
 });
 
 describe('GridPathfinder', () => {

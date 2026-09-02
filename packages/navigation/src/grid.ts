@@ -89,9 +89,18 @@ export class NavigationGrid {
     this.nonBuildableWalkable[this.toIndex(cx, cz)] = enabled ? 1 : 0;
   }
 
-  setFootprintBlocked(origin: NavCell, cellsW: number, cellsH: number, blocked: boolean): void {
+  setFootprintBlocked(
+    origin: NavCell,
+    cellsW: number,
+    cellsH: number,
+    blocked: boolean,
+    mask?: ReadonlyArray<readonly boolean[]>,
+  ): void {
     for (let dz = 0; dz < cellsH; dz += 1) {
       for (let dx = 0; dx < cellsW; dx += 1) {
+        if (mask !== undefined && !(mask[dz]?.[dx] ?? true)) {
+          continue;
+        }
         const cx = origin.cx + dx;
         const cz = origin.cz + dz;
         if (!this.inBounds(cx, cz)) {

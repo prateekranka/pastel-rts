@@ -96,13 +96,16 @@ function computeLooseOffsets(count: number, spacing: number): SlotOffset[] {
 
 function computeLineOffsets(count: number, spacing: number, facingMilli: number): SlotOffset[] {
   const angle = facingMilli / 1000;
-  const perpX = Math.round(Math.cos(angle + Math.PI / 2) * spacing);
-  const perpZ = Math.round(Math.sin(angle + Math.PI / 2) * spacing);
-  const center = Math.floor((count - 1) / 2);
+  const perpX = Math.cos(angle + Math.PI / 2);
+  const perpZ = Math.sin(angle + Math.PI / 2);
+  const center = (count - 1) / 2;
   const offsets: SlotOffset[] = [];
   for (let i = 0; i < count; i += 1) {
     const along = i - center;
-    offsets.push({ dx: perpX * along, dz: perpZ * along });
+    offsets.push({
+      dx: Math.round(perpX * spacing * along),
+      dz: Math.round(perpZ * spacing * along),
+    });
   }
   return offsets;
 }

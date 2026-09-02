@@ -72,4 +72,34 @@ describe('formation planning', () => {
     expect(grid.isBuildable(3, 3)).toBe(false);
     expect(grid.classifyCell(2, 2)).toBe('buildable');
   });
+
+  it('centers even-count line formations on the destination', () => {
+    const grid = new NavigationGrid();
+    grid.resize(32, 32);
+    const destination = { x: 16 * 1024 + 512, z: 16 * 1024 + 512 };
+    const slots = planFormationSlots(grid, {
+      entityIds: [createEntityId(0, 1), createEntityId(1, 1)],
+      destination,
+      kind: 'line',
+      spacingSubunits: 2048,
+      facingMilli: 0,
+    });
+    const zs = slots.map((slot) => slot.target.z).sort((a, b) => a - b);
+    expect((zs[0]! + zs[1]!) / 2).toBe(destination.z);
+  });
+
+  it('uses facingMilli to orient line formation', () => {
+    const grid = new NavigationGrid();
+    grid.resize(32, 32);
+    const destination = { x: 16 * 1024 + 512, z: 16 * 1024 + 512 };
+    const slots = planFormationSlots(grid, {
+      entityIds: [createEntityId(0, 1), createEntityId(1, 1), createEntityId(2, 1)],
+      destination,
+      kind: 'line',
+      spacingSubunits: 1024,
+      facingMilli: Math.round((Math.PI / 2) * 1000),
+    });
+    const xs = new Set(slots.map((slot) => Math.floor(slot.target.x / 1024)));
+    expect(xs.size).toBeGreaterThan(1);
+  });
 });

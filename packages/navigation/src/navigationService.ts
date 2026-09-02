@@ -65,8 +65,14 @@ export class NavigationService {
     this.grid.setNonBuildableWalkable(cx, cz, enabled);
   }
 
-  setFootprintBlocked(origin: { cx: number; cz: number }, cellsW: number, cellsH: number, blocked: boolean): void {
-    this.grid.setFootprintBlocked(origin, cellsW, cellsH, blocked);
+  setFootprintBlocked(
+    origin: { cx: number; cz: number },
+    cellsW: number,
+    cellsH: number,
+    blocked: boolean,
+    mask?: ReadonlyArray<readonly boolean[]>,
+  ): void {
+    this.grid.setFootprintBlocked(origin, cellsW, cellsH, blocked, mask);
     this.replanAll();
   }
 
@@ -187,6 +193,7 @@ export class NavigationService {
     if (active === undefined || active.status !== 'found') {
       return;
     }
+    active.from = { x: current.x, z: current.z };
     const targetCell = active.cells[active.waypointIndex];
     if (targetCell === undefined) {
       return;
@@ -220,6 +227,7 @@ export class NavigationService {
       destination,
       kind: formation.kind as FormationKind,
       ...(formation.spacingSubunits !== undefined ? { spacingSubunits: formation.spacingSubunits } : {}),
+      ...(formation.facingMilli !== undefined ? { facingMilli: formation.facingMilli } : {}),
     };
     return planFormationSlots(this.grid, input).map((slot) => ({
       entityId: slot.entityId,
@@ -228,6 +236,10 @@ export class NavigationService {
   }
 
   nextWaypoint(entityId: EntityId, current?: SubunitCoord): SubunitCoord | null {
+    const tracked = this.pathsByEntity.get(entityIdKey(entityId));
+    if (current !== undefined && tracked !== undefined) {
+      tracked.from = { x: current.x, z: current.z };
+    }
     if (current !== undefined) {
       this.advanceWaypoint(entityId, current);
     }
