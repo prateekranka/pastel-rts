@@ -1,4 +1,4 @@
-import { createHash } from 'node:crypto';
+import { sha256Hex } from './sha256';
 
 type JsonValue = null | boolean | number | string | JsonValue[] | { [key: string]: JsonValue };
 
@@ -26,7 +26,7 @@ export function canonicalize(value: unknown): JsonValue {
 export function computeContentHash(content: unknown): string {
   const canonical = canonicalize(content);
   const json = JSON.stringify(canonical);
-  return createHash('sha256').update(json, 'utf8').digest('hex');
+  return sha256Hex(json);
 }
 
 export function createInitialRevision(): string {
