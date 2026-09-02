@@ -108,6 +108,7 @@ export function mountUnitEditor(root: HTMLElement, unitId: string | null, query:
   let pngDataUrl: string | null = null;
   let existingId: string | null = isNew ? null : unitId;
   let selectedFrame = 0;
+  let loadedArchetype: UnitArchetype | null = null;
 
   void loadExisting();
 
@@ -154,6 +155,7 @@ export function mountUnitEditor(root: HTMLElement, unitId: string | null, query:
         const source = units.find((entry) => entry.id === cloneFrom);
         if (source) {
           applyArchetype({ ...source, id: presetId, displayName: `${source.displayName} Copy` });
+          loadedArchetype = { ...source, id: presetId, displayName: `${source.displayName} Copy` };
           existingId = null;
         }
       } catch {
@@ -165,6 +167,7 @@ export function mountUnitEditor(root: HTMLElement, unitId: string | null, query:
         const source = units.find((entry) => entry.id === unitId);
         if (source) {
           applyArchetype(source);
+          loadedArchetype = source;
           const img = new Image();
           img.onload = () => {
             sourceImage = img;
@@ -244,11 +247,11 @@ export function mountUnitEditor(root: HTMLElement, unitId: string | null, query:
     const idleIndexes = parseFrameCsv(str('idle-frames'), frames);
     const moveIndexes = parseFrameCsv(str('move-frames'), frames);
     const directions = Number(str('directions')) as DirectionCount;
-    return {
+    const archetype: UnitArchetype = {
       schemaVersion: 2,
       id,
       displayName: str('unit-name'),
-      enabled: true,
+      enabled: loadedArchetype?.enabled ?? true,
       factionId: str('unit-faction') as FactionId,
       assetPath,
       sourceWidth: sourceImage.naturalWidth,
@@ -287,6 +290,13 @@ export function mountUnitEditor(root: HTMLElement, unitId: string | null, query:
         footprintCategory: 'unit-1x1',
       },
     };
+    if (loadedArchetype?.shadow) {
+      archetype.shadow = loadedArchetype.shadow;
+    }
+    if (loadedArchetype?.tags) {
+      archetype.tags = loadedArchetype.tags;
+    }
+    return archetype;
   }
 
   function refresh(): void {
@@ -303,6 +313,7 @@ export function mountUnitEditor(root: HTMLElement, unitId: string | null, query:
         manifestEl.textContent = JSON.stringify(archetype, null, 2);
       }
       const config = readSheetConfig();
+      const frames = totalFrames(config, sourceImage.naturalWidth, sourceImage.naturalHeight);
       const overlay = {
         anchorX: archetype.anchor.x,
         anchorY: archetype.anchor.y,
@@ -319,8 +330,8 @@ export function mountUnitEditor(root: HTMLElement, unitId: string | null, query:
         sourceImage.naturalHeight,
         selectedFrame,
       );
-      const idleFrame = parseFrameCsv(str('idle-frames'), 1)[0] ?? 0;
-      const moveFrame = parseFrameCsv(str('move-frames'), 1)[0] ?? 0;
+      const idleFrame = parseFrameCsv(str('idle-frames'), frames)[0] ?? 0;
+      const moveFrame = parseFrameCsv(str('move-frames'), frames)[0] ?? 0;
       drawFramePreview(mustCanvas('pv-frame-neutral'), sourceImage, selectedFrame, config, sourceImage.naturalWidth, sourceImage.naturalHeight, 'neutral', overlay);
       drawFramePreview(mustCanvas('pv-frame-checker'), sourceImage, selectedFrame, config, sourceImage.naturalWidth, sourceImage.naturalHeight, 'checker', overlay);
       drawFramePreview(mustCanvas('pv-idle'), sourceImage, idleFrame, config, sourceImage.naturalWidth, sourceImage.naturalHeight, 'neutral');
@@ -346,7 +357,10 @@ export function mountUnitEditor(root: HTMLElement, unitId: string | null, query:
     }
     container.innerHTML = '';
     const labels = directionLabels(archetype.animation.directions);
-    const idleFrames = parseFrameCsv(str('idle-frames'), 1);
+    const idleFrames = parseFrameCsv(
+      str('idle-frames'),
+      totalFrames(config, sourceImage.naturalWidth, sourceImage.naturalHeight),
+    );
     const base = idleFrames[0] ?? 0;
     for (let i = 0; i < labels.length; i += 1) {
       const wrap = document.createElement('div');

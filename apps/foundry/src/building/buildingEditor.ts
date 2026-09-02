@@ -65,6 +65,7 @@ export function mountBuildingEditor(root: HTMLElement, buildingId: string | null
   let pngDataUrl: string | null = null;
   let existingId: string | null = isNew ? null : buildingId;
   let blockedMask: boolean[][] = [];
+  let loadedArchetype: BuildingArchetype | null = null;
 
   void loadExisting();
 
@@ -124,6 +125,7 @@ export function mountBuildingEditor(root: HTMLElement, buildingId: string | null
       const source = buildings.find((entry) => entry.id === cloneFrom);
       if (source) {
         applyArchetype({ ...source, id: presetId, displayName: `${source.displayName} Copy` });
+        loadedArchetype = { ...source, id: presetId, displayName: `${source.displayName} Copy` };
         existingId = null;
       }
     } else if (!isNew && buildingId) {
@@ -131,6 +133,7 @@ export function mountBuildingEditor(root: HTMLElement, buildingId: string | null
       const source = buildings.find((entry) => entry.id === buildingId);
       if (source) {
         applyArchetype(source);
+        loadedArchetype = source;
         const img = new Image();
         img.onload = () => {
           sourceImage = img;
@@ -172,11 +175,12 @@ export function mountBuildingEditor(root: HTMLElement, buildingId: string | null
     const cellsH = num('cells-h');
     ensureMask(cellsW, cellsH);
     const id = str('bld-id');
-    return {
+    const archetype: BuildingArchetype = {
+      ...(loadedArchetype ?? {}),
       schemaVersion: 2,
       id,
       displayName: str('bld-name'),
-      enabled: true,
+      enabled: loadedArchetype?.enabled ?? true,
       factionId: str('bld-faction') as FactionId,
       assetPath: `buildings/${id}/sprite.png`,
       sourceWidth: sourceImage.naturalWidth,
@@ -190,6 +194,7 @@ export function mountBuildingEditor(root: HTMLElement, buildingId: string | null
       entrancePoint: { x: num('entrance-x'), z: num('entrance-z') },
       rallyPoint: { x: num('rally-x'), z: num('rally-z') },
     };
+    return archetype;
   }
 
   function refresh(): void {

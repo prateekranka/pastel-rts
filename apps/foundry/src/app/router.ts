@@ -44,27 +44,28 @@ function render(): void {
     return;
   }
   const hash = location.hash.replace(/^#\/?/, '');
-  const navigate = (path: string) => {
-    location.hash = path.startsWith('#') ? path : `#${path}`;
+  const queryIndex = hash.indexOf('?');
+  const path = queryIndex >= 0 ? hash.slice(0, queryIndex) : hash;
+  const query = new URLSearchParams(queryIndex >= 0 ? hash.slice(queryIndex + 1) : '');
+  const navigate = (next: string) => {
+    location.hash = next.startsWith('#') ? next : `#${next}`;
   };
 
-  if (hash === '' || hash === 'v1') {
+  if (path === '' || path === 'v1') {
     mountV1ProxyEditor(main);
     return;
   }
-  if (hash === 'library') {
+  if (path === 'library') {
     mountContentLibrary(main, navigate);
     return;
   }
-  const unitMatch = /^unit\/(.+)$/.exec(hash);
+  const unitMatch = /^unit\/(.+)$/.exec(path);
   if (unitMatch) {
-    const query = new URLSearchParams(location.hash.split('?')[1] ?? '');
     mountUnitEditor(main, unitMatch[1] ?? null, query);
     return;
   }
-  const buildingMatch = /^building\/(.+)$/.exec(hash);
+  const buildingMatch = /^building\/(.+)$/.exec(path);
   if (buildingMatch) {
-    const query = new URLSearchParams(location.hash.split('?')[1] ?? '');
     mountBuildingEditor(main, buildingMatch[1] ?? null, query);
     return;
   }

@@ -163,6 +163,18 @@ export function assetUrl(assetPath: string): string {
   return `${BASE}/assets/${assetPath}`;
 }
 
+export function sandboxOrigin(): string {
+  const fromEnv = import.meta.env.VITE_GAME_WEB_ORIGIN;
+  if (typeof fromEnv === 'string' && fromEnv.length > 0) {
+    return fromEnv.replace(/\/$/, '');
+  }
+  const port = import.meta.env.VITE_SANDBOX_PORT;
+  if (typeof port === 'string' && port.length > 0) {
+    return `http://127.0.0.1:${port}`;
+  }
+  return 'http://127.0.0.1:5173';
+}
+
 export function buildSandboxUrl(options: {
   archetypeId: string;
   kind: 'unit' | 'building';
@@ -177,5 +189,5 @@ export function buildSandboxUrl(options: {
     params.set('touchDebug', '1');
   }
   params.set(options.kind === 'unit' ? 'spawnUnit' : 'spawnBuilding', options.archetypeId);
-  return `http://127.0.0.1:4173/?${params.toString()}`;
+  return `${sandboxOrigin()}/?${params.toString()}`;
 }

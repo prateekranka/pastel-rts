@@ -243,5 +243,6 @@ test.describe('Test in sandbox', () => {
     const opened = await page.evaluate(() => (window as unknown as { __openedSandbox: string }).__openedSandbox);
     expect(opened).toContain('mode=interaction-lab');
     expect(opened).toContain('spawnUnit=');
+    expect(opened).toContain('127.0.0.1:5173');
   });
 });
