@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "id": "lab-grid",
+  "displayName": "Lab Grid",
+  "cellsX": 160,
+  "cellsZ": 160,
+  "chunkSize": 16
+}
