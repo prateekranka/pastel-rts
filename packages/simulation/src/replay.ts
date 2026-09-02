@@ -30,6 +30,12 @@ export function runSimulationReplay(config: ReplayConfig): ReplayResult {
     pack: config.pack,
     nav,
     ...config.simulationConfig,
+    ...(config.map !== undefined
+      ? {
+          cellsX: config.simulationConfig?.cellsX ?? config.map.cellsX,
+          cellsZ: config.simulationConfig?.cellsZ ?? config.map.cellsZ,
+        }
+      : {}),
   });
 
   if (config.map !== undefined) {

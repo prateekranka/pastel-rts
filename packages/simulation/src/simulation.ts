@@ -144,6 +144,7 @@ export class Simulation {
           archetypeId: unitSpawn.archetypeId,
           position: unitSpawn.position,
           ...(unitSpawn.headingMilli !== undefined ? { headingMilli: unitSpawn.headingMilli } : {}),
+          ...(unitSpawn.factionId !== undefined ? { factionId: unitSpawn.factionId } : {}),
         },
       });
     }
@@ -161,6 +162,7 @@ export class Simulation {
           archetypeId: buildingSpawn.archetypeId,
           originCell: buildingSpawn.originCell,
           ...(buildingSpawn.headingMilli !== undefined ? { headingMilli: buildingSpawn.headingMilli } : {}),
+          ...(buildingSpawn.factionId !== undefined ? { factionId: buildingSpawn.factionId } : {}),
         },
       });
     }

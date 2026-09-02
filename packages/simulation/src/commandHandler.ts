@@ -63,6 +63,7 @@ function isFootprintPlaceable(
   origin: CellCoord,
   cellsW: number,
   cellsH: number,
+  mask?: ReadonlyArray<readonly boolean[]>,
 ): boolean {
   for (let dz = 0; dz < cellsH; dz += 1) {
     for (let dx = 0; dx < cellsW; dx += 1) {
@@ -70,6 +71,9 @@ function isFootprintPlaceable(
       const cz = origin.cz + dz;
       if (!isCellInBounds(cx, cz, ctx.cellsX, ctx.cellsZ)) {
         return false;
+      }
+      if (mask !== undefined && !(mask[dz]?.[dx] ?? true)) {
+        continue;
       }
       if (!ctx.nav.isWalkable(cx, cz)) {
         return false;
@@ -155,7 +159,7 @@ function applySpawnUnit(ctx: CommandContext, envelope: CommandEnvelopeV1): Comma
   }
   slot.kind = 'unit';
   slot.archetypeId = archetype.id;
-  slot.factionId = archetype.factionId;
+  slot.factionId = envelope.payload.factionId ?? archetype.factionId;
   slot.x = x;
   slot.z = z;
   slot.headingMilli = envelope.payload.headingMilli ?? 0;
@@ -165,6 +169,7 @@ function applySpawnUnit(ctx: CommandContext, envelope: CommandEnvelopeV1): Comma
   slot.originCell = null;
   slot.footprintCellsW = 0;
   slot.footprintCellsH = 0;
+  slot.blockedCellMask = null;
   return accept(envelope.commandId, ctx.tick, id);
 }
 
@@ -256,7 +261,7 @@ function applyPlaceBuilding(ctx: CommandContext, envelope: CommandEnvelopeV1): C
   }
   const { cellsW, cellsH } = footprintDimensions(archetype.footprint);
   const origin = envelope.payload.originCell;
-  if (!isFootprintPlaceable(ctx, origin, cellsW, cellsH)) {
+  if (!isFootprintPlaceable(ctx, origin, cellsW, cellsH, archetype.blockedCellMask)) {
     return reject(envelope.commandId, 'blocked');
   }
   const id = allocateEntity(ctx.pool);
@@ -269,9 +274,9 @@ function applyPlaceBuilding(ctx: CommandContext, envelope: CommandEnvelopeV1): C
   }
   slot.kind = 'building';
   slot.archetypeId = archetype.id;
-  slot.factionId = archetype.factionId;
-  slot.x = origin.cx * SUBUNITS_PER_CELL + Math.floor(SUBUNITS_PER_CELL / 2);
-  slot.z = origin.cz * SUBUNITS_PER_CELL + Math.floor(SUBUNITS_PER_CELL / 2);
+  slot.factionId = envelope.payload.factionId ?? archetype.factionId;
+  slot.x = origin.cx * SUBUNITS_PER_CELL + Math.floor((cellsW * SUBUNITS_PER_CELL) / 2);
+  slot.z = origin.cz * SUBUNITS_PER_CELL + Math.floor((cellsH * SUBUNITS_PER_CELL) / 2);
   slot.headingMilli = envelope.payload.headingMilli ?? 0;
   slot.movementState = 'idle';
   slot.destination = null;
@@ -279,7 +284,8 @@ function applyPlaceBuilding(ctx: CommandContext, envelope: CommandEnvelopeV1): C
   slot.originCell = { cx: origin.cx, cz: origin.cz };
   slot.footprintCellsW = cellsW;
   slot.footprintCellsH = cellsH;
-  ctx.nav.setFootprintBlocked(origin, cellsW, cellsH, true);
+  slot.blockedCellMask = copyCellMask(archetype.blockedCellMask);
+  ctx.nav.setFootprintBlocked(origin, cellsW, cellsH, true, archetype.blockedCellMask);
   return accept(envelope.commandId, ctx.tick, id);
 }
 
@@ -299,7 +305,15 @@ function applyRemoveBuilding(ctx: CommandContext, envelope: CommandEnvelopeV1): 
     resolved.footprintCellsW,
     resolved.footprintCellsH,
     false,
+    resolved.blockedCellMask ?? undefined,
   );
   releaseEntity(ctx.pool, envelope.payload.entityId);
   return accept(envelope.commandId, ctx.tick);
+}
+
+function copyCellMask(mask: boolean[][] | undefined): boolean[][] | null {
+  if (mask === undefined) {
+    return null;
+  }
+  return mask.map((row) => [...row]);
 }

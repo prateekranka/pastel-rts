@@ -51,9 +51,18 @@ export class StubNavigationService implements NavigationService {
     this.blocked[index] = blocked ? 1 : 0;
   }
 
-  setFootprintBlocked(origin: NavCell, cellsW: number, cellsH: number, blocked: boolean): void {
+  setFootprintBlocked(
+    origin: NavCell,
+    cellsW: number,
+    cellsH: number,
+    blocked: boolean,
+    mask?: ReadonlyArray<readonly boolean[]>,
+  ): void {
     for (let dz = 0; dz < cellsH; dz += 1) {
       for (let dx = 0; dx < cellsW; dx += 1) {
+        if (mask !== undefined && !(mask[dz]?.[dx] ?? true)) {
+          continue;
+        }
         this.setBlocked(origin.cx + dx, origin.cz + dz, blocked);
       }
     }
@@ -87,7 +96,7 @@ export class StubNavigationService implements NavigationService {
   planFormation(
     entityIds: readonly EntityId[],
     destination: SubunitCoord,
-    formation: { kind: 'none' | 'line' | 'box'; spacingSubunits?: number },
+    formation: { kind: 'none' | 'line' | 'box'; spacingSubunits?: number; facingMilli?: number },
   ): ReadonlyArray<{ entityId: EntityId; target: SubunitCoord }> {
     const spacing = formation.spacingSubunits ?? 512;
     const sorted = [...entityIds].sort((a, b) => a.index - b.index || a.generation - b.generation);

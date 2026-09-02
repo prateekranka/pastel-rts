@@ -21,6 +21,7 @@ export type EntitySlot = {
   originCell: CellCoord | null;
   footprintCellsW: number;
   footprintCellsH: number;
+  blockedCellMask: boolean[][] | null;
   animPhase: number;
 };
 
@@ -46,6 +47,7 @@ function createEmptySlot(): EntitySlot {
     originCell: null,
     footprintCellsW: 0,
     footprintCellsH: 0,
+    blockedCellMask: null,
     animPhase: 0,
   };
 }
@@ -109,6 +111,7 @@ export function releaseEntity(pool: EntityPool, id: EntityId): boolean {
   slot.originCell = null;
   slot.footprintCellsW = 0;
   slot.footprintCellsH = 0;
+  slot.blockedCellMask = null;
   slot.generation += 1;
   pool.liveCount -= 1;
   return true;

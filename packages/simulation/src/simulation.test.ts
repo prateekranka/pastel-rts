@@ -277,6 +277,94 @@ describe('command application', () => {
     expect(nav.isWalkable(2, 2)).toBe(true);
     expect(nav.isWalkable(3, 3)).toBe(true);
   });
+
+  it('centers building snapshots on the full footprint', () => {
+    const sim = createSim();
+    sim.enqueueCommand(
+      spawnCommand({
+        commandId: 'place-center',
+        payload: {
+          kind: 'placeBuilding',
+          archetypeId: 'gravemark-bastion',
+          originCell: { cx: 4, cz: 4 },
+        },
+      }),
+    );
+    sim.step();
+    const snapshot = sim.buildSnapshot();
+    expect(snapshot.payload[0]).toBe(5);
+    expect(snapshot.payload[1]).toBe(5);
+  });
+
+  it('honors scenario spawn faction overrides', () => {
+    const sim = createSim();
+    sim.loadScenario({
+      schemaVersion: 1,
+      id: 'faction-override',
+      displayName: 'Faction override',
+      mapId: 'lab-grid',
+      units: [
+        {
+          archetypeId: 'sunweaver-scout',
+          position: { x: 1024, z: 1024 },
+          factionId: 'gravemark',
+        },
+      ],
+      buildings: [],
+    });
+    sim.step();
+    const snapshot = sim.buildSnapshot();
+    expect(snapshot.payload[5]).toBe(1);
+  });
+
+  it('applies L-shaped blockedCellMask on place and remove', () => {
+    const pack = createTestPackV2();
+    const lShaped = {
+      ...pack.buildings[0]!,
+      id: 'l-hall',
+      footprint: { kind: 'rect' as const, cellsW: 2, cellsH: 2 },
+      blockedCellMask: [
+        [true, false],
+        [true, true],
+      ],
+    };
+    const customPack = createTestPackV2();
+    customPack.buildings.push(lShaped);
+    const nav = new StubNavigationService();
+    nav.resize(32, 32);
+    const sim = new Simulation({
+      pack: customPack,
+      nav,
+      cellsX: 32,
+      cellsZ: 32,
+    });
+    sim.enqueueCommand(
+      spawnCommand({
+        commandId: 'place-l',
+        payload: {
+          kind: 'placeBuilding',
+          archetypeId: 'l-hall',
+          originCell: { cx: 6, cz: 6 },
+        },
+      }),
+    );
+    sim.step();
+    expect(nav.isWalkable(6, 6)).toBe(false);
+    expect(nav.isWalkable(7, 6)).toBe(true);
+    expect(nav.isWalkable(6, 7)).toBe(false);
+    expect(nav.isWalkable(7, 7)).toBe(false);
+    const buildingId = sim.getCommandLog()[0]?.result.spawnedId as EntityId;
+    sim.enqueueCommand(
+      spawnCommand({
+        commandId: 'remove-l',
+        executeTick: 1,
+        payload: { kind: 'removeBuilding', entityId: buildingId },
+      }),
+    );
+    sim.step();
+    expect(nav.isWalkable(6, 6)).toBe(true);
+    expect(nav.isWalkable(7, 6)).toBe(true);
+  });
 });
 
 describe('determinism and replay', () => {

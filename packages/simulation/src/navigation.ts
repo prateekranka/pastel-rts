@@ -29,7 +29,13 @@ export interface NavigationService {
   /** Apply authored static blockers. Called after Simulation construction (which resizes). */
   applyMapDef(map: MapDef): void;
   setBlocked(cx: number, cz: number, blocked: boolean): void;
-  setFootprintBlocked(origin: NavCell, cellsW: number, cellsH: number, blocked: boolean): void;
+  setFootprintBlocked(
+    origin: NavCell,
+    cellsW: number,
+    cellsH: number,
+    blocked: boolean,
+    mask?: ReadonlyArray<readonly boolean[]>,
+  ): void;
   isWalkable(cx: number, cz: number): boolean;
   requestPath(entityId: EntityId, from: SubunitCoord, to: SubunitCoord): PathId;
   cancel(entityId: EntityId): void;
@@ -42,7 +48,7 @@ export interface NavigationService {
   planFormation(
     entityIds: readonly EntityId[],
     destination: SubunitCoord,
-    formation: { kind: 'none' | 'line' | 'box'; spacingSubunits?: number },
+    formation: { kind: 'none' | 'line' | 'box'; spacingSubunits?: number; facingMilli?: number },
   ): ReadonlyArray<{ entityId: EntityId; target: SubunitCoord }>;
   debugSnapshot(): NavDebugSnapshot;
 }
