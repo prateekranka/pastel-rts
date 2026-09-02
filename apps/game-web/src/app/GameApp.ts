@@ -4,19 +4,21 @@ import {
   DirectionalLight,
   HemisphereLight,
   Scene,
-  WebGLRenderer,
 } from 'three';
-import {
-  DEFAULT_DPR_CAP,
-  DEFAULT_SEED,
-  MAP_WORLD_SIZE,
-  STRESS_COUNTS,
-} from '../config/constants';
+import { MAP_WORLD_SIZE, STRESS_COUNTS } from '../config/constants';
 import { palette } from '../config/palette';
 import { IsometricCamera } from '../camera/IsometricCamera';
 import { EntityRenderer } from '../entities/EntityRenderer';
 import { PointerCameraControls } from '../input/PointerCameraControls';
 import { TouchDebugOverlay } from '../input/TouchDebugOverlay';
+import { createRendererAdapter, type RendererAdapter } from '../renderer/adapter';
+import { CameraDirector } from '../runtime/CameraDirector';
+import {
+  BENCHMARKS,
+  parseRuntimeConfig,
+  pixelRatioForPreset,
+  type RuntimeConfig,
+} from '../runtime/config';
 import { SimClient } from '../sim/SimClient';
 import { SNAPSHOT_STRIDE, totalEntities, type SimCounts } from '../sim/types';
 import { LandmarkSystem } from '../world/LandmarkSystem';
@@ -24,7 +26,7 @@ import { TerrainSystem } from '../world/TerrainSystem';
 import { assertChunkLayout } from '../world/chunks';
 
 export class GameApp {
-  private renderer: WebGLRenderer | null = null;
+  private adapter: RendererAdapter | null = null;
   private readonly scene = new Scene();
   private readonly iso = new IsometricCamera();
   private terrain: TerrainSystem | null = null;
@@ -37,37 +39,31 @@ export class GameApp {
   private paused = false;
   private pauseStartedAt = 0;
   private pausedDuration = 0;
+  private lastFrameAt = 0;
   private readonly lights: Array<AmbientLight | HemisphereLight | DirectionalLight> = [];
   private canvas: HTMLCanvasElement | null = null;
   private resizeObserver: ResizeObserver | null = null;
   private visibilityHandler: (() => void) | null = null;
   private controls: PointerCameraControls | null = null;
   private touchDebug: TouchDebugOverlay | null = null;
+  private readonly director = new CameraDirector();
+  private config: RuntimeConfig = parseRuntimeConfig('');
 
-  async start(canvas: HTMLCanvasElement): Promise<void> {
+  async start(canvas: HTMLCanvasElement, config = parseRuntimeConfig()): Promise<void> {
     assertChunkLayout();
     this.canvas = canvas;
+    this.config = config;
     this.scene.background = new Color(palette.background);
 
-    const renderer = new WebGLRenderer({
-      canvas,
-      antialias: false,
-      powerPreference: 'high-performance',
-      alpha: false,
-    });
-    renderer.setClearColor(palette.background, 1);
-    renderer.autoClear = true;
-    this.renderer = renderer;
-
+    this.adapter = await createRendererAdapter(canvas, config.renderer);
     this.addLights();
-    this.iso.applyNamedPreset('70-percent');
+    this.iso.applyNamedPreset(config.zoomStop);
     this.iso.setLookAt(MAP_WORLD_SIZE * 0.52, MAP_WORLD_SIZE * 0.48);
-    this.terrain = new TerrainSystem(this.scene, DEFAULT_SEED);
-    this.landmarks = new LandmarkSystem(this.scene, DEFAULT_SEED);
+    this.terrain = new TerrainSystem(this.scene, config.seed);
+    this.landmarks = new LandmarkSystem(this.scene, config.seed);
     this.entities = new EntityRenderer(this.scene);
 
-    const counts: SimCounts = { ...STRESS_COUNTS };
-    this.sim.start(DEFAULT_SEED, counts, true);
+    this.applyBenchmark(config);
 
     this.resizeObserver = new ResizeObserver(() => this.syncSize());
     this.resizeObserver.observe(canvas.parentElement ?? canvas);
@@ -77,8 +73,7 @@ export class GameApp {
     const hudRoot = document.querySelector('#hud-root');
     if (hudRoot instanceof HTMLElement) {
       this.touchDebug = new TouchDebugOverlay(hudRoot);
-      const params = new URLSearchParams(window.location.search);
-      this.touchDebug.setVisible(params.get('touchDebug') === '1');
+      this.touchDebug.setVisible(config.touchDebug);
     }
 
     this.visibilityHandler = () => {
@@ -94,8 +89,11 @@ export class GameApp {
       if (this.disposed) {
         return;
       }
+      const dt = this.lastFrameAt === 0 ? 16.6 : time - this.lastFrameAt;
+      this.lastFrameAt = time;
       const renderTime = time - this.pausedDuration;
       if (!this.paused) {
+        this.director.update(dt, this.iso);
         const count = this.sim.interpolate(this.interpolated, renderTime);
         this.entities?.applySnapshot(this.interpolated, count);
       }
@@ -103,10 +101,21 @@ export class GameApp {
       if (this.controls && this.touchDebug) {
         this.touchDebug.update(this.controls.getDebugSnapshot());
       }
-      this.renderer?.render(this.scene, this.iso.camera);
+      this.adapter?.render(this.scene, this.iso.camera);
       this.animationFrame = requestAnimationFrame(loop);
     };
     this.animationFrame = requestAnimationFrame(loop);
+  }
+
+  applyBenchmark(config: RuntimeConfig): void {
+    this.config = config;
+    const def = BENCHMARKS[config.benchmark];
+    this.entities?.setFrozenAnimation(def.freezeAnimation);
+    this.director.setEnabled(def.autoPan);
+    this.director.reset();
+    this.ensureBuffer(def.counts);
+    this.sim.setPopulation(config.seed, def.counts, def.concentrate);
+    this.controls?.setEnabled(!def.autoPan && !def.freezeAnimation);
   }
 
   pause(_reason: 'background' | 'native' = 'native'): void {
@@ -146,13 +155,37 @@ export class GameApp {
       this.scene.remove(light);
     }
     this.lights.length = 0;
-    this.renderer?.dispose();
-    this.renderer = null;
+    this.adapter?.dispose();
+    this.adapter = null;
     this.canvas = null;
   }
 
   getCamera(): IsometricCamera {
     return this.iso;
+  }
+
+  getRenderer(): RendererAdapter | null {
+    return this.adapter;
+  }
+
+  getConfig(): RuntimeConfig {
+    return this.config;
+  }
+
+  getSim(): SimClient {
+    return this.sim;
+  }
+
+  getEntities(): EntityRenderer | null {
+    return this.entities;
+  }
+
+  getTerrain(): TerrainSystem | null {
+    return this.terrain;
+  }
+
+  isPaused(): boolean {
+    return this.paused;
   }
 
   setTouchDebugVisible(visible: boolean): void {
@@ -161,6 +194,13 @@ export class GameApp {
 
   isTouchDebugVisible(): boolean {
     return this.touchDebug?.isVisible() ?? false;
+  }
+
+  private ensureBuffer(counts: SimCounts): void {
+    const needed = totalEntities(counts) * SNAPSHOT_STRIDE;
+    if (this.interpolated.length < needed) {
+      this.interpolated = new Float32Array(needed);
+    }
   }
 
   private addLights(): void {
@@ -173,15 +213,16 @@ export class GameApp {
   }
 
   private syncSize(): void {
-    if (!this.canvas || !this.renderer) {
+    if (!this.canvas || !this.adapter) {
       return;
     }
     const width = Math.max(1, this.canvas.clientWidth);
     const height = Math.max(1, this.canvas.clientHeight);
-    const cap = DEFAULT_DPR_CAP;
-    const dpr = Math.min(window.devicePixelRatio || 1, cap);
-    this.renderer.setPixelRatio(dpr);
-    this.renderer.setSize(width, height, false);
+    const dpr = pixelRatioForPreset(this.config.dprPreset, window.devicePixelRatio || 1);
+    this.adapter.setPixelRatio(dpr);
+    this.adapter.setSize(width, height);
     this.iso.setViewport(width, height);
   }
 }
+
+export { parseRuntimeConfig };

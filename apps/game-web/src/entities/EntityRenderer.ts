@@ -21,15 +21,15 @@ const _scale = new Vector3();
 const _axis = new Vector3(0, 1, 0);
 
 const SLOT_CAPACITY: Record<number, number> = {
-  [ATLAS_SLOT.friendlyCombat]: 160,
-  [ATLAS_SLOT.opposingCombat]: 160,
-  [ATLAS_SLOT.friendlyWorker]: 80,
-  [ATLAS_SLOT.opposingWorker]: 80,
-  [ATLAS_SLOT.friendlyBuilding]: 64,
-  [ATLAS_SLOT.opposingBuilding]: 64,
-  [ATLAS_SLOT.mushroom]: 180,
-  [ATLAS_SLOT.crystal]: 180,
-  [ATLAS_SLOT.rock]: 180,
+  [ATLAS_SLOT.friendlyCombat]: 320,
+  [ATLAS_SLOT.opposingCombat]: 320,
+  [ATLAS_SLOT.friendlyWorker]: 160,
+  [ATLAS_SLOT.opposingWorker]: 160,
+  [ATLAS_SLOT.friendlyBuilding]: 128,
+  [ATLAS_SLOT.opposingBuilding]: 128,
+  [ATLAS_SLOT.mushroom]: 320,
+  [ATLAS_SLOT.crystal]: 320,
+  [ATLAS_SLOT.rock]: 320,
 };
 
 const SLOT_HEIGHT: Record<number, number> = {

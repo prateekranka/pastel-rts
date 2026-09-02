@@ -1,4 +1,5 @@
 import { GameApp } from './app/GameApp';
+import { parseRuntimeConfig } from './runtime/config';
 import './styles.css';
 
 const canvas = document.querySelector('#game-canvas');
@@ -7,7 +8,7 @@ if (!(canvas instanceof HTMLCanvasElement)) {
 }
 
 const app = new GameApp();
-void app.start(canvas).catch((error: unknown) => {
+void app.start(canvas, parseRuntimeConfig()).catch((error: unknown) => {
   const message = error instanceof Error ? error.message : String(error);
   const banner = document.createElement('div');
   banner.textContent = `Runtime failed to start: ${message}`;
@@ -19,3 +20,11 @@ void app.start(canvas).catch((error: unknown) => {
 window.addEventListener('pagehide', () => {
   app.dispose();
 });
+
+declare global {
+  interface Window {
+    __pastelApp?: GameApp;
+  }
+}
+
+window.__pastelApp = app;

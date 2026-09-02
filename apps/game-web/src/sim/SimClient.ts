@@ -51,6 +51,10 @@ export class SimClient {
   }
 
   setPopulation(seed: number, counts: SimCounts, concentrate: boolean): void {
+    if (!this.worker) {
+      this.start(seed, counts, concentrate);
+      return;
+    }
     this.prev = null;
     this.curr = null;
     this.post({ type: 'setCounts', seed, counts, concentrate });
