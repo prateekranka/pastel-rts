@@ -220,7 +220,7 @@ export class NavigationService {
   planFormation(
     entityIds: readonly EntityId[],
     destination: SubunitCoord,
-    formation: Pick<MoveFormation, 'kind'> & { spacingSubunits?: number },
+    formation: Pick<MoveFormation, 'kind'> & { spacingSubunits?: number; facingMilli?: number },
   ): ReadonlyArray<{ entityId: EntityId; target: SubunitCoord }> {
     const input = {
       entityIds: [...entityIds],
