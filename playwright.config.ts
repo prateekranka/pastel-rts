@@ -25,7 +25,7 @@ export default defineConfig({
   },
   projects: [
     {
-      name: 'game-web',
+      name: 'chromium',
       testDir: './apps/game-web/e2e',
       use: {
         ...devices['Desktop Chrome'],
@@ -53,10 +53,13 @@ export default defineConfig({
       timeout: 120_000,
     },
     {
-      command: `mkdir -p "${foundryPackDir}" && CONTENT_PACK_DIR="${foundryPackDir}" npm run start --workspace @pastel-rts/content-server`,
+      command: `mkdir -p "${foundryPackDir}" && npm run start --workspace @pastel-rts/content-server`,
       url: 'http://127.0.0.1:8787/health',
-      reuseExistingServer: !process.env['CI'],
+      reuseExistingServer: false,
       timeout: 60_000,
+      env: {
+        CONTENT_PACK_DIR: foundryPackDir,
+      },
     },
     {
       command: 'npm run preview --workspace @pastel-rts/foundry -- --host 127.0.0.1 --port 4174 --strictPort',

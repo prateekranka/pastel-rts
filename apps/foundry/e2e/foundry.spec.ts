@@ -68,6 +68,13 @@ test.describe('Content Foundry PNG click-path', () => {
     expect(Array.isArray(pack.units)).toBe(true);
     expect(pack.units.some((unit: { id: string }) => unit.id === 'foundry-proxy')).toBe(true);
 
+    const spriteUrl = await page.evaluate(async () => {
+      const response = await fetch('/dev-content/units/foundry-proxy/sprite.png');
+      return { ok: response.ok, type: response.headers.get('content-type'), length: (await response.arrayBuffer()).byteLength };
+    });
+    expect(spriteUrl.ok).toBe(true);
+    expect(spriteUrl.length).toBeGreaterThan(32);
+
     const spritePath = join(PACK_DIR, 'units/foundry-proxy/sprite.png');
     const manifestPath = join(PACK_DIR, 'units/foundry-proxy/manifest.json');
     expect(existsSync(spritePath)).toBe(true);
