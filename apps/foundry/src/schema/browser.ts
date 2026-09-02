@@ -1,4 +1,8 @@
-/** Browser-safe subset of @pastel-rts/content-schema (excludes node:crypto pack helpers). */
+/**
+ * Browser-safe Foundry entry for `@pastel-rts/content-schema`.
+ * Re-export unit/animation helpers by source file and pack types only so Vite
+ * never walks pack validators or `node:crypto` test helpers into the bundle.
+ */
 export {
   UNIT_FACTIONS,
   UNIT_MANIFEST_SCHEMA_VERSION,
