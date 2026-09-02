@@ -11,8 +11,19 @@ describe('authored pack fixture', () => {
     const raw = JSON.parse(readFileSync(fixturePath, 'utf8')) as unknown;
     const pack = validatePackV2(raw);
     expect(pack.id).toBe('dev-pack-v2');
-    expect(pack.units).toHaveLength(2);
-    expect(pack.buildings).toHaveLength(2);
+    expect(pack.units.length).toBeGreaterThanOrEqual(6);
+    expect(pack.buildings.length).toBeGreaterThanOrEqual(3);
+    expect(pack.units.map((unit) => unit.id)).toEqual(
+      expect.arrayContaining([
+        'sunweaver-infantry',
+        'sunweaver-walker',
+        'gravemark-infantry',
+        'gravemark-walker',
+      ]),
+    );
+    expect(pack.buildings.map((building) => building.id)).toEqual(
+      expect.arrayContaining(['sunweaver-sanctum', 'gravemark-bastion', 'neutral-cyan-beacon']),
+    );
     expect(pack.units.some((unit) => unit.factionId === 'sunweaver')).toBe(true);
     expect(pack.units.some((unit) => unit.factionId === 'gravemark')).toBe(true);
     expect(pack.buildings.some((building) => building.factionId === 'sunweaver')).toBe(true);

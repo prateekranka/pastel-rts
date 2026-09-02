@@ -3,7 +3,7 @@ import { dirname, extname, join, normalize, relative, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url';
 import { execSync } from 'node:child_process';
 import type { IncomingMessage, ServerResponse } from 'node:http';
-import { defineConfig, type PreviewServer, type ViteDevServer } from 'vite';
+import { defineConfig, type Plugin, type PreviewServer, type ViteDevServer } from 'vite';
 
 function gitCommit(): string {
   try {
@@ -51,7 +51,7 @@ function copyPackV2ToDist(outDir: string): void {
   cpSync(packV2Root, dest, { recursive: true });
 }
 
-function packV2Plugin() {
+function packV2Plugin(): Plugin {
   return {
     name: 'pastel-pack-v2',
     configureServer(server: ViteDevServer) {
@@ -60,8 +60,8 @@ function packV2Plugin() {
     configurePreviewServer(server: PreviewServer) {
       server.middlewares.use(servePackV2);
     },
-    writeBundle(options: { dir?: string }) {
-      copyPackV2ToDist(typeof options.dir === 'string' ? options.dir : resolve(gameWebRoot, 'dist'));
+    writeBundle(options) {
+      copyPackV2ToDist(options.dir ?? resolve(gameWebRoot, 'dist'));
     },
     closeBundle() {
       copyPackV2ToDist(resolve(gameWebRoot, 'dist'));
