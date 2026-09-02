@@ -1,3 +1,11 @@
+import {
+  isRecord,
+  isValidContentId,
+  requireInt,
+  requirePositiveInt,
+  requirePositiveNumber,
+} from './validation';
+
 export const UNIT_MANIFEST_SCHEMA_VERSION = 1;
 
 export const UNIT_FACTIONS = ['friendly', 'opposing', 'neutral'] as const;
@@ -31,10 +39,8 @@ export type UnitManifest = {
   tags?: string[];
 };
 
-const ID_PATTERN = /^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/;
-
 export function isValidUnitId(id: string): boolean {
-  return ID_PATTERN.test(id) && id.length <= 64;
+  return isValidContentId(id);
 }
 
 export function isValidAnchor(anchor: UnitAnchor): boolean {
@@ -143,30 +149,4 @@ function parseBounds(value: unknown, width: number, height: number): PixelBounds
     throw new Error('bounds must be non-empty');
   }
   return bounds;
-}
-
-function requirePositiveInt(value: unknown, label: string): number {
-  const n = requireInt(value, label);
-  if (n <= 0) {
-    throw new Error(`${label} must be > 0`);
-  }
-  return n;
-}
-
-function requireInt(value: unknown, label: string): number {
-  if (typeof value !== 'number' || !Number.isInteger(value)) {
-    throw new Error(`${label} must be an integer`);
-  }
-  return value;
-}
-
-function requirePositiveNumber(value: unknown, label: string): number {
-  if (typeof value !== 'number' || !Number.isFinite(value) || value <= 0) {
-    throw new Error(`${label} must be a positive number`);
-  }
-  return value;
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null && !Array.isArray(value);
 }

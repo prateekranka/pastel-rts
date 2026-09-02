@@ -1,65 +1,77 @@
-# Milestone 0 architecture
+# Architecture
 
-Milestone 0 is a platform and frame-budget proof, not a game-rules prototype.
-
-## Runtime boundaries
-
-- **SwiftUI** owns app lifecycle, future menus/navigation, local storage, haptics, and the `WKWebView` host. It must not render a live match HUD or sync entity state every frame.
-- **Three.js (game-web)** owns the complete live match surface: battlefield, camera, touch, stress simulation, renderer switching, and in-match diagnostics.
-- The native bridge transports **coarse** events only: `gameReady`, `requestHaptic`, `performanceReport`, `runtimeError` (JS→Swift) and `pause`, `resume`, `setDeveloperConfiguration` (Swift→JS).
+pastel-rts is a TypeScript monorepo (`npm workspaces`) with a Vite + PixiJS web client
+and a thin WKWebView iOS shell. The same web bundle runs in Safari, Chrome, and
+the native iPad app.
 
 ## Repository layout
 
-The original scaffold only listed `apps/game-web`. Milestone 0 keeps **npm workspaces** and adds packages around that runtime:
-
 ```
-apps/game-web          Vite + Three.js match runtime
-apps/foundry           Content Foundry (PNG → unit proxy)
-apps/ios-shell         XcodeGen SwiftUI WKWebView shell
-packages/content-schema Shared unit-manifest validation
-tools/content-server   Local HTTP+SSE writer for content/dev-pack
-content/dev-pack       On-disk development content pack
+apps/game-web/          Vite + PixiJS client (renderer, input, HUD, sandbox, QA)
+apps/foundry/           Local content Foundry (Vite + Hono API)
+apps/ios-shell/         SwiftUI WKWebView host + NativeBridge
+packages/content-schema Versioned JSON schemas + loaders (Pack v1 + Pack v2)
+packages/simulation     Deterministic lockstep sim (M0 orbit + M1 command/nav)
+packages/navigation     Occupancy grid + A* + formation slots (runs in worker)
+packages/render-core    Shared Pixi helpers
+packages/native-bridge  Typed postMessage protocol
+packages/perf           HUD / frame timing helpers
+tools/content-server    Pack HTTP + SSE hot-reload (Foundry API)
+e2e/                    Playwright visual + interaction-lab specs
+content/dev-pack        Pack v1 (M0 dense-battle)
+content/dev-pack-v2     Pack v2 (M1 archetypes, buildings, scenarios)
+docs/                   Contracts, milestone notes, iPad checklist
 ```
 
-## Map scale
+## Runtime modes
 
-- Logical map: `160 × 160` cells.
-- Chunks: `16 × 16` cells, `10 × 10` grid.
-- Terrain is **one mesh per chunk**, not one mesh per tile.
-- Default camera preset: `70-percent` (~44 cells of ground AABB width; height follows viewport aspect, ~28 cells on a typical landscape iPad aspect).
-- The map is larger than the viewport; pan reveals more terrain. Look-at is clamped so the battlefield cannot be lost.
+`apps/game-web/src/runtime/config.ts` parses the URL:
 
-## Stress population
+| `?mode=` | Default | Worker | Purpose |
+| --- | --- | --- | --- |
+| `benchmark` | yes (also when omitted) | 20 Hz M0 orbit worker | Dense-battle visual / perf capture |
+| `interaction-lab` | no | 20 Hz M1 command worker | Selection, movement, buildings, replay |
 
-Default dense scene:
+M0 URLs used by Playwright (`/?benchmark=visual-capture&seed=1&renderer=webgl&dpr=1&zoom=70-percent`)
+do not set `mode`, so they keep the dense-battle path.
 
-- 120 combat-unit placeholders
-- 40 worker placeholders
-- 30 building placeholders
-- 200 instanced environment props
+## Threading
 
-`2x-stress` / `maximum-population` double those counts. `idle-base` is a lighter preset. `visual-capture` freezes motion for Playwright.
+- **Main / render thread:** PixiJS, camera, Pointer Events, HUD, interpolation,
+  `InteractionController`, `UnitRenderSystem` (instanced sprite batches).
+  Placement preview uses occupancy `isWalkable` only — never A*.
+- **Match worker (`matchWorker.ts`):** `SimulationWorld.tick`, occupancy updates,
+  A* / formation via `NavigationService`. Checksums every N ticks.
+- **Logic rate** is 20 Hz (`FIXED_DT`) independent of rAF / display refresh.
 
-## Simulation and render threads
+## Snapshot layout (M1 lab)
 
-- Simulation runs at a fixed **20 Hz in a Web Worker**.
-- The main thread renders at display refresh and interpolates compact `Float32Array` snapshots from the previous snapshot toward the current one, clocked from when the current snapshot arrived.
-- Snapshot buffers are pooled in the worker (the in-flight buffer is transferred; the next buffer is preallocated). Simulation entities are pooled across population resets.
-- No SharedArrayBuffer / COOP-COEP is required.
-- Pause on `document.hidden` and on native `pause`; resume does not fast-forward missed ticks. The first resumed frame is omitted from FPS sampling so a background interval cannot appear as one long frame.
-- Foundry SSE (`EventSource /dev-content/events`) is **dev-only**. Production preview and bundled iOS builds do not open that connection.
+Little-endian `Float32Array` stride **12**:
 
-## Rendering
+`id, x, y, vx, vy, hp, facing, anim, selected, orderKind, archetypeIndex, buildingFlag`
 
-- Fixed isometric `OrthographicCamera` (no yaw/pitch from the player).
-- Instanced sprite-like quads from a generated nearest-neighbour atlas with padding.
-- `WebGLRenderer` is the baseline. `WebGPURenderer` is a developer-selected benchmark (`?renderer=webgpu`); availability is checked before the canvas is claimed. If `init()` still fails after a WebGPU context is taken, the canvas is replaced so WebGL fallback can proceed. Failure is shown in diagnostics.
-- Default DPR cap is 1.5; presets are 1.0, 1.25, 1.5, and native.
+M0 benchmark snapshots remain stride **8**.
 
-## Content pipeline
+Entity ids are `index + generation * 2^16` (see `packages/simulation` EntityRegistry).
 
-Content Foundry uploads one transparent PNG, auto-detects opaque bounds, authors a versioned unit manifest, and POSTs to the local content server. The server writes `content/dev-pack/units/<id>/` and broadcasts over SSE. game-web loads the PNG from disk via `/dev-content` (Vite proxy) and hot-reloads proxy meshes. Blob URLs are not the source of truth.
+## Content
 
-## Performance reporting
+Pack v2 is the M1 source of truth (`content/dev-pack-v2`). Pack v1 remains for M0.
+Vite serves `/content/dev-pack-v2/` in dev and copies it into `dist/` for production.
+Foundry writes atomically under `content/dev-pack-v2/` and broadcasts SSE `v2-changed`.
 
-Diagnostics record FPS, 1% low, frame-time percentiles (p95/p99), sim tick duration, snapshot latency, draw calls, triangles, visible chunks/units, renderer, DPR, CSS viewport, backing-buffer size, and elapsed time. Soak mode defaults to **20 minutes** (`SOAK_DURATION_MS`). HUD-started soaks enable the same automatic camera motion as `?benchmark=20-minute-soak`. Tests may pass `?soakMs=` for a short run. Reports include `physicalValidationStatus: awaiting-physical-validation`, live viewport/DPR/UA/renderer/timestamp, `benchmark`, and `autoCameraMotion`. Full sample series are retained only while a report is recording.
+Factions in v2: `sunweaver`, `gravemark`, `neutral`. Relationship is a separate
+field (`friendly` / `hostile` / `neutral`).
+
+## Native bridge
+
+`NativeBridge` messages are coarse: `requestHaptic` (optional `reason`:
+`selection` | `move` | `place` | `invalid`), `reportPerf`, `notifyReady`.
+No per-frame entity dumps. The Swift decoder ignores unknown keys and rejects
+an unknown `reason` string if present.
+
+## iOS
+
+`apps/ios-shell` loads `apps/game-web/dist` from the app bundle after
+`npm run ios:sync-web`. Simulator CI compiles with `xcodebuild` on `macos-latest`.
+Physical-device status lives in `docs/ipad-physical-device-checklist.md`.

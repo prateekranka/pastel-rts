@@ -33,7 +33,9 @@ window.addEventListener('pagehide', () => {
 declare global {
   interface Window {
     __pastelApp?: GameApp;
+    getInteractionLab?: () => ReturnType<GameApp['getInteractionLab']>;
   }
 }
 
 window.__pastelApp = app;
+window.getInteractionLab = () => app.getInteractionLab();

@@ -32,6 +32,8 @@ export type BenchmarkDefinition = {
   freezeAnimation: boolean;
 };
 
+export type RuntimeMode = 'benchmark' | 'interaction-lab';
+
 export type RuntimeConfig = {
   renderer: RendererPreference;
   dprPreset: DprPreset;
@@ -41,6 +43,10 @@ export type RuntimeConfig = {
   touchDebug: boolean;
   soakMs: number | null;
   haptics: boolean;
+  mode: RuntimeMode;
+  scenarioId: string | null;
+  spawnUnitId: string | null;
+  spawnBuildingId: string | null;
 };
 
 export const BENCHMARKS: Record<BenchmarkName, BenchmarkDefinition> = {
@@ -132,6 +138,7 @@ export function parseRuntimeConfig(search = window.location.search): RuntimeConf
   const seedParam = Number(params.get('seed') ?? DEFAULT_SEED);
   const soakMsParam = params.get('soakMs');
   const zoomParam = params.get('zoom');
+  const modeParam = params.get('mode');
   return {
     renderer,
     dprPreset,
@@ -143,6 +150,10 @@ export function parseRuntimeConfig(search = window.location.search): RuntimeConf
     touchDebug: params.get('touchDebug') === '1',
     soakMs: soakMsParam ? Number(soakMsParam) : null,
     haptics: params.get('haptics') !== '0',
+    mode: modeParam === 'interaction-lab' ? 'interaction-lab' : 'benchmark',
+    scenarioId: params.get('scenario'),
+    spawnUnitId: params.get('spawnUnit'),
+    spawnBuildingId: params.get('spawnBuilding'),
   };
 }
 
@@ -180,4 +191,11 @@ export function pixelRatioForPreset(preset: DprPreset, devicePixelRatio: number)
     return Math.max(1, devicePixelRatio);
   }
   return Math.min(devicePixelRatio, preset);
+}
+
+/** Pack v2 public URL prefix. Relative so WKWebView bundled loads resolve. */
+export function packV2PublicBaseUrl(): string {
+  const base = import.meta.env.BASE_URL;
+  const normalized = base.endsWith('/') ? base : `${base}/`;
+  return `${normalized}content/dev-pack-v2/`;
 }

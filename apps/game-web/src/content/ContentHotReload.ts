@@ -15,6 +15,10 @@ import { applyUvRect, opaqueBoundsToUv } from './spriteUv';
 
 const CONTENT_BASE = '/dev-content';
 
+type ContentHotReloadOptions = {
+  onV2Event?: (event: unknown) => void;
+};
+
 /**
  * Dev-only: listen for Foundry publishes and spawn textured proxies.
  * Loads PNG + manifest from the content server (files on disk), not Blob URLs.
@@ -29,9 +33,11 @@ export class ContentHotReload {
   private readonly scene: Scene;
   private spawnGeneration = 0;
   private enabled = false;
+  private readonly onV2Event: ((event: unknown) => void) | null;
 
-  constructor(scene: Scene) {
+  constructor(scene: Scene, options: ContentHotReloadOptions = {}) {
     this.scene = scene;
+    this.onV2Event = options.onV2Event ?? null;
   }
 
   start(): void {
@@ -45,7 +51,14 @@ export class ContentHotReload {
       this.source.onmessage = (event) => {
         try {
           const parsed: unknown = JSON.parse(event.data);
-          if (!parsed || typeof parsed !== 'object' || !('manifest' in parsed)) {
+          if (!parsed || typeof parsed !== 'object') {
+            return;
+          }
+          const record = parsed as { type?: string; manifest?: unknown };
+          if (typeof record.type === 'string' && record.type.includes('archetype')) {
+            this.onV2Event?.(parsed);
+          }
+          if (!('manifest' in parsed)) {
             return;
           }
           const manifest = validateUnitManifest((parsed as { manifest: unknown }).manifest);

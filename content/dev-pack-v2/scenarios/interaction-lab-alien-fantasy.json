@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "id": "interaction-lab-alien-fantasy",
+  "displayName": "Interaction Lab — Alien Fantasy",
+  "mapId": "interaction-lab-alien-fantasy",
+  "units": [
+    { "archetypeId": "sunweaver-infantry", "position": { "x": 16384, "z": 20480 }, "factionId": "sunweaver" },
+    { "archetypeId": "sunweaver-infantry", "position": { "x": 17408, "z": 20480 }, "factionId": "sunweaver" },
+    { "archetypeId": "sunweaver-infantry", "position": { "x": 18432, "z": 20480 }, "factionId": "sunweaver" },
+    { "archetypeId": "sunweaver-infantry", "position": { "x": 19456, "z": 20480 }, "factionId": "sunweaver" },
+    { "archetypeId": "sunweaver-infantry", "position": { "x": 20480, "z": 20480 }, "factionId": "sunweaver" },
+    { "archetypeId": "sunweaver-infantry", "position": { "x": 21504, "z": 20480 }, "factionId": "sunweaver" },
+    { "archetypeId": "sunweaver-infantry", "position": { "x": 22528, "z": 20480 }, "factionId": "sunweaver" },
+    { "archetypeId": "sunweaver-infantry", "position": { "x": 23552, "z": 20480 }, "factionId": "sunweaver" },
+    { "archetypeId": "sunweaver-infantry", "position": { "x": 24576, "z": 20480 }, "factionId": "sunweaver" },
+    { "archetypeId": "sunweaver-infantry", "position": { "x": 25600, "z": 20480 }, "factionId": "sunweaver" },
+    { "archetypeId": "sunweaver-infantry", "position": { "x": 26624, "z": 20480 }, "factionId": "sunweaver" },
+    { "archetypeId": "sunweaver-infantry", "position": { "x": 27648, "z": 20480 }, "factionId": "sunweaver" },
+    { "archetypeId": "sunweaver-walker", "position": { "x": 28672, "z": 21504 }, "factionId": "sunweaver" },
+    { "archetypeId": "gravemark-infantry", "position": { "x": 49152, "z": 49152 }, "factionId": "gravemark" },
+    { "archetypeId": "gravemark-infantry", "position": { "x": 50176, "z": 49152 }, "factionId": "gravemark" },
+    { "archetypeId": "gravemark-infantry", "position": { "x": 51200, "z": 49152 }, "factionId": "gravemark" },
+    { "archetypeId": "gravemark-infantry", "position": { "x": 52224, "z": 49152 }, "factionId": "gravemark" },
+    { "archetypeId": "gravemark-infantry", "position": { "x": 53248, "z": 49152 }, "factionId": "gravemark" },
+    { "archetypeId": "gravemark-infantry", "position": { "x": 54272, "z": 49152 }, "factionId": "gravemark" },
+    { "archetypeId": "gravemark-infantry", "position": { "x": 55296, "z": 49152 }, "factionId": "gravemark" },
+    { "archetypeId": "gravemark-infantry", "position": { "x": 56320, "z": 49152 }, "factionId": "gravemark" },
+    { "archetypeId": "gravemark-walker", "position": { "x": 57344, "z": 50176 }, "factionId": "gravemark" }
+  ],
+  "buildings": [
+    { "archetypeId": "sunweaver-sanctum", "originCell": { "cx": 18, "cz": 18 }, "factionId": "sunweaver" },
+    { "archetypeId": "gravemark-bastion", "originCell": { "cx": 130, "cz": 130 }, "factionId": "gravemark" },
+    { "archetypeId": "neutral-cyan-beacon", "originCell": { "cx": 80, "cz": 80 }, "factionId": "neutral" }
+  ]
+}

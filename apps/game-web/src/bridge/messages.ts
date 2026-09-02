@@ -13,6 +13,7 @@ export type JsToNativeType = (typeof JS_TO_NATIVE_TYPES)[number];
 export type NativeToJsType = (typeof NATIVE_TO_JS_TYPES)[number];
 
 export type HapticStyle = 'light' | 'medium' | 'heavy';
+export type HapticReason = 'selection' | 'move' | 'place' | 'invalid';
 
 export type DeveloperConfigurationPayload = {
   renderer?: 'webgl' | 'webgpu';
@@ -25,7 +26,7 @@ export type DeveloperConfigurationPayload = {
 
 export type JsToNativeMessage =
   | { type: 'gameReady'; payload: { renderer: string; viewport: { width: number; height: number } } }
-  | { type: 'requestHaptic'; payload: { style: HapticStyle } }
+  | { type: 'requestHaptic'; payload: { style: HapticStyle; reason?: HapticReason } }
   | { type: 'performanceReport'; payload: unknown }
   | { type: 'runtimeError'; payload: { message: string; stack?: string } };
 
@@ -71,7 +72,22 @@ export function validateJsToNative(value: unknown): JsToNativeMessage {
       if (!isRecord(payload) || !['light', 'medium', 'heavy'].includes(String(payload['style']))) {
         throw new Error('requestHaptic payload is malformed');
       }
-      return { type: 'requestHaptic', payload: { style: payload['style'] as HapticStyle } };
+      const reasonValue = payload['reason'];
+      const message: { type: 'requestHaptic'; payload: { style: HapticStyle; reason?: HapticReason } } = {
+        type: 'requestHaptic',
+        payload: { style: payload['style'] as HapticStyle },
+      };
+      if (
+        reasonValue === 'selection' ||
+        reasonValue === 'move' ||
+        reasonValue === 'place' ||
+        reasonValue === 'invalid'
+      ) {
+        message.payload.reason = reasonValue;
+      } else if (reasonValue !== undefined) {
+        throw new Error('requestHaptic reason is malformed');
+      }
+      return message;
     }
     case 'performanceReport':
       if (!isRecord(payload)) {

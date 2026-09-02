@@ -6,7 +6,9 @@ The first playable biome is **Alien Fantasy**: clean teal terrain, oversized ali
 
 ## Current milestone
 
-**Milestone 0 — platform and 60 FPS proof** (not a game). See `docs/milestone-0.md`.
+**Milestone 1 — touch command sandbox and Pack v2 authoring** (no combat). See `docs/milestone-1.md`.
+
+Milestone 0 platform proof remains the default URL (`docs/milestone-0.md`). Interaction Lab is opt-in via `?mode=interaction-lab`.
 
 Physical iPad status: **awaiting physical validation**. Do not treat desktop FPS as device proof.
 
@@ -34,6 +36,7 @@ Useful query flags:
 
 | Flag | Example | Meaning |
 | --- | --- | --- |
+| `mode` | `?mode=interaction-lab` | Milestone 1 sandbox (omit or `benchmark` keeps Milestone 0) |
 | `renderer` | `?renderer=webgpu` | WebGPU benchmark path (falls back to WebGL) |
 | `benchmark` | `?benchmark=dense-battle` | idle-base, normal-midgame, dense-battle, camera-pan-stress, maximum-population, 2x-stress, 20-minute-soak, visual-capture |
 | `dpr` | `?dpr=1.5` | 1, 1.25, 1.5, native |
@@ -41,6 +44,17 @@ Useful query flags:
 | `seed` | `?seed=1` | Deterministic placement |
 | `touchDebug` | `?touchDebug=1` | Pointer / gesture overlay |
 | `soakMs` | `?soakMs=5000` | Short soak for tests only |
+| `spawnUnit` | `?spawnUnit=sunweaver-infantry` | Foundry Test-in-sandbox spawn (lab only) |
+| `spawnBuilding` | `?spawnBuilding=sunweaver-sanctum` | Foundry building placement (lab only) |
+| `scenario` | `?scenario=interaction-lab-alien-fantasy` | Named Pack v2 scenario (lab only) |
+
+Interaction Lab (deterministic seed 42):
+
+```bash
+# http://127.0.0.1:5173/?mode=interaction-lab&seed=42&renderer=webgl&dpr=1&zoom=70-percent
+```
+
+Commands are recorded in the lab. Replay checksums: Army Rail / ReplayInspector, or `runSimulationReplay` in `@pastel-rts/simulation`.
 
 ## Content Foundry + local content server
 
@@ -53,6 +67,12 @@ npm run dev            # game-web proxies /dev-content to the content server
 ```
 
 Foundry path: upload one transparent PNG → checkerboard/neutral preview → auto bounds → set id, name, faction, anchor, world height, selection radius → save. The server writes PNG + `manifest.json` and notifies game-web over SSE so the proxy hot-reloads without editing runtime source.
+
+Pack v2 (units, buildings, animation sheets): Foundry also writes `content/dev-pack-v2`. **Test in sandbox** opens game-web with `mode=interaction-lab` and `spawnUnit=` / `spawnBuilding=`.
+
+```bash
+CONTENT_PACK_DIR=content/dev-pack-v2 npm run dev:content
+```
 
 ## Tests, lint, production build
 

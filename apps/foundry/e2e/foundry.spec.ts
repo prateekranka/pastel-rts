@@ -4,6 +4,10 @@ import { join } from 'node:path';
 
 const PACK_DIR = process.env['CONTENT_PACK_DIR'] ?? '/tmp/pastel-foundry-e2e';
 
+/** Minimal 32×32 PNG as base64 */
+const TINY_PNG_BASE64 =
+  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==';
+
 test.describe('Content Foundry PNG click-path', () => {
   test('upload PNG, preview bounds, save to disk pack', async ({ page }) => {
     await page.goto('/', { waitUntil: 'networkidle' });
@@ -81,5 +85,164 @@ test.describe('Content Foundry PNG click-path', () => {
     expect(existsSync(manifestPath)).toBe(true);
     const diskManifest = JSON.parse(readFileSync(manifestPath, 'utf8')) as { assetPath: string };
     expect(diskManifest.assetPath).toContain('sprite.png');
+  });
+});
+
+test.describe('Content server v2 routes', () => {
+  test('creates and validates v2 unit and building via API', async ({ page }) => {
+    await page.goto('/', { waitUntil: 'networkidle' });
+    const suffix = Date.now();
+
+    const unitResult = await page.evaluate(async ({ pngBase64, suffix: s }) => {
+      const id = `e2e-scout-${String(s)}`;
+      const archetype = {
+        schemaVersion: 2,
+        id,
+        displayName: 'E2E Scout',
+        enabled: true,
+        factionId: 'sunweaver',
+        assetPath: `units/${id}/sheet.png`,
+        sourceWidth: 32,
+        sourceHeight: 32,
+        frameWidth: 32,
+        frameHeight: 32,
+        margin: { x: 0, y: 0 },
+        spacing: { x: 0, y: 0 },
+        bounds: { minX: 4, minY: 4, maxX: 28, maxY: 28 },
+        anchor: { x: 0.5, y: 1 },
+        worldHeight: 1.5,
+        selectionRadius: 0.6,
+        collisionRadius: 0.45,
+        animation: {
+          directions: 1,
+          mirrored: false,
+          clips: {
+            idle: { frames: { kind: 'indexes', indexes: [0] }, fps: 8, looping: true },
+            move: { frames: { kind: 'indexes', indexes: [0] }, fps: 12, looping: true },
+          },
+        },
+        movement: {
+          speedSubunitsPerTick: 64,
+          accelerationRate: 1,
+          turnRateMilli: 3000,
+          footprintCategory: 'unit-1x1',
+        },
+      };
+      const response = await fetch('/dev-content/v2/units', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ archetype, pngBase64 }),
+      });
+      return { ok: response.ok, body: await response.json(), id };
+    }, { pngBase64: TINY_PNG_BASE64, suffix });
+
+    expect(unitResult.ok).toBe(true);
+    expect(unitResult.body.archetype.id).toBe(unitResult.id);
+
+    const buildingResult = await page.evaluate(async ({ pngBase64, suffix: s }) => {
+      const id = `e2e-bastion-${String(s)}`;
+      const archetype = {
+        schemaVersion: 2,
+        id,
+        displayName: 'E2E Bastion',
+        enabled: true,
+        factionId: 'gravemark',
+        assetPath: `buildings/${id}/sprite.png`,
+        sourceWidth: 32,
+        sourceHeight: 32,
+        bounds: { minX: 4, minY: 4, maxX: 28, maxY: 28 },
+        anchor: { x: 0.5, y: 1 },
+        worldHeight: 2.4,
+        footprint: { kind: 'rect', cellsW: 2, cellsH: 2 },
+      };
+      const response = await fetch('/dev-content/v2/buildings', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ archetype, pngBase64 }),
+      });
+      return { ok: response.ok, body: await response.json(), id };
+    }, { pngBase64: TINY_PNG_BASE64, suffix });
+
+    expect(buildingResult.ok).toBe(true);
+    expect(buildingResult.body.archetype.id).toBe(buildingResult.id);
+
+    const pack = await page.evaluate(async () => {
+      const response = await fetch('/dev-content/pack?schema=2');
+      return response.json();
+    });
+    expect(pack.schemaVersion).toBe(2);
+    expect(pack.units.some((u: { id: string }) => u.id === unitResult.id)).toBe(true);
+    expect(pack.buildings.some((b: { id: string }) => b.id === buildingResult.id)).toBe(true);
+    expect(typeof pack.contentHash).toBe('string');
+    expect(pack.contentHash.length).toBe(64);
+
+    const v1Pack = await page.evaluate(async () => {
+      const response = await fetch('/dev-content/pack');
+      return response.json();
+    });
+    expect(v1Pack.schemaVersion).toBe(1);
+    expect(Array.isArray(v1Pack.units)).toBe(true);
+  });
+
+  test('rejects unsafe asset paths', async ({ request }) => {
+    const response = await request.post('http://127.0.0.1:8787/v2/units', {
+      data: {
+        archetype: {
+          schemaVersion: 2,
+          id: 'unsafe-path-test',
+          displayName: 'Unsafe',
+          enabled: true,
+          factionId: 'neutral',
+          assetPath: '../escape/sheet.png',
+          sourceWidth: 32,
+          sourceHeight: 32,
+          frameWidth: 32,
+          frameHeight: 32,
+          margin: { x: 0, y: 0 },
+          spacing: { x: 0, y: 0 },
+          bounds: { minX: 4, minY: 4, maxX: 28, maxY: 28 },
+          anchor: { x: 0.5, y: 1 },
+          worldHeight: 1.5,
+          selectionRadius: 0.6,
+          collisionRadius: 0.45,
+          animation: {
+            directions: 1,
+            mirrored: false,
+            clips: {
+              idle: { frames: { kind: 'indexes', indexes: [0] }, fps: 8, looping: true },
+              move: { frames: { kind: 'indexes', indexes: [0] }, fps: 12, looping: true },
+            },
+          },
+          movement: {
+            speedSubunitsPerTick: 64,
+            accelerationRate: 1,
+            turnRateMilli: 3000,
+            footprintCategory: 'unit-1x1',
+          },
+        },
+        pngBase64: TINY_PNG_BASE64,
+      },
+    });
+    expect(response.status()).toBe(400);
+    const body = (await response.json()) as { error: string };
+    expect(body.error).toMatch(/asset path|invalid path/i);
+  });
+});
+
+test.describe('Test in sandbox', () => {
+  test('unit editor sandbox launcher targets interaction-lab', async ({ page }) => {
+    await page.addInitScript(() => {
+      Object.defineProperty(window, '__openedSandbox', { writable: true, value: '' });
+      window.open = (url?: string | URL) => {
+        (window as unknown as { __openedSandbox: string }).__openedSandbox = String(url ?? '');
+        return null;
+      };
+    });
+    await page.goto('/#/unit/new', { waitUntil: 'networkidle' });
+    await page.locator('#sandbox-unit').click();
+    const opened = await page.evaluate(() => (window as unknown as { __openedSandbox: string }).__openedSandbox);
+    expect(opened).toContain('mode=interaction-lab');
+    expect(opened).toContain('spawnUnit=');
+    expect(opened).toContain('127.0.0.1:5173');
   });
 });
