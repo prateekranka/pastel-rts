@@ -1,0 +1,2 @@
+# This folder is filled by `npm run ios:sync-web` from apps/game-web/dist.
+# Bundled iOS loads these files locally via the pastel:// scheme. Do not point WKWebView at a remote production URL.

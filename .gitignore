@@ -2,8 +2,12 @@
 node_modules/
 apps/game-web/dist/
 apps/game-web/.vite/
+apps/foundry/dist/
+apps/foundry/.vite/
 apps/ios-shell/PastelRTS/WebGame/*
 !apps/ios-shell/PastelRTS/WebGame/.gitkeep
+apps/ios-shell/*.xcodeproj
+apps/ios-shell/*.xcworkspace
 DerivedData/
 *.xcuserstate
 xcuserdata/
