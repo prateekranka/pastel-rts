@@ -13,6 +13,7 @@ import { FrameTracker } from '../diagnostics/FrameTracker';
 import { DiagnosticsHud } from '../diagnostics/Hud';
 import { SoakController, downloadReport } from '../diagnostics/SoakController';
 import { EntityRenderer } from '../entities/EntityRenderer';
+import { ContentHotReload } from '../content/ContentHotReload';
 import { PointerCameraControls } from '../input/PointerCameraControls';
 import { TouchDebugOverlay } from '../input/TouchDebugOverlay';
 import { createRendererAdapter, type RendererAdapter } from '../renderer/adapter';
@@ -37,6 +38,7 @@ export class GameApp {
   private terrain: TerrainSystem | null = null;
   private landmarks: LandmarkSystem | null = null;
   private entities: EntityRenderer | null = null;
+  private hotReload: ContentHotReload | null = null;
   private readonly sim = new SimClient();
   private interpolated = new Float32Array(totalEntities(STRESS_COUNTS) * SNAPSHOT_STRIDE);
   private animationFrame = 0;
@@ -72,6 +74,8 @@ export class GameApp {
     this.terrain = new TerrainSystem(this.scene, config.seed);
     this.landmarks = new LandmarkSystem(this.scene, config.seed);
     this.entities = new EntityRenderer(this.scene);
+    this.hotReload = new ContentHotReload(this.scene);
+    this.hotReload.start();
 
     this.applyBenchmark(config);
 
@@ -184,6 +188,7 @@ export class GameApp {
     this.controls?.dispose();
     this.touchDebug?.dispose();
     this.entities?.dispose();
+    this.hotReload?.dispose();
     this.terrain?.dispose();
     this.landmarks?.dispose();
     for (const light of this.lights) {
