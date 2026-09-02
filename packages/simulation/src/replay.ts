@@ -1,5 +1,6 @@
 import type { CommandEnvelopeV1, PackV2, ScenarioDef } from '@pastel-rts/content-schema';
 import type { StateChecksum } from './checksum.js';
+import type { CommandLogEntry } from './commandQueue.js';
 import type { NavigationService } from './navigation.js';
 import { Simulation, type SimulationConfig } from './simulation.js';
 
@@ -61,11 +62,33 @@ export function assertDeterministicReplay(config: ReplayConfig): {
   return { first, second, identical };
 }
 
+function envelopesFromCommandLog(
+  commandLog: Array<CommandEnvelopeV1 | CommandLogEntry>,
+): CommandEnvelopeV1[] {
+  return commandLog.map((entry) => ('envelope' in entry ? entry.envelope : entry));
+}
+
 /** Replay stored commands from a prior run and compare checksum sequences. */
 export function replayFromCommandLog(
-  config: Omit<ReplayConfig, 'commands'> & { recordedChecksums: StateChecksum[] },
+  config: Omit<ReplayConfig, 'commands'> & {
+    recordedChecksums: StateChecksum[];
+    commandLog: Array<CommandEnvelopeV1 | CommandLogEntry>;
+  },
 ): boolean {
-  const result = runSimulationReplay({ ...config, commands: [] });
+  const replayConfig: ReplayConfig = {
+    pack: config.pack,
+    navFactory: config.navFactory,
+    commands: envelopesFromCommandLog(config.commandLog),
+    totalTicks: config.totalTicks,
+  };
+  if (config.scenario !== undefined) {
+    replayConfig.scenario = config.scenario;
+  }
+  if (config.simulationConfig !== undefined) {
+    replayConfig.simulationConfig = config.simulationConfig;
+  }
+
+  const result = runSimulationReplay(replayConfig);
   if (result.checksums.length !== config.recordedChecksums.length) {
     return false;
   }

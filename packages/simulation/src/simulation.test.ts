@@ -4,7 +4,7 @@ import { createEntityId } from '@pastel-rts/content-schema';
 import { compareCommands } from './commandQueue.js';
 import { allocateEntity, createEntityPool, releaseEntity, resolveEntity } from './entityPool.js';
 import { StubNavigationService } from './navStub.js';
-import { assertDeterministicReplay, runSimulationReplay } from './replay.js';
+import { assertDeterministicReplay, replayFromCommandLog, runSimulationReplay } from './replay.js';
 import { Simulation } from './simulation.js';
 import { createTestPackV2 } from './testFixtures.js';
 
@@ -367,6 +367,35 @@ describe('determinism and replay', () => {
     });
 
     expect(replay.checksums).toEqual(original.checksums);
+  });
+
+  it('replayFromCommandLog applies recorded commands', () => {
+    const pack = createTestPackV2();
+    const commands: CommandEnvelopeV1[] = [
+      spawnCommand({
+        commandId: 'spawn',
+        payload: {
+          kind: 'spawnUnit',
+          archetypeId: 'sunweaver-scout',
+          position: { x: 2048, z: 2048 },
+        },
+      }),
+    ];
+    const replayConfig = {
+      pack,
+      navFactory: () => new StubNavigationService(),
+      totalTicks: 50,
+      simulationConfig: { cellsX: 32, cellsZ: 32 },
+    };
+    const original = runSimulationReplay({ ...replayConfig, commands });
+
+    expect(
+      replayFromCommandLog({
+        ...replayConfig,
+        commandLog: commands,
+        recordedChecksums: original.checksums,
+      }),
+    ).toBe(true);
   });
 });
 
