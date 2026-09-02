@@ -1,0 +1,21 @@
+{
+  "name": "@pastel-rts/navigation",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@pastel-rts/content-schema": "file:../content-schema"
+  },
+  "devDependencies": {
+    "@types/node": "^22.17.2",
+    "typescript": "~5.8.3",
+    "vitest": "^3.2.4"
+  }
+}
