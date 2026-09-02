@@ -1,5 +1,6 @@
 import {
   Scene,
+  Vector2,
   WebGLRenderer,
   type Camera,
   type WebGLRendererParameters,
@@ -120,11 +121,7 @@ function wrap(
       return renderer.getPixelRatio();
     },
     getDrawingBufferSize() {
-      const size = { x: 0, y: 0, set(width: number, height: number) {
-        this.x = width;
-        this.y = height;
-        return this;
-      } };
+      const size = new Vector2();
       renderer.getDrawingBufferSize(size);
       return { width: size.x, height: size.y };
     },

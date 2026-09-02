@@ -29,7 +29,7 @@ test.describe('camera interaction', () => {
     await page.waitForSelector('.pastel-hud');
     await expect(page.locator('.pastel-hud')).toBeVisible();
     await expect(page.locator('.pastel-hud')).toContainText('Diagnostics');
-    await expect(page.locator('.pastel-hud')).toContainText(/FPS|WebGL|Renderer/i);
+    await expect(page.locator('.pastel-hud')).toContainText(/FPS/i);
 
     const before = await page.evaluate(() => {
       const app = window.__pastelApp;

@@ -302,38 +302,42 @@ export class GameApp {
   }
 
   private sample(frameTimeMs: number, nowMs: number): void {
-    const stats = this.adapter?.getStats() ?? { drawCalls: 0, triangles: 0 };
-    this.tracker.sample({
-      frameTimeMs,
-      simTimeMs: this.sim.getTickDurationMs(),
-      snapshotLatencyMs: this.sim.getSnapshotLatencyMs(),
-      drawCalls: stats.drawCalls,
-      triangles: stats.triangles,
-      nowMs,
-    });
-    const hud = this.tracker.hud();
-    const viewport = this.iso.getViewport();
-    this.hud?.update({
-      ...hud,
-      simTickMs: this.sim.getTickDurationMs(),
-      snapshotLatencyMs: this.sim.getSnapshotLatencyMs(),
-      drawCalls: stats.drawCalls,
-      triangles: stats.triangles,
-      visibleChunks: this.terrain?.getVisibleChunkCount() ?? 0,
-      visibleUnits: this.entities?.getVisibleUnitCount() ?? 0,
-      totalEntities: this.entities?.getVisibleEntityCount() ?? 0,
-      renderer: this.adapter?.kind ?? 'webgl',
-      rendererBackend: this.adapter?.backend ?? 'webgl',
-      rendererRequested: this.adapter?.requested ?? this.config.renderer,
-      rendererInitError: this.adapter?.initError ?? null,
-      dprPreset: this.config.dprPreset,
-      effectiveDpr: this.adapter?.getPixelRatio() ?? 1,
-      viewport,
-      drawingBuffer: this.adapter?.getDrawingBufferSize() ?? { width: 0, height: 0 },
-      elapsedMs: this.tracker.durationMs(nowMs),
-      soakActive: this.soak?.isRunning() ?? false,
-      counts: this.sim.getCounts(),
-    });
+    try {
+      const stats = this.adapter?.getStats() ?? { drawCalls: 0, triangles: 0 };
+      this.tracker.sample({
+        frameTimeMs,
+        simTimeMs: this.sim.getTickDurationMs(),
+        snapshotLatencyMs: this.sim.getSnapshotLatencyMs(),
+        drawCalls: stats.drawCalls,
+        triangles: stats.triangles,
+        nowMs,
+      });
+      const hud = this.tracker.hud();
+      const viewport = this.iso.getViewport();
+      this.hud?.update({
+        ...hud,
+        simTickMs: this.sim.getTickDurationMs(),
+        snapshotLatencyMs: this.sim.getSnapshotLatencyMs(),
+        drawCalls: stats.drawCalls,
+        triangles: stats.triangles,
+        visibleChunks: this.terrain?.getVisibleChunkCount() ?? 0,
+        visibleUnits: this.entities?.getVisibleUnitCount() ?? 0,
+        totalEntities: this.entities?.getVisibleEntityCount() ?? 0,
+        renderer: this.adapter?.kind ?? 'webgl',
+        rendererBackend: this.adapter?.backend ?? 'webgl',
+        rendererRequested: this.adapter?.requested ?? this.config.renderer,
+        rendererInitError: this.adapter?.initError ?? null,
+        dprPreset: this.config.dprPreset,
+        effectiveDpr: this.adapter?.getPixelRatio() ?? 1,
+        viewport,
+        drawingBuffer: this.adapter?.getDrawingBufferSize() ?? { width: 0, height: 0 },
+        elapsedMs: this.tracker.durationMs(nowMs),
+        soakActive: this.soak?.isRunning() ?? false,
+        counts: this.sim.getCounts(),
+      });
+    } catch (error) {
+      console.warn('Diagnostics sample failed', error);
+    }
   }
 
   private ensureBuffer(counts: SimCounts): void {
