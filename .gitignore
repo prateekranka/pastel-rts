@@ -1,0 +1,17 @@
+.DS_Store
+node_modules/
+apps/game-web/dist/
+apps/game-web/.vite/
+apps/ios-shell/PastelRTS/WebGame/*
+!apps/ios-shell/PastelRTS/WebGame/.gitkeep
+DerivedData/
+*.xcuserstate
+xcuserdata/
+*.swp
+.env
+.env.*
+!.env.example
+coverage/
+playwright-report/
+test-results/
+performance-reports/
