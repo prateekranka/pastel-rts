@@ -15,6 +15,8 @@ import {
 import { palette } from '../config/palette';
 import { IsometricCamera } from '../camera/IsometricCamera';
 import { EntityRenderer } from '../entities/EntityRenderer';
+import { PointerCameraControls } from '../input/PointerCameraControls';
+import { TouchDebugOverlay } from '../input/TouchDebugOverlay';
 import { SimClient } from '../sim/SimClient';
 import { SNAPSHOT_STRIDE, totalEntities, type SimCounts } from '../sim/types';
 import { LandmarkSystem } from '../world/LandmarkSystem';
@@ -39,6 +41,8 @@ export class GameApp {
   private canvas: HTMLCanvasElement | null = null;
   private resizeObserver: ResizeObserver | null = null;
   private visibilityHandler: (() => void) | null = null;
+  private controls: PointerCameraControls | null = null;
+  private touchDebug: TouchDebugOverlay | null = null;
 
   async start(canvas: HTMLCanvasElement): Promise<void> {
     assertChunkLayout();
@@ -69,6 +73,14 @@ export class GameApp {
     this.resizeObserver.observe(canvas.parentElement ?? canvas);
     this.syncSize();
 
+    this.controls = new PointerCameraControls(canvas, this.iso);
+    const hudRoot = document.querySelector('#hud-root');
+    if (hudRoot instanceof HTMLElement) {
+      this.touchDebug = new TouchDebugOverlay(hudRoot);
+      const params = new URLSearchParams(window.location.search);
+      this.touchDebug.setVisible(params.get('touchDebug') === '1');
+    }
+
     this.visibilityHandler = () => {
       if (document.hidden) {
         this.pause('background');
@@ -88,6 +100,9 @@ export class GameApp {
         this.entities?.applySnapshot(this.interpolated, count);
       }
       this.terrain?.updateVisibility(this.iso);
+      if (this.controls && this.touchDebug) {
+        this.touchDebug.update(this.controls.getDebugSnapshot());
+      }
       this.renderer?.render(this.scene, this.iso.camera);
       this.animationFrame = requestAnimationFrame(loop);
     };
@@ -122,6 +137,8 @@ export class GameApp {
       this.visibilityHandler = null;
     }
     this.sim.stop();
+    this.controls?.dispose();
+    this.touchDebug?.dispose();
     this.entities?.dispose();
     this.terrain?.dispose();
     this.landmarks?.dispose();
@@ -136,6 +153,14 @@ export class GameApp {
 
   getCamera(): IsometricCamera {
     return this.iso;
+  }
+
+  setTouchDebugVisible(visible: boolean): void {
+    this.touchDebug?.setVisible(visible);
+  }
+
+  isTouchDebugVisible(): boolean {
+    return this.touchDebug?.isVisible() ?? false;
   }
 
   private addLights(): void {
