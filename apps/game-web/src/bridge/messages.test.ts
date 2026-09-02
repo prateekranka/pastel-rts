@@ -22,7 +22,16 @@ describe('native bridge validation', () => {
     expect(
       validateJsToNative({
         type: 'requestHaptic',
-        payload: { style: 'light' },
+        payload: { style: 'light', reason: 'selection' },
+      }),
+    ).toEqual({
+      type: 'requestHaptic',
+      payload: { style: 'light', reason: 'selection' },
+    });
+    expect(
+      validateJsToNative({
+        type: 'requestHaptic',
+        payload: { style: 'medium', reason: 'move' },
       }).type,
     ).toBe('requestHaptic');
     expect(

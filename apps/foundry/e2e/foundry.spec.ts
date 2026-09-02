@@ -228,3 +228,20 @@ test.describe('Content server v2 routes', () => {
     expect(body.error).toMatch(/asset path|invalid path/i);
   });
 });
+
+test.describe('Test in sandbox', () => {
+  test('unit editor sandbox launcher targets interaction-lab', async ({ page }) => {
+    await page.addInitScript(() => {
+      Object.defineProperty(window, '__openedSandbox', { writable: true, value: '' });
+      window.open = (url?: string | URL) => {
+        (window as unknown as { __openedSandbox: string }).__openedSandbox = String(url ?? '');
+        return null;
+      };
+    });
+    await page.goto('/#/unit/new', { waitUntil: 'networkidle' });
+    await page.locator('#sandbox-unit').click();
+    const opened = await page.evaluate(() => (window as unknown as { __openedSandbox: string }).__openedSandbox);
+    expect(opened).toContain('mode=interaction-lab');
+    expect(opened).toContain('spawnUnit=');
+  });
+});
