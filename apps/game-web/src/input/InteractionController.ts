@@ -147,6 +147,7 @@ export class InteractionController {
     }
     if (this.touchPointerCount >= 2 || this.cameraControls.getDebugSnapshot().gesture === 'pinch') {
       this.sawPinch = true;
+      this.clearLongPressTimer();
     }
     const rect = this.canvasRect();
     const track: PointerTrack = {
@@ -344,6 +345,13 @@ export class InteractionController {
       if (!track || track.movedPastTap) {
         return;
       }
+      if (
+        this.sawPinch ||
+        this.touchPointerCount >= 2 ||
+        this.cameraControls.getDebugSnapshot().gesture === 'pinch'
+      ) {
+        return;
+      }
       const onUnit = this.pickEntity(track.startX, track.startY);
       const hasSelection = this.selection.getSelected().length > 0;
       if (onUnit && !this.selectModeActive()) {
@@ -379,17 +387,6 @@ export class InteractionController {
     this.lassoActive = false;
     this.onLassoRect(null);
     this.lastGestureLabel = 'lasso-select';
-  }
-
-  private beginFormation(track: PointerTrack): void {
-    void track;
-    if (this.formationActive) {
-      return;
-    }
-    this.formationActive = true;
-    this.disableCamera();
-    this.updateFormationPreview(track);
-    this.lastGestureLabel = 'formation-start';
   }
 
   private updateFormationPreview(track: PointerTrack): void {

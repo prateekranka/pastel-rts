@@ -185,6 +185,23 @@ describe('InteractionController', () => {
     pointer(window, 'pointerup', { pointerId: 2, pointerType: 'touch', clientX: 500, clientY: 240 });
     pointer(window, 'pointerup', { pointerId: 1, pointerType: 'touch', clientX: 300, clientY: 240 });
     expect(selection.getSelected()).toHaveLength(0);
+    expect(interaction.lastGestureLabel).toBe('pinch-ignored');
+    interaction.dispose();
+  });
+
+  it('long-press during pinch does not start lasso or disable camera', async () => {
+    vi.useFakeTimers();
+    const { canvas, interaction, selection, controls } = createLab();
+    pointer(canvas, 'pointerdown', { pointerId: 1, pointerType: 'touch', clientX: 300, clientY: 240 });
+    pointer(canvas, 'pointerdown', { pointerId: 2, pointerType: 'touch', clientX: 500, clientY: 240 });
+    await vi.advanceTimersByTimeAsync(500);
+    expect(interaction.lastGestureLabel).toBeNull();
+    expect(selection.getSelected()).toHaveLength(0);
+    pointer(window, 'pointerup', { pointerId: 2, pointerType: 'touch', clientX: 500, clientY: 240 });
+    pointer(window, 'pointerup', { pointerId: 1, pointerType: 'touch', clientX: 300, clientY: 240 });
+    expect(interaction.lastGestureLabel).toBe('pinch-ignored');
+    expect(controls.getDebugSnapshot().gesture).toBe('idle');
+    vi.useRealTimers();
     interaction.dispose();
   });
 

@@ -1,9 +1,13 @@
 import {
   COMMAND_PROTOCOL_VERSION,
+  type CellCoord,
   type CommandEnvelopeV1,
   type CommandResult,
   type EntityId,
   type MoveFormation,
+  type MovePayload,
+  type PlaceBuildingPayload,
+  type SpawnUnitPayload,
   type SubunitCoord,
   type Tick,
 } from '@pastel-rts/content-schema';
@@ -54,6 +58,37 @@ export class CommandClient {
     return this.sequence;
   }
 
+  issueSpawnUnit(params: {
+    archetypeId: string;
+    position: SubunitCoord;
+    issuedAtTick: Tick;
+    executeTick: Tick;
+    headingMilli?: number;
+  }): CommandEnvelopeV1 {
+    const payload: SpawnUnitPayload = {
+      kind: 'spawnUnit',
+      archetypeId: params.archetypeId,
+      position: params.position,
+    };
+    if (params.headingMilli !== undefined) {
+      payload.headingMilli = params.headingMilli;
+    }
+    return this.send('spawnUnit', payload, params.issuedAtTick, params.executeTick);
+  }
+
+  issueRemoveEntity(params: {
+    entityId: EntityId;
+    issuedAtTick: Tick;
+    executeTick: Tick;
+  }): CommandEnvelopeV1 {
+    return this.send(
+      'removeEntity',
+      { kind: 'removeEntity', entityId: params.entityId },
+      params.issuedAtTick,
+      params.executeTick,
+    );
+  }
+
   issueMove(params: {
     entityIds: EntityId[];
     destination: SubunitCoord;
@@ -61,14 +96,13 @@ export class CommandClient {
     executeTick: Tick;
     formation?: MoveFormation;
   }): CommandEnvelopeV1 {
-    const payload: CommandEnvelopeV1['payload'] = {
+    const payload: MovePayload = {
       kind: 'move',
       entityIds: params.entityIds,
       destination: params.destination,
     };
     if (params.formation !== undefined) {
-      (payload as Extract<CommandEnvelopeV1['payload'], { kind: 'move' }>).formation =
-        params.formation;
+      payload.formation = params.formation;
     }
     return this.send('move', payload, params.issuedAtTick, params.executeTick);
   }
@@ -81,6 +115,37 @@ export class CommandClient {
     return this.send(
       'stop',
       { kind: 'stop', entityIds: params.entityIds },
+      params.issuedAtTick,
+      params.executeTick,
+    );
+  }
+
+  issuePlaceBuilding(params: {
+    archetypeId: string;
+    originCell: CellCoord;
+    issuedAtTick: Tick;
+    executeTick: Tick;
+    headingMilli?: number;
+  }): CommandEnvelopeV1 {
+    const payload: PlaceBuildingPayload = {
+      kind: 'placeBuilding',
+      archetypeId: params.archetypeId,
+      originCell: params.originCell,
+    };
+    if (params.headingMilli !== undefined) {
+      payload.headingMilli = params.headingMilli;
+    }
+    return this.send('placeBuilding', payload, params.issuedAtTick, params.executeTick);
+  }
+
+  issueRemoveBuilding(params: {
+    entityId: EntityId;
+    issuedAtTick: Tick;
+    executeTick: Tick;
+  }): CommandEnvelopeV1 {
+    return this.send(
+      'removeBuilding',
+      { kind: 'removeBuilding', entityId: params.entityId },
       params.issuedAtTick,
       params.executeTick,
     );

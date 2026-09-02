@@ -4,8 +4,6 @@ import { MIN_TOUCH_TARGET_CSS } from '../input/gestureConstants';
 export function applyTouchTargetSize(element: HTMLElement, sizeCss = MIN_TOUCH_TARGET_CSS): void {
   element.style.minWidth = `${sizeCss}px`;
   element.style.minHeight = `${sizeCss}px`;
-  element.style.width = `${sizeCss}px`;
-  element.style.height = `${sizeCss}px`;
 }
 
 /** Returns true when the event target is inside a match HUD or minimap region. */

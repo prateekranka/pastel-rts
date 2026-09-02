@@ -13,8 +13,13 @@ describe('MatchHud', () => {
     const host = document.createElement('div');
     document.body.appendChild(host);
     const hud = new MatchHud(host);
-    const stopBtn = hud.getElement().querySelector('[data-action="stop"]') as HTMLButtonElement;
+    const root = hud.getElement();
+    const stopBtn = root.querySelector('[data-action="stop"]') as HTMLButtonElement;
+    const selectBtn = root.querySelector('[data-action="select-mode"]') as HTMLButtonElement;
+    const formation = root.querySelector('[data-role="formation"]') as HTMLSelectElement;
     expect(assertTouchTarget(stopBtn)).toBe(true);
+    expect(assertTouchTarget(selectBtn)).toBe(true);
+    expect(assertTouchTarget(formation)).toBe(true);
 
     hud.render({
       aggregates: [{ archetypeId: 'spear', count: 3 }],
@@ -29,11 +34,16 @@ describe('MatchHud', () => {
 
   it('aggregateSelection groups large selections by archetype', () => {
     const entities = [
-      { id: { index: 0 }, archetypeId: 'spear' },
-      { id: { index: 1 }, archetypeId: 'spear' },
-      { id: { index: 2 }, archetypeId: 'bow' },
+      { id: { index: 0, generation: 1 }, archetypeId: 'spear' },
+      { id: { index: 1, generation: 1 }, archetypeId: 'spear' },
+      { id: { index: 2, generation: 1 }, archetypeId: 'bow' },
+      { id: { index: 0, generation: 2 }, archetypeId: 'spear' },
     ];
-    const selected = [{ index: 0 }, { index: 1 }, { index: 2 }];
+    const selected = [
+      { index: 0, generation: 1 },
+      { index: 1, generation: 1 },
+      { index: 2, generation: 1 },
+    ];
     expect(aggregateSelection(entities, selected)).toEqual([
       { archetypeId: 'spear', count: 2 },
       { archetypeId: 'bow', count: 1 },

@@ -1,5 +1,6 @@
-import type { MoveFormationKind } from '@pastel-rts/content-schema';
+import type { EntityId, MoveFormationKind } from '@pastel-rts/content-schema';
 import { MIN_TOUCH_TARGET_CSS } from '../input/gestureConstants';
+import { keyFor } from '../selection/SelectionController';
 import type { ArchetypeAggregate } from '../selection/types';
 import { applyTouchTargetSize } from './touchTargets';
 
@@ -165,13 +166,13 @@ export class MatchHud {
 }
 
 export function aggregateSelection(
-  entities: ReadonlyArray<{ id: { index: number }; archetypeId: string }>,
-  selected: ReadonlyArray<{ index: number }>,
+  entities: ReadonlyArray<{ id: EntityId; archetypeId: string }>,
+  selected: readonly EntityId[],
 ): ArchetypeAggregate[] {
-  const selectedSet = new Set(selected.map((id) => id.index));
+  const selectedSet = new Set(selected.map((id) => keyFor(id)));
   const counts = new Map<string, number>();
   for (const entity of entities) {
-    if (!selectedSet.has(entity.id.index)) {
+    if (!selectedSet.has(keyFor(entity.id))) {
       continue;
     }
     counts.set(entity.archetypeId, (counts.get(entity.archetypeId) ?? 0) + 1);
