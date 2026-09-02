@@ -14,6 +14,8 @@
   },
   "dependencies": {
     "@pastel-rts/content-schema": "*",
+    "@pastel-rts/navigation": "*",
+    "@pastel-rts/simulation": "*",
     "three": "0.185.1"
   },
   "devDependencies": {

@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "id": "interaction-lab-alien-fantasy",
+  "displayName": "Interaction Lab Alien Fantasy",
+  "cellsX": 160,
+  "cellsZ": 160,
+  "chunkSize": 16
+}
