@@ -155,6 +155,20 @@ describe('NavigationService pathfinding', () => {
     expect(nav.getPath(entity)).toBeNull();
     expect(nav.nextWaypoint(entity)).toBeNull();
   });
+
+  it('peeks nextWaypoint and advances when current position is supplied', () => {
+    const nav = new NavigationService(8, 8);
+    const entity = createEntityId(30, 1);
+    nav.requestPath(entity, cellCenter(0, 0), cellCenter(2, 0));
+
+    const first = nav.nextWaypoint(entity);
+    expect(first).toEqual(cellCenter(1, 0));
+    expect(nav.nextWaypoint(entity)).toEqual(first);
+
+    expect(first).not.toBeNull();
+    const second = nav.nextWaypoint(entity, first!);
+    expect(second).toEqual(cellCenter(2, 0));
+  });
 });
 
 describe('GridPathfinder', () => {

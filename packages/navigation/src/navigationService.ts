@@ -202,7 +202,15 @@ export class NavigationService {
     active.waypointIndex += 1;
   }
 
-  nextWaypoint(entityId: EntityId): SubunitCoord | null {
+  /**
+   * Contract follow API. Peeks the current cell-center waypoint.
+   * When `current` is provided, advances the path if the unit is close enough
+   * so simulation can follow multi-cell routes without calling `advanceWaypoint`.
+   */
+  nextWaypoint(entityId: EntityId, current?: SubunitCoord): SubunitCoord | null {
+    if (current !== undefined) {
+      this.advanceWaypoint(entityId, current);
+    }
     const active = this.pathsByEntity.get(entityIdKey(entityId));
     if (active === undefined || active.status !== 'found' || active.cells.length === 0) {
       return null;
