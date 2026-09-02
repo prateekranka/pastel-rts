@@ -177,7 +177,7 @@ Suggested new files (A-owned):
 type Tick = number; // integer, uint32 range in practice
 ```
 
-Pause does **not** fast-forward missed ticks (Milestone 0). Commands carry `issuedAtTick` equal to the last completed tick known to the issuer; the worker stamps `acceptedAtTick` on apply.
+Pause does **not** fast-forward missed ticks (Milestone 0). Commands carry `issuedAtTick` equal to the last completed tick known to the issuer and `executeTick` for when the worker should apply (usually the same tick, never earlier). Same-tick commands from one issuer are ordered by `sequence`. The worker stamps `acceptedAtTick` on apply.
 
 ### Fixed-point coordinates
 
@@ -237,10 +237,10 @@ Milestone 0 `FACTION` / manifest `faction: 'friendly' | 'opposing' | 'neutral'` 
 
 | Term | Where | Example |
 | --- | --- | --- |
-| `factionId` | Content Pack v2 | `"ember-court"`, `"violet-host"` |
+| `factionId` | Content Pack v2 | `"sunweaver"`, `"gravemark"`, `"neutral"` |
 | `relationship` | Runtime / snapshot | `'friendly' \| 'opposing' \| 'neutral'` |
 
-Lab default: local player is `ember-court`; the other authored faction is opposing. Neutral is props/environment, not a playable faction.
+Product faction ids are **`sunweaver` | `gravemark` | `neutral`**. Lab default: local player is `sunweaver`; `gravemark` is opposing. Neutral is props/environment, not a playable faction. Do not author `ember-court` / `violet-host`.
 
 ---
 
@@ -258,17 +258,23 @@ Unit files: `content/dev-pack/units/<id>/manifest.json` + `sprite.png`. Foundry 
 
 ### Pack v2 (add)
 
+Canonical types live in `@pastel-rts/content-schema`. Product `factionId` is `'sunweaver' | 'gravemark' | 'neutral'`.
+
 ```ts
 type PackV2 = {
   schemaVersion: 2;
   id: string;
+  revision: string;
   factions: FactionDef[];
   units: UnitArchetype[];
   buildings: BuildingArchetype[];
+  maps?: MapReference[];
+  scenarios?: ScenarioReference[];
+  contentHash: string;
 };
 
 type FactionDef = {
-  id: string;           // kebab-case, same id rules as units
+  id: FactionId;
   displayName: string;
 };
 
@@ -277,17 +283,26 @@ type UnitArchetype = {
   id: string;
   displayName: string;
   enabled: boolean;
-  factionId: string;    // NOT relationship
+  factionId: FactionId; // sunweaver | gravemark | neutral — NOT relationship
   assetPath: string;    // relative PNG or sheet, no `..`, no leading `/`
   sourceWidth: number;
   sourceHeight: number;
+  frameWidth: number;
+  frameHeight: number;
+  margin: { x: number; y: number };
+  spacing: { x: number; y: number };
   bounds: PixelBounds;
   anchor: UnitAnchor;   // 0..1, same as v1
   worldHeight: number;  // world units (cells), same meaning as v1
   selectionRadius: number;
-  footprint: { cellsW: 1; cellsH: 1 }; // M1 units occupy one cell for nav
-  speedSubunitsPerTick: number;        // integer > 0 for movers
-  animation: AnimationDef;             // section 10
+  collisionRadius: number;
+  animation: UnitAnimationDef; // idle AND move required
+  movement: {
+    speedSubunitsPerTick: number; // integer > 0
+    accelerationRate: number;
+    turnRateMilli: number;
+    footprintCategory: string;    // M1 units: typically "unit-1x1" (one nav cell)
+  };
   tags?: string[];
 };
 
@@ -296,40 +311,43 @@ type BuildingArchetype = {
   id: string;
   displayName: string;
   enabled: boolean;
-  factionId: string;
+  factionId: FactionId;
   assetPath: string;
   sourceWidth: number;
   sourceHeight: number;
   bounds: PixelBounds;
   anchor: UnitAnchor;
   worldHeight: number;
-  selectionRadius: number;
-  footprint: { cellsW: number; cellsH: number }; // integer >= 1, axis-aligned
-  animation: AnimationDef; // typically directions: 1, clip: idle only
+  footprint: RectFootprint | CellMaskFootprint; // cellsW/cellsH >= 1
+  animation?: AnimationDef; // idle required when present; move optional
   tags?: string[];
 };
 ```
 
-Footprints are in **cells**, origin = occupancy cell of the building’s south-west (min-x, min-z) corner. Placement fails if any covered cell is out of map or occupied.
+M1 units occupy **one nav cell** (`movement.footprintCategory`, typically `unit-1x1`). Buildings use cell footprints (`kind: 'rect' | 'mask'`). Footprints are in **cells**, origin = occupancy cell of the building’s south-west (min-x, min-z) corner. Placement fails if any covered cell is out of map or occupied.
 
 ### v1 → v2 migration
 
 A must ship `upgradePackV1ToV2(packV1): PackV2`:
 
 1. Keep `id`.
-2. Synthesize two factions: `ember-court`, `violet-host` (display names free).
-3. Each v1 unit: `factionId` from legacy `faction` — `friendly` → `ember-court`, `opposing` → `violet-host`, `neutral` → `ember-court` with tag `legacy-neutral` (runtime relationship still derived separately for Foundry proxies).
-4. Default `footprint: { cellsW: 1, cellsH: 1 }`, `speedSubunitsPerTick` from a documented constant (e.g. 64), `animation` = `{ clips: { idle: default, move: default }, directions: 1, mirrored: false }`.
+2. Synthesize three factions: `sunweaver`, `gravemark`, `neutral` (display names free).
+3. Each v1 unit: `factionId` from legacy `faction` — `friendly` → `sunweaver`, `opposing` → `gravemark`, `neutral` → `neutral` (runtime **relationship** is still derived separately for Foundry proxies and snapshots).
+4. Default `movement.speedSubunitsPerTick` from `DEFAULT_V1_UPGRADE_SPEED_SUBUNITS_PER_TICK` (64), `movement.footprintCategory: 'unit-1x1'`, `animation` = `{ clips: { idle: default, move: default }, directions: 1, mirrored: false }`.
 5. `validateUnitManifest` continues to require `schemaVersion: 1`. A **new** `validateUnitArchetype` requires `schemaVersion: 2`.
 6. Content server `readPack()` remains able to return v1 for M0 tests. Additive: `GET /pack?schema=2` or dual body field — D implements after A’s validators exist. Do not break `GET /pack` v1 shape used by Foundry e2e (`id`, `schemaVersion: 1`, `units` array of v1 manifests).
 
 Sample authored content (A, under `content/**` only): at least two unit archetypes and two building archetypes, one per faction, plus a v2 pack fixture used by schema tests. Do not rewrite `apps/game-web` loaders.
 
+Pack v2 may list `maps[]` / `scenarios[]` path references. On-disk **foundations** (stubbed, tested) are `MapDef` (`validateMapDef`) and `ScenarioDef` (`validateScenarioDef`): default lab map is 160×160 cells, 16-cell chunks; a scenario names a `mapId` plus unit/building spawn lists. Composer F authors scenario files against these types; C reads `MapDef.blockedCells` if present.
+
 ---
 
 ## 5. Command format
 
-Wire type lives in `packages/content-schema/src/commands.ts`. Protocol version **1** for M1.
+Wire type lives in `packages/content-schema/src/commands.ts`. Protocol / schema version **1** for M1.
+
+Canonical envelope keeps the contract names `protocolVersion`, `commandId`, `issuedAtTick`, and `kind`. User-spec fields `sequence` and `executeTick` are **required** (same-tick ordering uses `sequence`; the worker applies at `executeTick`). Input aliases: `schemaVersion` for `protocolVersion`, `type` for `kind`. `entityIds` stay on the payload (move/stop). Optional `formation` on move.
 
 ```ts
 type CommandKind =
@@ -340,10 +358,17 @@ type CommandKind =
   | 'placeBuilding'
   | 'removeBuilding';
 
+type MoveFormation = {
+  kind: 'none' | 'line' | 'box';
+  spacingSubunits?: number;
+};
+
 type CommandEnvelopeV1 = {
   protocolVersion: 1;
   commandId: string;     // client-generated, unique per issued command (uuid or `lab-${n}`)
+  sequence: number;      // same-tick order; lower applies first; >= 0
   issuedAtTick: Tick;
+  executeTick: Tick;     // >= issuedAtTick
   playerId: string;      // sandbox: "lab-local"
   kind: CommandKind;
   payload: CommandPayload;
@@ -352,7 +377,7 @@ type CommandEnvelopeV1 = {
 type CommandPayload =
   | { kind: 'spawnUnit'; archetypeId: string; position: SubunitCoord; headingMilli?: number }
   | { kind: 'removeEntity'; entityId: EntityId }
-  | { kind: 'move'; entityIds: EntityId[]; destination: SubunitCoord }
+  | { kind: 'move'; entityIds: EntityId[]; destination: SubunitCoord; formation?: MoveFormation }
   | { kind: 'stop'; entityIds: EntityId[] }
   | {
       kind: 'placeBuilding';
@@ -384,7 +409,7 @@ Semantics:
 | --- | --- | --- |
 | `spawnUnit` | Slot allocated, id returned, idle at position | OOB, unknown archetype, capacity |
 | `removeEntity` | Unit (not building) despawned, generation bumped | Stale id, target is a building (use `removeBuilding`) |
-| `move` | Nav request queued per id; unit state → move | Stale id, empty list, destination OOB |
+| `move` | Nav request queued per id; unit state → move. Optional `formation` is recorded for B to apply | Stale id, empty list, destination OOB, invalid formation |
 | `stop` | Cancel path, state → idle | Stale id |
 | `placeBuilding` | Occupancy claimed, idle building | Overlap, OOB, unknown archetype |
 | `removeBuilding` | Occupancy released | Stale id, target is a unit |
@@ -533,22 +558,24 @@ type AnimClipId = 'idle' | 'move'; // M1 only; no attack/death
 type AnimationDef = {
   clips: {
     idle: SpriteClip;
-    move?: SpriteClip; // buildings omit; units default to idle if missing
+    move?: SpriteClip; // units require move; buildings may omit
   };
   /** 1 = billboard / single frame set; 4 = N E S W; 8 = N NE E SE S SW W NW */
   directions: 1 | 4 | 8;
   /** If true, west-ish facings are east-ish frames with X flip. 4 dirs + mirror ⇒ 8 visual. */
-  mirrored: boolean;
+  mirrored?: boolean;
 };
 
 type SpriteClip = {
   /** Atlas or sheet path relative to the pack; may equal the unit assetPath for M1 proxies */
-  assetPath: string;
-  frameCount: number;    // >= 1
+  assetPath?: string;
+  frames: { kind: 'indexes'; indexes: number[] } | { kind: 'range'; start: number; end: number };
   fps: number;           // display rate; sim only stores phase 0..1
-  frame: { w: number; h: number };
+  looping: boolean;
 };
 ```
+
+Unit archetypes **must** include `idle` and `move`. Buildings may omit `animation` entirely, or supply idle-only.
 
 Runtime (`UnitRenderSystem`):
 
@@ -745,7 +772,7 @@ Combat, projectiles, HP as gameplay, economy, resources, build queues, productio
 
 | Agent | Done when |
 | --- | --- |
-| A | Pack v2 + command/id/coord/animation types exported; v1 tests green; v1→v2 upgrade tested; sample content under `content/**` |
+| A | Pack v2 + command/id/coord/animation/map/scenario types exported; v1 tests green; v1→v2 upgrade tested; sample content under `content/**` |
 | B | Commands in section 5 applied; ids + generations; 20 Hz step; snapshot layout documented; vitest without Three |
 | C | 160×160 A\* + footprints; debug snapshot; vitest on a small fixture map |
 | D | v1 Foundry e2e still passes; v2 authoring for unit+building+factionId; server additive routes |
