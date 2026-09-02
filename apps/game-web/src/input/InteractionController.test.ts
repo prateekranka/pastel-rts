@@ -295,7 +295,7 @@ describe('UI pointer isolation', () => {
   });
 
   it('UI pointer does not leak into battlefield command', () => {
-    const { canvas, interaction, selection, commandPort } = createLab();
+    const { interaction, selection, commandPort } = createLab();
     selection.select({ index: 0, generation: 1 }, false);
     const hud = document.createElement('div');
     hud.className = 'pastel-match-hud';
