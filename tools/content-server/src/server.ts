@@ -5,9 +5,9 @@ import { fileURLToPath } from 'node:url';
 import {
   validateBuildingArchetype,
   validateUnitArchetype,
-} from '../../../packages/content-schema/src/pack.ts';
-import { validateUnitManifest } from '../../../packages/content-schema/src/unitManifest.ts';
-import { PackStore, type HotReloadEvent, sanitizeRelativePath } from './packStore.ts';
+  validateUnitManifest,
+} from '@pastel-rts/content-schema';
+import { PackStore, type HotReloadEvent, sanitizeRelativePath } from './packStore';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '../../..');
 const packDir = process.env['CONTENT_PACK_DIR']

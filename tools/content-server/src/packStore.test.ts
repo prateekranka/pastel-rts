@@ -2,8 +2,8 @@ import { mkdtempSync, readFileSync, rmSync, existsSync, mkdirSync, writeFileSync
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { validatePackV2 } from '../../../packages/content-schema/src/pack.ts';
-import { PackStore, sanitizeRelativePath } from './packStore.ts';
+import { validatePackV2 } from '@pastel-rts/content-schema';
+import { PackStore, sanitizeRelativePath } from './packStore';
 
 /** 1×1 PNG */
 const TINY_PNG_BASE64 =

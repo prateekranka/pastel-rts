@@ -16,13 +16,14 @@ import {
   upgradePackV1ToV2,
   validateBuildingArchetype,
   validatePackV2,
+  validateScenarioDef,
   validateUnitArchetype,
+  validateUnitManifest,
   type BuildingArchetype,
   type PackV2,
   type UnitArchetype,
-} from '../../../packages/content-schema/src/pack.ts';
-import { validateScenarioDef } from '../../../packages/content-schema/src/scenario.ts';
-import { validateUnitManifest, type UnitManifest } from '../../../packages/content-schema/src/unitManifest.ts';
+  type UnitManifest,
+} from '@pastel-rts/content-schema';
 
 export type PackStoreOptions = {
   packDir: string;
@@ -330,15 +331,17 @@ export class PackStore {
   }
 
   private buildPackV2Index(units: UnitArchetype[], buildings: BuildingArchetype[], revision: string): PackV2 {
-    const packWithoutHash = {
-      schemaVersion: 2 as const,
+    const maps = this.readMapReferences();
+    const scenarios = this.readScenarioReferences();
+    const packWithoutHash: Omit<PackV2, 'contentHash'> = {
+      schemaVersion: 2,
       id: 'dev-pack-v2',
       revision,
       factions: DEFAULT_FACTIONS,
       units,
       buildings,
-      maps: this.readMapReferences(),
-      scenarios: this.readScenarioReferences(),
+      ...(maps ? { maps } : {}),
+      ...(scenarios ? { scenarios } : {}),
     };
     return { ...packWithoutHash, contentHash: computeContentHash(packWithoutHash) };
   }
