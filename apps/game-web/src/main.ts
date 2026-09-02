@@ -15,6 +15,15 @@ void app.start(canvas, parseRuntimeConfig()).catch((error: unknown) => {
   banner.style.cssText =
     'position:fixed;inset:24px;color:#f2e6d0;background:#3d2a63;padding:16px;font:16px/1.4 sans-serif;z-index:20';
   document.body.append(banner);
+  const stack = error instanceof Error ? error.stack : undefined;
+  const payload: { message: string; stack?: string } = { message };
+  if (stack) {
+    payload.stack = stack;
+  }
+  window.webkit?.messageHandlers?.['pastelBridge']?.postMessage({
+    type: 'runtimeError',
+    payload,
+  });
 });
 
 window.addEventListener('pagehide', () => {

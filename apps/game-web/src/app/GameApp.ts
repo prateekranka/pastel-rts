@@ -5,9 +5,13 @@ import {
   HemisphereLight,
   Scene,
 } from 'three';
-import { MAP_WORLD_SIZE, STRESS_COUNTS } from '../config/constants';
+import { MAP_WORLD_SIZE, SOAK_DURATION_MS, STRESS_COUNTS } from '../config/constants';
 import { palette } from '../config/palette';
+import { NativeBridge } from '../bridge/NativeBridge';
 import { IsometricCamera } from '../camera/IsometricCamera';
+import { FrameTracker } from '../diagnostics/FrameTracker';
+import { DiagnosticsHud } from '../diagnostics/Hud';
+import { SoakController, downloadReport } from '../diagnostics/SoakController';
 import { EntityRenderer } from '../entities/EntityRenderer';
 import { PointerCameraControls } from '../input/PointerCameraControls';
 import { TouchDebugOverlay } from '../input/TouchDebugOverlay';
@@ -17,6 +21,7 @@ import {
   BENCHMARKS,
   parseRuntimeConfig,
   pixelRatioForPreset,
+  reloadWithQuery,
   type RuntimeConfig,
 } from '../runtime/config';
 import { SimClient } from '../sim/SimClient';
@@ -48,6 +53,11 @@ export class GameApp {
   private touchDebug: TouchDebugOverlay | null = null;
   private readonly director = new CameraDirector();
   private config: RuntimeConfig = parseRuntimeConfig('');
+  private readonly tracker = new FrameTracker();
+  private readonly bridge = new NativeBridge();
+  private hud: DiagnosticsHud | null = null;
+  private soak: SoakController | null = null;
+  private unbindNative: (() => void) | null = null;
 
   async start(canvas: HTMLCanvasElement, config = parseRuntimeConfig()): Promise<void> {
     assertChunkLayout();
@@ -74,7 +84,21 @@ export class GameApp {
     if (hudRoot instanceof HTMLElement) {
       this.touchDebug = new TouchDebugOverlay(hudRoot);
       this.touchDebug.setVisible(config.touchDebug);
+      this.hud = new DiagnosticsHud(hudRoot);
+      this.hud.syncConfig(config);
+      this.bindHud();
     }
+
+    this.soak = new SoakController(this, this.tracker, this.bridge);
+    this.tracker.begin();
+    this.bindNative();
+    this.bridge.send({
+      type: 'gameReady',
+      payload: {
+        renderer: this.adapter.kind,
+        viewport: { width: canvas.clientWidth, height: canvas.clientHeight },
+      },
+    });
 
     this.visibilityHandler = () => {
       if (document.hidden) {
@@ -85,11 +109,15 @@ export class GameApp {
     };
     document.addEventListener('visibilitychange', this.visibilityHandler);
 
+    if (config.benchmark === '20-minute-soak' || config.soakMs) {
+      this.soak.start(config.soakMs && config.soakMs > 0 ? config.soakMs : SOAK_DURATION_MS);
+    }
+
     const loop = (time: number) => {
       if (this.disposed) {
         return;
       }
-      const dt = this.lastFrameAt === 0 ? 16.6 : time - this.lastFrameAt;
+      const dt = this.lastFrameAt === 0 ? 16.6 : Math.max(0.01, time - this.lastFrameAt);
       this.lastFrameAt = time;
       const renderTime = time - this.pausedDuration;
       if (!this.paused) {
@@ -102,6 +130,7 @@ export class GameApp {
         this.touchDebug.update(this.controls.getDebugSnapshot());
       }
       this.adapter?.render(this.scene, this.iso.camera);
+      this.sample(dt, time);
       this.animationFrame = requestAnimationFrame(loop);
     };
     this.animationFrame = requestAnimationFrame(loop);
@@ -118,22 +147,24 @@ export class GameApp {
     this.controls?.setEnabled(!def.autoPan && !def.freezeAnimation);
   }
 
-  pause(_reason: 'background' | 'native' = 'native'): void {
+  pause(reason: 'background' | 'native' = 'native'): void {
     if (this.paused) {
       return;
     }
     this.paused = true;
     this.pauseStartedAt = performance.now();
     this.sim.pause();
+    this.soak?.recordPause(reason === 'background' ? 'background' : 'pause');
   }
 
-  resume(_reason: 'background' | 'native' = 'native'): void {
+  resume(reason: 'background' | 'native' = 'native'): void {
     if (!this.paused) {
       return;
     }
     this.pausedDuration += performance.now() - this.pauseStartedAt;
     this.paused = false;
     this.sim.resume();
+    this.soak?.recordPause(reason === 'background' ? 'foreground' : 'resume');
   }
 
   dispose(): void {
@@ -145,6 +176,10 @@ export class GameApp {
       document.removeEventListener('visibilitychange', this.visibilityHandler);
       this.visibilityHandler = null;
     }
+    this.unbindNative?.();
+    this.soak?.dispose();
+    this.hud?.dispose();
+    this.bridge.dispose();
     this.sim.stop();
     this.controls?.dispose();
     this.touchDebug?.dispose();
@@ -189,11 +224,109 @@ export class GameApp {
   }
 
   setTouchDebugVisible(visible: boolean): void {
+    this.config = { ...this.config, touchDebug: visible };
     this.touchDebug?.setVisible(visible);
   }
 
   isTouchDebugVisible(): boolean {
     return this.touchDebug?.isVisible() ?? false;
+  }
+
+  private bindHud(): void {
+    this.hud?.setHandlers({
+      onToggle: () => undefined,
+      onRenderer: (kind) => reloadWithQuery({ renderer: kind }),
+      onBenchmark: (name) => reloadWithQuery({ benchmark: name }),
+      onDpr: (preset) => reloadWithQuery({ dpr: String(preset) }),
+      onTouchDebug: (enabled) => this.setTouchDebugVisible(enabled),
+      onHaptic: () => this.bridge.send({ type: 'requestHaptic', payload: { style: 'medium' } }),
+      onDownloadReport: () => {
+        const report = this.soak?.captureReport();
+        if (report) {
+          downloadReport(report);
+          this.bridge.send({ type: 'performanceReport', payload: report });
+        }
+      },
+      onToggleSoak: () => {
+        if (!this.soak) {
+          return;
+        }
+        if (this.soak.isRunning()) {
+          const report = this.soak.cancelOrFinish();
+          downloadReport(report);
+          this.bridge.send({ type: 'performanceReport', payload: report });
+        } else {
+          this.soak.start(this.config.soakMs && this.config.soakMs > 0 ? this.config.soakMs : SOAK_DURATION_MS);
+        }
+      },
+    });
+  }
+
+  private bindNative(): void {
+    this.unbindNative = this.bridge.onNativeMessage((message) => {
+      if (message.type === 'pause') {
+        this.pause('native');
+      } else if (message.type === 'resume') {
+        this.resume('native');
+      } else {
+        const payload = message.payload;
+        if (payload.renderer || payload.benchmark || payload.dprPreset) {
+          const patch: Record<string, string> = {};
+          if (payload.renderer) {
+            patch['renderer'] = payload.renderer;
+          }
+          if (payload.benchmark) {
+            patch['benchmark'] = payload.benchmark;
+          }
+          if (payload.dprPreset) {
+            patch['dpr'] = String(payload.dprPreset);
+          }
+          reloadWithQuery(patch);
+          return;
+        }
+        if (typeof payload.touchDebug === 'boolean') {
+          this.setTouchDebugVisible(payload.touchDebug);
+        }
+        if (typeof payload.haptics === 'boolean') {
+          this.config = { ...this.config, haptics: payload.haptics };
+        }
+      }
+    });
+  }
+
+  private sample(frameTimeMs: number, nowMs: number): void {
+    const stats = this.adapter?.getStats() ?? { drawCalls: 0, triangles: 0 };
+    this.tracker.sample({
+      frameTimeMs,
+      simTimeMs: this.sim.getTickDurationMs(),
+      snapshotLatencyMs: this.sim.getSnapshotLatencyMs(),
+      drawCalls: stats.drawCalls,
+      triangles: stats.triangles,
+      nowMs,
+    });
+    const hud = this.tracker.hud();
+    const viewport = this.iso.getViewport();
+    this.hud?.update({
+      ...hud,
+      simTickMs: this.sim.getTickDurationMs(),
+      snapshotLatencyMs: this.sim.getSnapshotLatencyMs(),
+      drawCalls: stats.drawCalls,
+      triangles: stats.triangles,
+      visibleChunks: this.terrain?.getVisibleChunkCount() ?? 0,
+      visibleUnits: this.entities?.getVisibleUnitCount() ?? 0,
+      totalEntities: this.entities?.getVisibleEntityCount() ?? 0,
+      renderer: this.adapter?.kind ?? 'webgl',
+      rendererBackend: this.adapter?.backend ?? 'webgl',
+      rendererRequested: this.adapter?.requested ?? this.config.renderer,
+      rendererInitError: this.adapter?.initError ?? null,
+      dprPreset: this.config.dprPreset,
+      effectiveDpr: this.adapter?.getPixelRatio() ?? 1,
+      viewport,
+      drawingBuffer: this.adapter?.getDrawingBufferSize() ?? { width: 0, height: 0 },
+      elapsedMs: this.tracker.durationMs(nowMs),
+      soakActive: this.soak?.isRunning() ?? false,
+      counts: this.sim.getCounts(),
+    });
   }
 
   private ensureBuffer(counts: SimCounts): void {
