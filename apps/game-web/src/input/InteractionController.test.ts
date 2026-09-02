@@ -115,7 +115,7 @@ function createLab(entities = makeEntities()): LabSetup {
   const camera = new IsometricCamera();
   camera.setViewport(800, 500);
   camera.applyNamedPreset('70-percent');
-  camera.setLookAt(80, 80);
+  camera.setLookAt(entities[0]?.x ?? 80, entities[0]?.z ?? 80);
   const controls = new PointerCameraControls(canvas, camera);
   const selection = new SelectionController();
   const commandPort: WorkerCommandPort & { messages: unknown[] } = {
@@ -267,8 +267,11 @@ describe('InteractionController', () => {
     });
     expect(interaction.lastGestureLabel).toBe('formation-move');
     expect(commandPort.messages).toHaveLength(1);
-    const msg = commandPort.messages[0] as { envelope: { payload: { formation?: { kind: string } } } };
+    const msg = commandPort.messages[0] as {
+      envelope: { payload: { formation?: { kind: string; facingMilli?: number } } };
+    };
     expect(msg.envelope.payload.formation?.kind).toBeDefined();
+    expect(msg.envelope.payload.formation?.facingMilli).toEqual(expect.any(Number));
     vi.useRealTimers();
     interaction.dispose();
   });
@@ -285,6 +288,16 @@ describe('InteractionController', () => {
     });
     expect(interaction.lastGestureLabel).toBe('tap-move');
     expect(commandPort.messages).toHaveLength(1);
+    interaction.dispose();
+  });
+
+  it('tap selects only friendly units', () => {
+    const opposing = makeEntities().filter((entity) => entity.relationship === 'opposing');
+    const { canvas, interaction, selection } = createLab(opposing);
+    pointer(canvas, 'pointerdown', { pointerId: 1, pointerType: 'touch', clientX: 400, clientY: 250 });
+    pointer(window, 'pointerup', { pointerId: 1, pointerType: 'touch', clientX: 400, clientY: 250 });
+    expect(selection.getSelected()).toHaveLength(0);
+    expect(interaction.lastGestureLabel).toBe('tap-empty');
     interaction.dispose();
   });
 });

@@ -290,6 +290,21 @@ export class InteractionController {
     const now = performance.now();
 
     if (entity) {
+      const isFriendlyUnit = entity.kind === 'unit' && entity.relationship === 'friendly';
+      if (!isFriendlyUnit) {
+        this.lastTapTime = now;
+        this.lastTapEntityKey = null;
+        const selected = this.selection.getSelected();
+        if (selected.length > 0) {
+          this.issueMove(selected, entity.x, entity.z);
+          this.onDestinationMarker({ x: entity.x, z: entity.z });
+          this.requestHaptic('medium');
+          this.lastGestureLabel = 'tap-move';
+        } else {
+          this.lastGestureLabel = 'tap-empty';
+        }
+        return;
+      }
       const key = `${entity.id.index}:${entity.id.generation}`;
       const isDoubleTap =
         now - this.lastTapTime <= DOUBLE_TAP_MS && this.lastTapEntityKey === key;
@@ -427,6 +442,7 @@ export class InteractionController {
       const dx = startGround ? endGround.x - startGround.x : 0;
       const dz = startGround ? endGround.z - startGround.z : 1;
       const widthWorld = Math.max(1, Math.hypot(dx, dz));
+      const facingMilli = Math.round(Math.atan2(dx, dz) * 1000);
       this.commandClient.issueMove({
         entityIds: selected,
         destination: {
@@ -438,6 +454,7 @@ export class InteractionController {
         formation: {
           kind: widthWorld > 4 ? 'box' : 'line',
           spacingSubunits: 512,
+          facingMilli,
         },
       });
       this.recordCommand('move', selected.length);

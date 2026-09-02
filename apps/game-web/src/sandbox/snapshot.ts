@@ -93,3 +93,53 @@ export function resolveArchetypeId(
 export function entityIdKey(id: EntityId): string {
   return `${String(id.index)}:${String(id.generation)}`;
 }
+
+export function interpolateSnapshotRows(
+  out: Float32Array,
+  prev: Float32Array,
+  curr: Float32Array,
+  prevCount: number,
+  currCount: number,
+  alpha: number,
+): void {
+  const prevIndexById = new Map<string, number>();
+  for (let index = 0; index < prevCount; index += 1) {
+    prevIndexById.set(snapshotRowEntityKey(prev, index), index);
+  }
+  for (let index = 0; index < currCount; index += 1) {
+    const dest = index * INTERACTION_SNAPSHOT_STRIDE;
+    const prevIndex = prevIndexById.get(snapshotRowEntityKey(curr, index));
+    if (prevIndex === undefined) {
+      out.set(curr.subarray(dest, dest + INTERACTION_SNAPSHOT_STRIDE), dest);
+      continue;
+    }
+    const src = prevIndex * INTERACTION_SNAPSHOT_STRIDE;
+    out[dest] = lerp(prev[src] ?? 0, curr[dest] ?? 0, alpha);
+    out[dest + 1] = lerp(prev[src + 1] ?? 0, curr[dest + 1] ?? 0, alpha);
+    out[dest + 2] = lerpAngle(prev[src + 2] ?? 0, curr[dest + 2] ?? 0, alpha);
+    out[dest + 3] = lerp(prev[src + 3] ?? 0, curr[dest + 3] ?? 0, alpha);
+    for (let channel = 4; channel < INTERACTION_SNAPSHOT_STRIDE; channel += 1) {
+      out[dest + channel] = curr[dest + channel] ?? 0;
+    }
+  }
+}
+
+function snapshotRowEntityKey(payload: Float32Array, index: number): string {
+  const offset = index * INTERACTION_SNAPSHOT_STRIDE;
+  return `${Math.round(payload[offset + 6] ?? 0)}:${Math.round(payload[offset + 7] ?? 0)}`;
+}
+
+function lerp(a: number, b: number, t: number): number {
+  return a + (b - a) * t;
+}
+
+function lerpAngle(a: number, b: number, t: number): number {
+  let diff = b - a;
+  while (diff > Math.PI) {
+    diff -= Math.PI * 2;
+  }
+  while (diff < -Math.PI) {
+    diff += Math.PI * 2;
+  }
+  return a + diff * t;
+}

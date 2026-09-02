@@ -10,6 +10,7 @@ import {
   Quaternion,
   Scene,
   SRGBColorSpace,
+  TextureLoader,
   Vector3,
 } from 'three';
 import type { BuildingArchetype, PackV2 } from '@pastel-rts/content-schema';
@@ -32,6 +33,7 @@ type BuildingBatch = {
 export type BuildingRenderSystemOptions = {
   scene: Scene;
   pack: PackV2;
+  packBaseUrl?: string;
   capacityPerArchetype?: number;
 };
 
@@ -39,6 +41,8 @@ export type BuildingRenderSystemOptions = {
 export class BuildingRenderSystem {
   private readonly scene: Scene;
   private readonly pack: PackV2;
+  private readonly packBaseUrl: string;
+  private readonly loader = new TextureLoader();
   private readonly batches = new Map<string, BuildingBatch>();
   private readonly archetypeByEntity = new Map<string, string>();
   private readonly textures = new Map<string, MeshLambertMaterial>();
@@ -46,6 +50,11 @@ export class BuildingRenderSystem {
   constructor(options: BuildingRenderSystemOptions) {
     this.scene = options.scene;
     this.pack = options.pack;
+    this.packBaseUrl = options.packBaseUrl
+      ? options.packBaseUrl.endsWith('/')
+        ? options.packBaseUrl
+        : `${options.packBaseUrl}/`
+      : './content/dev-pack-v2/';
     for (const building of options.pack.buildings) {
       if (building.enabled) {
         this.ensureBatch(building, options.capacityPerArchetype ?? 32);
@@ -95,7 +104,7 @@ export class BuildingRenderSystem {
       batch.mesh.setMatrixAt(slot, _matrix);
     }
     for (const batch of this.batches.values()) {
-      batch.mesh.count = batch.visible;
+      batch.mesh.count = Math.min(batch.visible, batch.capacity);
       batch.mesh.instanceMatrix.needsUpdate = true;
     }
   }
@@ -161,6 +170,29 @@ export class BuildingRenderSystem {
       depthWrite: true,
     });
     this.textures.set(archetype.id, material);
+    void this.loadAuthoredTexture(archetype, material);
     return material;
+  }
+
+  private async loadAuthoredTexture(
+    archetype: BuildingArchetype,
+    material: MeshLambertMaterial,
+  ): Promise<void> {
+    try {
+      const texture = await this.loader.loadAsync(`${this.packBaseUrl}${archetype.assetPath}`);
+      texture.colorSpace = SRGBColorSpace;
+      texture.magFilter = NearestFilter;
+      texture.minFilter = NearestFilter;
+      texture.generateMipmaps = false;
+      texture.needsUpdate = true;
+      const previous = material.map;
+      material.map = texture;
+      material.needsUpdate = true;
+      if (previous && previous !== texture) {
+        previous.dispose();
+      }
+    } catch {
+      /* keep the solid-color placeholder when the authored PNG is missing */
+    }
   }
 }

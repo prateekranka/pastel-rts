@@ -16,6 +16,30 @@ export type AtlasEntry = {
 
 type AtlasKey = string;
 
+export function spriteFrameUvRect(params: {
+  frameIndex: number;
+  cols: number;
+  frameWidth: number;
+  frameHeight: number;
+  texW: number;
+  texH: number;
+  marginX: number;
+  marginY: number;
+  spacingX: number;
+  spacingY: number;
+}): { u: number; v: number; w: number; h: number } {
+  const col = params.frameIndex % Math.max(1, params.cols);
+  const row = Math.floor(params.frameIndex / Math.max(1, params.cols));
+  const x = params.marginX + col * (params.frameWidth + params.spacingX);
+  const y = params.marginY + row * (params.frameHeight + params.spacingY);
+  return {
+    u: x / params.texW,
+    v: 1 - (y + params.frameHeight) / params.texH,
+    w: params.frameWidth / params.texW,
+    h: params.frameHeight / params.texH,
+  };
+}
+
 /** Shared sprite atlas cache — one texture per archetype asset path. */
 export class SpriteAtlasCache {
   private readonly entries = new Map<AtlasKey, AtlasEntry>();
@@ -45,19 +69,22 @@ export class SpriteAtlasCache {
 
   frameUv(archetype: UnitArchetype, frameIndex: number): { u: number; v: number; w: number; h: number } {
     const atlas = this.getForArchetype(archetype);
-    const col = frameIndex % atlas.cols;
-    const row = Math.floor(frameIndex / atlas.cols);
-    const { frameWidth, frameHeight } = atlas;
     const tex = atlas.texture;
     const image = tex.image as { width?: number; height?: number } | undefined;
     const texW = image?.width ?? archetype.sourceWidth;
     const texH = image?.height ?? archetype.sourceHeight;
-    return {
-      u: (col * frameWidth) / texW,
-      v: 1 - ((row + 1) * frameHeight) / texH,
-      w: frameWidth / texW,
-      h: frameHeight / texH,
-    };
+    return spriteFrameUvRect({
+      frameIndex,
+      cols: atlas.cols,
+      frameWidth: atlas.frameWidth,
+      frameHeight: atlas.frameHeight,
+      texW,
+      texH,
+      marginX: archetype.margin.x,
+      marginY: archetype.margin.y,
+      spacingX: archetype.spacing.x,
+      spacingY: archetype.spacing.y,
+    });
   }
 
   dispose(): void {

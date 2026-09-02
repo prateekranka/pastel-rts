@@ -1,4 +1,4 @@
-import type { MapDef, PackV2, ScenarioDef } from '@pastel-rts/content-schema';
+import type { CommandEnvelopeV1, MapDef, PackV2, ScenarioDef } from '@pastel-rts/content-schema';
 import { NavigationService } from '@pastel-rts/navigation';
 import { Simulation, TICK_MS, type CommandLogEntry, type StateChecksum } from '@pastel-rts/simulation';
 import type { LabControlMessage, LabNavDebugMessage, LabSnapshotMessage, LabWorkerOutbound } from '../sandbox/types';
@@ -43,13 +43,19 @@ function initLab(body: {
   pack: PackV2;
   map?: MapDef;
   scenario?: ScenarioDef;
+  commandLog?: CommandEnvelopeV1[];
+  replayToTick?: number;
 }): void {
   stopInterval();
-  nav = new NavigationService();
+  const cellsX = body.map?.cellsX;
+  const cellsZ = body.map?.cellsZ;
+  nav = new NavigationService(cellsX, cellsZ);
   simulation = new Simulation({
     pack: body.pack,
     nav,
     seed: body.seed,
+    ...(cellsX !== undefined ? { cellsX } : {}),
+    ...(cellsZ !== undefined ? { cellsZ } : {}),
   });
   lastCommandLogLength = 0;
   if (body.map !== undefined) {
@@ -57,6 +63,15 @@ function initLab(body: {
   }
   if (body.scenario !== undefined) {
     simulation.loadScenario(body.scenario);
+  }
+  if (body.commandLog !== undefined && body.commandLog.length > 0) {
+    for (const envelope of body.commandLog) {
+      simulation.enqueueCommand(envelope);
+    }
+    const lastExecute = body.commandLog.reduce((max, envelope) => Math.max(max, envelope.executeTick), 0);
+    const replayTicks = body.replayToTick ?? lastExecute + 1;
+    simulation.runTicks(Math.max(1, replayTicks));
+    lastCommandLogLength = simulation.getCommandLog().length;
   }
 }
 

@@ -9,6 +9,8 @@ export type LabInitMessage = {
   scenarioId?: string;
   map?: MapDef;
   scenario?: ScenarioDef;
+  commandLog?: CommandEnvelopeV1[];
+  replayToTick?: number;
 };
 
 export type LabControlMessage =

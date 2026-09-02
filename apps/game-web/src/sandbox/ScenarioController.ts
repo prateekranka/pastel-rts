@@ -13,6 +13,8 @@ export type ScenarioControllerOptions = {
     pack: PackV2;
     scenario?: ScenarioDef;
     map?: MapDef;
+    commandLog?: CommandEnvelopeV1[];
+    replayToTick?: number;
   }) => void;
 };
 
@@ -129,11 +131,18 @@ export class ScenarioController {
     this.currentScenario = doc.scenario;
     this.commandLog = [...doc.commandLog];
     this.checksums = [...doc.checksums];
+    const lastChecksumTick = doc.checksums[doc.checksums.length - 1]?.tick;
+    const lastExecuteTick = doc.commandLog.reduce(
+      (max, envelope) => Math.max(max, envelope.executeTick),
+      0,
+    );
     this.onInitLab({
       seed: this.seed,
       pack: this.pack,
       scenario: doc.scenario,
       ...(this.currentMap ? { map: this.currentMap } : {}),
+      commandLog: doc.commandLog,
+      replayToTick: (lastChecksumTick ?? lastExecuteTick) + 1,
     });
   }
 }

@@ -7,7 +7,7 @@ import {
 } from '@pastel-rts/simulation';
 import { COMMAND_PROTOCOL_VERSION } from '@pastel-rts/content-schema';
 import type { CommandEnvelopeV1 } from '@pastel-rts/content-schema';
-import { ReplayInspector } from '../replay/CommandRecorder';
+import { ReplayInspector, CommandRecorder } from '../replay/CommandRecorder';
 
 describe('command replay checksum', () => {
   const pack = createTestPackV2();
@@ -72,5 +72,24 @@ describe('command replay checksum', () => {
     });
     inspector.setRecorded(commands, first.checksums);
     expect(inspector.runReplay(10)).toBe(true);
+  });
+
+  it('CommandRecorder start clears prior commands', () => {
+    const recorder = new CommandRecorder();
+    recorder.start();
+    recorder.onCommand({
+      protocolVersion: COMMAND_PROTOCOL_VERSION,
+      commandId: 'old',
+      sequence: 0,
+      issuedAtTick: 0,
+      executeTick: 0,
+      playerId: 'lab-local',
+      kind: 'stop',
+      payload: { kind: 'stop', entityIds: [{ index: 0, generation: 1 }] },
+    });
+    expect(recorder.exportLog()).toHaveLength(1);
+    recorder.start();
+    expect(recorder.exportLog()).toHaveLength(0);
+    expect(recorder.isRecording()).toBe(true);
   });
 });

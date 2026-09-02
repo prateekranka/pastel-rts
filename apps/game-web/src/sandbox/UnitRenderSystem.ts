@@ -37,7 +37,7 @@ export type UnitRenderSystemOptions = {
 /** Renders interaction-lab units with idle/move directional sprites. */
 export class UnitRenderSystem {
   private readonly scene: Scene;
-  private readonly pack: PackV2;
+  private pack: PackV2;
   private readonly atlas: SpriteAtlasCache;
   private readonly batches = new Map<string, FrameBatch>();
   private readonly archetypeByEntity = new Map<string, string>();
@@ -87,24 +87,31 @@ export class UnitRenderSystem {
       const phase = this.frozenAnimation ? 0 : entity.animPhase;
       const resolved = resolveUnitSpriteFrame(archetype, animState, entity.headingRadians, phase);
       const batchKey = `${archetypeId}:${String(resolved.sheetFrameIndex)}:${resolved.mirrorX ? '1' : '0'}`;
-      const batch = this.ensureBatch(batchKey, archetype, resolved.sheetFrameIndex, resolved.mirrorX);
-      const slot = batch.visible;
-      batch.visible += 1;
-      if (slot >= batch.capacity) {
-        continue;
-      }
+      const { batch, slot } = this.takeBatchSlot(
+        batchKey,
+        archetype,
+        resolved.sheetFrameIndex,
+        resolved.mirrorX,
+      );
 
       const height = archetype.worldHeight;
-      _position.set(entity.x, height / 2, entity.z);
+      const boundsW = Math.max(1, archetype.bounds.maxX - archetype.bounds.minX);
+      const boundsH = Math.max(1, archetype.bounds.maxY - archetype.bounds.minY);
+      const width = height * (boundsW / boundsH);
+      _position.set(
+        entity.x + (0.5 - archetype.anchor.x) * width,
+        height * (1 - archetype.anchor.y) + height / 2,
+        entity.z,
+      );
       _quaternion.setFromAxisAngle(_axis, ISO_AZIMUTH);
       const mirror = resolved.mirrorX ? -1 : 1;
-      _scale.set(mirror * height * 0.5, height, height * 0.5);
+      _scale.set(mirror * width, height, width);
       _matrix.compose(_position, _quaternion, _scale);
       batch.mesh.setMatrixAt(slot, _matrix);
     }
 
     for (const batch of this.batches.values()) {
-      batch.mesh.count = batch.visible;
+      batch.mesh.count = Math.min(batch.visible, batch.capacity);
       batch.mesh.instanceMatrix.needsUpdate = true;
     }
   }
@@ -122,12 +129,30 @@ export class UnitRenderSystem {
 
   hotReload(pack: PackV2): void {
     this.dispose();
-    this.atlas.dispose();
+    this.pack = pack;
     void this.atlas.loadPack(pack);
   }
 
   private findArchetype(id: string): UnitArchetype | undefined {
     return this.pack.units.find((unit) => unit.id === id);
+  }
+
+  private takeBatchSlot(
+    batchKey: string,
+    archetype: UnitArchetype,
+    frameIndex: number,
+    mirrorX: boolean,
+  ): { batch: FrameBatch; slot: number } {
+    let ordinal = 0;
+    while (true) {
+      const batch = this.ensureBatch(`${batchKey}#${ordinal}`, archetype, frameIndex, mirrorX);
+      if (batch.visible < batch.capacity) {
+        const slot = batch.visible;
+        batch.visible += 1;
+        return { batch, slot };
+      }
+      ordinal += 1;
+    }
   }
 
   private ensureBatch(

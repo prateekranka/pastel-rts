@@ -2,7 +2,7 @@ import { TICK_MS, type StateChecksum } from '@pastel-rts/simulation';
 import type { CommandEnvelopeV1, CommandResult } from '@pastel-rts/content-schema';
 import type { NavDebugSnapshot } from '@pastel-rts/navigation';
 import { interpolationAlpha } from '../sim/SimClient';
-import { INTERACTION_SNAPSHOT_STRIDE } from '../sandbox/snapshot';
+import { INTERACTION_SNAPSHOT_STRIDE, interpolateSnapshotRows } from '../sandbox/snapshot';
 import type { LabControlMessage, LabSnapshotSlot, LabWorkerOutbound } from '../sandbox/types';
 
 export type MatchRuntimeOptions = {
@@ -144,18 +144,7 @@ export class MatchRuntime {
     }
     const span = Math.max(TICK_MS, curr.simTimeMs - prev.simTimeMs);
     const alpha = interpolationAlpha(renderTimeMs, curr.receivedAtMs, span);
-    const a = prev.payload;
-    const b = curr.payload;
-    for (let i = 0; i < count; i += 1) {
-      const o = i * INTERACTION_SNAPSHOT_STRIDE;
-      out[o] = lerp(a[o] ?? 0, b[o] ?? 0, alpha);
-      out[o + 1] = lerp(a[o + 1] ?? 0, b[o + 1] ?? 0, alpha);
-      out[o + 2] = lerpAngle(a[o + 2] ?? 0, b[o + 2] ?? 0, alpha);
-      out[o + 3] = lerp(a[o + 3] ?? 0, b[o + 3] ?? 0, alpha);
-      for (let channel = 4; channel < INTERACTION_SNAPSHOT_STRIDE; channel += 1) {
-        out[o + channel] = b[o + channel] ?? 0;
-      }
-    }
+    interpolateSnapshotRows(out, prev.payload, curr.payload, prev.entityCount, count, alpha);
     return count;
   }
 
@@ -198,19 +187,4 @@ export class MatchRuntime {
   private post(message: LabControlMessage): void {
     this.worker?.postMessage(message);
   }
-}
-
-function lerp(a: number, b: number, t: number): number {
-  return a + (b - a) * t;
-}
-
-function lerpAngle(a: number, b: number, t: number): number {
-  let diff = b - a;
-  while (diff > Math.PI) {
-    diff -= Math.PI * 2;
-  }
-  while (diff < -Math.PI) {
-    diff += Math.PI * 2;
-  }
-  return a + diff * t;
 }

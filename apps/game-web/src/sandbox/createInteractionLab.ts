@@ -18,6 +18,7 @@ import { validateBuildingPlacement } from '../buildings/placementValidation';
 import { DebugOverlayState } from '../qa/DebugOverlayState';
 import { seedFor } from '../qa/deterministicSeeds';
 import { EntityRegistry } from './EntityRegistry';
+import { InteractionFeedback } from './InteractionFeedback';
 import { NavigationDebugRenderer } from './NavigationDebugRenderer';
 import { ScenarioController } from './ScenarioController';
 import { UnitRenderSystem } from './UnitRenderSystem';
@@ -103,7 +104,10 @@ export function createInteractionLab(options: InteractionLabOptions): Interactio
   /** Occupancy queries only — never requestPath on the main thread. */
   const previewNav = new NavigationService();
   const protectedCells = alienFantasyProtectedCells();
-  const pendingSpawns = new Map<string, { archetypeId: string; kind: 'unit' | 'building' }>();
+  const pendingSpawns = new Map<
+    string,
+    { archetypeId: string; kind: 'unit' | 'building'; originCell?: { cx: number; cz: number } }
+  >();
   let formationKind: MoveFormationKind = 'none';
   let selectModeActive = false;
   let readyResolved = false;
@@ -120,9 +124,49 @@ export function createInteractionLab(options: InteractionLabOptions): Interactio
     pack: options.pack,
     packBaseUrl,
   });
-  const buildings = new BuildingRenderSystem({ scene: options.scene, pack: options.pack });
+  const buildings = new BuildingRenderSystem({
+    scene: options.scene,
+    pack: options.pack,
+    packBaseUrl,
+  });
   const debugOverlays = new DebugOverlayState(DEFAULT_DEBUG_OVERLAYS);
   const navDebug = new NavigationDebugRenderer(options.scene, debugOverlays.getFlags());
+  const feedback = new InteractionFeedback(options.canvas);
+  feedback.setCamera(options.camera);
+
+  function applyPreviewOccupancy(
+    archetypeId: string,
+    originCell: { cx: number; cz: number },
+    blocked: boolean,
+  ): void {
+    const archetype = options.pack.buildings.find((building) => building.id === archetypeId);
+    if (!archetype) {
+      return;
+    }
+    previewNav.setFootprintBlocked(
+      originCell,
+      archetype.footprint.cellsW,
+      archetype.footprint.cellsH,
+      blocked,
+      archetype.blockedCellMask,
+    );
+  }
+
+  function resetPreviewOccupancy(
+    map?: import('@pastel-rts/content-schema').MapDef,
+    scenario?: import('@pastel-rts/content-schema').ScenarioDef,
+    extraPlaces?: Array<{ archetypeId: string; originCell: { cx: number; cz: number } }>,
+  ): void {
+    if (map) {
+      previewNav.applyMapDef(map);
+    }
+    for (const building of scenario?.buildings ?? []) {
+      applyPreviewOccupancy(building.archetypeId, building.originCell, true);
+    }
+    for (const place of extraPlaces ?? []) {
+      applyPreviewOccupancy(place.archetypeId, place.originCell, true);
+    }
+  }
 
   function handleCommandResult(result: CommandResult): void {
     recorder.onResult(result);
@@ -134,6 +178,9 @@ export function createInteractionLab(options: InteractionLabOptions): Interactio
           units.registerEntityArchetype(entityIdKey(result.spawnedId), pending.archetypeId);
         } else {
           buildings.registerEntityArchetype(entityIdKey(result.spawnedId), pending.archetypeId);
+          if (pending.originCell) {
+            applyPreviewOccupancy(pending.archetypeId, pending.originCell, true);
+          }
         }
         pendingSpawns.delete(result.commandId);
       }
@@ -163,6 +210,7 @@ export function createInteractionLab(options: InteractionLabOptions): Interactio
           pendingSpawns.set(message.envelope.commandId, {
             archetypeId: payload.archetypeId,
             kind: 'building',
+            originCell: payload.originCell,
           });
         }
       },
@@ -174,19 +222,30 @@ export function createInteractionLab(options: InteractionLabOptions): Interactio
     pack: PackV2;
     scenario?: import('@pastel-rts/content-schema').ScenarioDef;
     map?: MapDef;
+    commandLog?: import('@pastel-rts/content-schema').CommandEnvelopeV1[];
+    replayToTick?: number;
   }): void => {
     registry.clear();
     pendingSpawns.clear();
+    selection.clear();
+    recorder.start();
     runtime.reinit({
       type: 'initLab',
       seed: params.seed,
       pack: params.pack,
       ...(params.scenario ? { scenario: params.scenario } : {}),
       ...(params.map ? { map: params.map } : {}),
+      ...(params.commandLog ? { commandLog: params.commandLog } : {}),
+      ...(params.replayToTick !== undefined ? { replayToTick: params.replayToTick } : {}),
     });
-    if (params.map) {
-      previewNav.applyMapDef(params.map);
-    }
+    const extraPlaces = (params.commandLog ?? [])
+      .filter((envelope) => envelope.payload.kind === 'placeBuilding')
+      .map((envelope) => ({
+        archetypeId: envelope.payload.kind === 'placeBuilding' ? envelope.payload.archetypeId : '',
+        originCell: envelope.payload.kind === 'placeBuilding' ? envelope.payload.originCell : { cx: 0, cz: 0 },
+      }))
+      .filter((place) => place.archetypeId.length > 0);
+    resetPreviewOccupancy(params.map, params.scenario, extraPlaces);
     const firstUnit = params.scenario?.units[0];
     if (firstUnit) {
       options.camera.setLookAt(firstUnit.position.x / 1024, firstUnit.position.z / 1024);
@@ -322,6 +381,9 @@ export function createInteractionLab(options: InteractionLabOptions): Interactio
     requestHaptic: (style) => requestHaptic(hapticStyleToReason(style)),
     getFormation,
     selectModeActive: () => selectModeActive,
+    onDestinationMarker: (marker) => feedback.setDestination(marker),
+    onFormationPreview: (preview) => feedback.setFormation(preview),
+    onLassoRect: (rect) => feedback.setLasso(rect),
     onEmptyGroundTap: (world) => {
       if (!placement.isActive()) {
         return false;
@@ -396,6 +458,7 @@ export function createInteractionLab(options: InteractionLabOptions): Interactio
     units.applySnapshot(buffer, count);
     buildings.applySnapshot(buffer, count);
     navDebug.update(runtime.getNavDebug());
+    feedback.update();
     if (!readyResolved && count > 0) {
       readyResolved = true;
       resolveReady();
@@ -424,6 +487,7 @@ export function createInteractionLab(options: InteractionLabOptions): Interactio
     buildings.dispose();
     navDebug.dispose();
     placement.dispose();
+    feedback.dispose();
     matchHud?.dispose();
     minimap?.dispose();
     toolsRoot?.remove();

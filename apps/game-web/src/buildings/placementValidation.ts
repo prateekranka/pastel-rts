@@ -41,6 +41,9 @@ export function validateBuildingPlacement(params: {
       if (params.protectedCells?.has(key)) {
         return { valid: false, reason: 'protected' };
       }
+      if (archetype.blockedCellMask !== undefined && !(archetype.blockedCellMask[dz]?.[dx] ?? true)) {
+        continue;
+      }
       if (!params.nav.isWalkable(cx, cz)) {
         return { valid: false, reason: 'overlap' };
       }

@@ -40,4 +40,25 @@ describe('building placement validation', () => {
     });
     expect(result.valid).toBe(false);
   });
+
+  it('ignores unmasked cells in an L-shaped footprint', () => {
+    const lPack = structuredClone(pack);
+    const building = lPack.buildings[0];
+    if (!building) {
+      throw new Error('missing building');
+    }
+    building.blockedCellMask = [
+      [true, false],
+      [true, true],
+    ];
+    const blockedNav = new NavigationService(160, 160);
+    blockedNav.setBlocked(21, 20, true);
+    const result = validateBuildingPlacement({
+      pack: lPack,
+      nav: blockedNav,
+      archetypeId: 'gravemark-bastion',
+      originCell: { cx: 20, cz: 20 },
+    });
+    expect(result.valid).toBe(true);
+  });
 });
