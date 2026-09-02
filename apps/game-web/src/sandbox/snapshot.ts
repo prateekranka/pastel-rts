@@ -26,6 +26,7 @@ export type ParsedSnapshotEntity = {
   relationship: EntityRelationship;
   animState: 'idle' | 'move';
   facingIndex: number;
+  archetypeIndex: number;
 };
 
 const RELATIONSHIP_MAP: Record<number, EntityRelationship> = {
@@ -48,6 +49,7 @@ export function parseSnapshotEntity(payload: Float32Array, index: number): Parse
     relationship: RELATIONSHIP_MAP[relationshipCode] ?? 'neutral',
     animState: animCode === SNAPSHOT_ANIM_MOVE ? 'move' : 'idle',
     facingIndex: Math.round(payload[offset + 9] ?? 0) % 8,
+    archetypeIndex: Math.round(payload[offset + 10] ?? 0),
     id: {
       index: Math.round(payload[offset + 6] ?? 0),
       generation: Math.round(payload[offset + 7] ?? 0),
@@ -74,6 +76,18 @@ export function snapshotToPickable(
     pickable.worldHeight = worldHeight;
   }
   return pickable;
+}
+
+export function resolveArchetypeId(
+  pack: { units: ReadonlyArray<{ id: string }>; buildings: ReadonlyArray<{ id: string }> },
+  kind: 'unit' | 'building',
+  archetypeIndex: number,
+): string | undefined {
+  if (archetypeIndex <= 0) {
+    return undefined;
+  }
+  const list = kind === 'unit' ? pack.units : pack.buildings;
+  return list[archetypeIndex - 1]?.id;
 }
 
 export function entityIdKey(id: EntityId): string {

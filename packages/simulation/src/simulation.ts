@@ -212,7 +212,7 @@ export class Simulation {
       payload[offset + 7] = id.generation;
       payload[offset + 8] = slot.movementState === 'move' ? SNAPSHOT_ANIM_MOVE : SNAPSHOT_ANIM_IDLE;
       payload[offset + 9] = headingToFacingIndex(slot.headingMilli);
-      payload[offset + 10] = 0;
+      payload[offset + 10] = archetypeIndex(this.pack, slot.kind, slot.archetypeId);
       payload[offset + 11] = 0;
       writeIndex += 1;
     });
@@ -245,7 +245,7 @@ export class Simulation {
       }
       const unitArchetype = this.pack.units.find((unit) => unit.id === slot.archetypeId);
       const speed = unitArchetype?.movement.speedSubunitsPerTick ?? 64;
-      const waypoint = this.nav.nextWaypoint(id);
+      const waypoint = this.nav.nextWaypoint(id, { x: slot.x, z: slot.z });
       if (waypoint === null) {
         slot.movementState = 'idle';
         slot.destination = null;
@@ -259,11 +259,16 @@ export class Simulation {
       if (distance <= speed) {
         slot.x = waypoint.x;
         slot.z = waypoint.z;
-        slot.headingMilli = Math.round(Math.atan2(dx, dz) * 1000);
-        this.nav.cancel(id);
-        slot.movementState = 'idle';
-        slot.destination = null;
-        slot.formation = null;
+        if (dx !== 0 || dz !== 0) {
+          slot.headingMilli = Math.round(Math.atan2(dx, dz) * 1000);
+        }
+        const following = this.nav.nextWaypoint(id, { x: slot.x, z: slot.z });
+        if (following === null || (following.x === slot.x && following.z === slot.z)) {
+          this.nav.cancel(id);
+          slot.movementState = 'idle';
+          slot.destination = null;
+          slot.formation = null;
+        }
       } else {
         const scale = speed / distance;
         slot.x += Math.round(dx * scale);
@@ -283,6 +288,12 @@ export class Simulation {
     }
     this.checksums.push(computeStateChecksum(this.tick, this.pool, this.nav));
   }
+}
+
+function archetypeIndex(pack: PackV2, kind: 'unit' | 'building', archetypeId: string): number {
+  const list = kind === 'unit' ? pack.units : pack.buildings;
+  const index = list.findIndex((entry) => entry.id === archetypeId);
+  return index >= 0 ? index + 1 : 0;
 }
 
 export type { CommandLogEntry, CommandResult, StateChecksum };

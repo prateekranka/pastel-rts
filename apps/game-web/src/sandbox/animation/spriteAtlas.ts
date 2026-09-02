@@ -21,7 +21,7 @@ export class SpriteAtlasCache {
   private readonly entries = new Map<AtlasKey, AtlasEntry>();
   private readonly packBaseUrl: string;
 
-  constructor(packBaseUrl = '/content/dev-pack-v2/') {
+  constructor(packBaseUrl = './content/dev-pack-v2/') {
     this.packBaseUrl = packBaseUrl.endsWith('/') ? packBaseUrl : `${packBaseUrl}/`;
   }
 

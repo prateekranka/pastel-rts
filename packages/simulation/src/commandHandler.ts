@@ -204,16 +204,22 @@ function applyMove(ctx: CommandContext, envelope: CommandEnvelopeV1): CommandRes
   }
 
   const formation = envelope.payload.formation ?? { kind: 'none' as const };
+  const planned = ctx.nav.planFormation(envelope.payload.entityIds, destination, formation);
+  const targets = new Map<string, SubunitCoord>();
+  for (const slotPlan of planned) {
+    targets.set(`${String(slotPlan.entityId.index)}:${String(slotPlan.entityId.generation)}`, slotPlan.target);
+  }
   for (let index = 0; index < envelope.payload.entityIds.length; index += 1) {
     const entityId = envelope.payload.entityIds[index];
     const slot = resolved[index];
     if (entityId === undefined || slot === undefined) {
       continue;
     }
+    const target = targets.get(`${String(entityId.index)}:${String(entityId.generation)}`) ?? destination;
     slot.movementState = 'move';
-    slot.destination = { x: destination.x, z: destination.z };
+    slot.destination = { x: target.x, z: target.z };
     slot.formation = formation;
-    ctx.nav.requestPath(entityId, { x: slot.x, z: slot.z }, destination);
+    ctx.nav.requestPath(entityId, { x: slot.x, z: slot.z }, target);
   }
   return accept(envelope.commandId, ctx.tick);
 }

@@ -23,7 +23,8 @@ export const DEFAULT_MAP_CELLS = 160 as const;
  * | 6–7 | entity index, generation |
  * | 8 | anim state (0 idle, 1 move) |
  * | 9 | facing index 0..7 |
- * | 10–11 | reserved |
+ * | 10 | 1-based archetype index into pack.units or pack.buildings |
+ * | 11 | reserved |
  */
 export const INTERACTION_SNAPSHOT_STRIDE = 12 as const;
 

@@ -1,4 +1,4 @@
-import { worldFloatToSubunit, type EntityId } from '@pastel-rts/content-schema';
+import { worldFloatToSubunit, type EntityId, type MoveFormation } from '@pastel-rts/content-schema';
 import type { IsometricCamera } from '../camera/IsometricCamera';
 import type { PointerCameraControls } from '../input/PointerCameraControls';
 import {
@@ -46,6 +46,9 @@ export type InteractionControllerOptions = {
   onLassoRect?: (rect: LassoRect | null) => void;
   /** Explicit select mode makes lasso easier on touch. */
   selectModeActive?: () => boolean;
+  getFormation?: () => MoveFormation | undefined;
+  /** Return true if the empty-ground tap was consumed (e.g. building placement). */
+  onEmptyGroundTap?: (world: { x: number; z: number }) => boolean;
 };
 
 type Listener = {
@@ -75,6 +78,8 @@ export class InteractionController {
   private readonly onFormationPreview: (preview: FormationPreview | null) => void;
   private readonly onLassoRect: (rect: LassoRect | null) => void;
   private readonly selectModeActive: () => boolean;
+  private readonly getFormation: () => MoveFormation | undefined;
+  private readonly onEmptyGroundTap: (world: { x: number; z: number }) => boolean;
 
   private readonly pointers = new Map<number, PointerTrack>();
   private readonly listeners: Listener[] = [];
@@ -105,6 +110,8 @@ export class InteractionController {
     this.onFormationPreview = options.onFormationPreview ?? (() => undefined);
     this.onLassoRect = options.onLassoRect ?? (() => undefined);
     this.selectModeActive = options.selectModeActive ?? (() => false);
+    this.getFormation = options.getFormation ?? (() => undefined);
+    this.onEmptyGroundTap = options.onEmptyGroundTap ?? (() => false);
 
     this.bind(this.canvas, 'pointerdown', (event) => this.onPointerDown(event as PointerEvent));
     this.bind(this.canvas, 'pointermove', (event) => this.onPointerMove(event as PointerEvent));
@@ -305,6 +312,11 @@ export class InteractionController {
 
     this.lastTapTime = now;
     this.lastTapEntityKey = null;
+    const ground = this.groundAt(track.x, track.y);
+    if (ground && this.onEmptyGroundTap(ground)) {
+      this.lastGestureLabel = 'placement-tap';
+      return;
+    }
     const selected = this.selection.getSelected();
     if (selected.length > 0) {
       const ground = this.groundAt(track.x, track.y);
@@ -438,11 +450,13 @@ export class InteractionController {
   }
 
   private issueMove(entityIds: EntityId[], worldX: number, worldZ: number): void {
+    const formation = this.getFormation();
     this.commandClient.issueMove({
       entityIds,
       destination: { x: worldFloatToSubunit(worldX), z: worldFloatToSubunit(worldZ) },
       issuedAtTick: this.getCurrentTick(),
       executeTick: this.getCurrentTick(),
+      ...(formation ? { formation } : {}),
     });
     this.recordCommand('move', entityIds.length);
   }

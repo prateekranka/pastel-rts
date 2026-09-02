@@ -1,15 +1,18 @@
 import { DEFAULT_MAP_CELLS, SUBUNITS_PER_CELL } from '@pastel-rts/content-schema';
 import type { EntityId, MapDef, SubunitCoord } from '@pastel-rts/content-schema';
 
+import type { MoveFormation } from '@pastel-rts/content-schema';
 import { NavigationGrid } from './grid';
 import {
   GridPathfinder,
   navCellCenterSubunits,
   subunitToNavCell,
 } from './pathfinder';
+import { planFormationSlots } from './formation';
 import {
   compareEntityIds,
   entityIdKey,
+  type FormationKind,
   type GridPath,
   type NavDebugSnapshot,
   type PathFailure,
@@ -207,6 +210,23 @@ export class NavigationService {
    * When `current` is provided, advances the path if the unit is close enough
    * so simulation can follow multi-cell routes without calling `advanceWaypoint`.
    */
+  planFormation(
+    entityIds: readonly EntityId[],
+    destination: SubunitCoord,
+    formation: Pick<MoveFormation, 'kind'> & { spacingSubunits?: number },
+  ): ReadonlyArray<{ entityId: EntityId; target: SubunitCoord }> {
+    const input = {
+      entityIds: [...entityIds],
+      destination,
+      kind: formation.kind as FormationKind,
+      ...(formation.spacingSubunits !== undefined ? { spacingSubunits: formation.spacingSubunits } : {}),
+    };
+    return planFormationSlots(this.grid, input).map((slot) => ({
+      entityId: slot.entityId,
+      target: slot.target,
+    }));
+  }
+
   nextWaypoint(entityId: EntityId, current?: SubunitCoord): SubunitCoord | null {
     if (current !== undefined) {
       this.advanceWaypoint(entityId, current);

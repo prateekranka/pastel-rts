@@ -1,4 +1,4 @@
-import type { CommandEnvelopeV1, PackV2, ScenarioDef } from '@pastel-rts/content-schema';
+import type { CommandEnvelopeV1, MapDef, PackV2, ScenarioDef } from '@pastel-rts/content-schema';
 import type { StateChecksum } from './checksum.js';
 import type { CommandLogEntry } from './commandQueue.js';
 import type { NavigationService } from './navigation.js';
@@ -8,6 +8,8 @@ export type ReplayConfig = {
   pack: PackV2;
   navFactory: () => NavigationService;
   scenario?: ScenarioDef;
+  /** Applied after Simulation construction so it is not wiped by `nav.resize`. */
+  map?: MapDef;
   commands: CommandEnvelopeV1[];
   totalTicks: number;
   simulationConfig?: Partial<Omit<SimulationConfig, 'pack' | 'nav'>>;
@@ -23,11 +25,16 @@ export type ReplayResult = {
  * Caller compares two runs or replays against stored checksums.
  */
 export function runSimulationReplay(config: ReplayConfig): ReplayResult {
+  const nav = config.navFactory();
   const sim = new Simulation({
     pack: config.pack,
-    nav: config.navFactory(),
+    nav,
     ...config.simulationConfig,
   });
+
+  if (config.map !== undefined) {
+    nav.applyMapDef(config.map);
+  }
 
   if (config.scenario !== undefined) {
     sim.loadScenario(config.scenario);
@@ -86,6 +93,9 @@ export function replayFromCommandLog(
   }
   if (config.simulationConfig !== undefined) {
     replayConfig.simulationConfig = config.simulationConfig;
+  }
+  if (config.map !== undefined) {
+    replayConfig.map = config.map;
   }
 
   const result = runSimulationReplay(replayConfig);

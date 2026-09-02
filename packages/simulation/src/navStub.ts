@@ -1,4 +1,4 @@
-import type { EntityId, SubunitCoord } from '@pastel-rts/content-schema';
+import type { EntityId, MapDef, SubunitCoord } from '@pastel-rts/content-schema';
 import { SUBUNITS_PER_CELL, entityIdsEqual } from '@pastel-rts/content-schema';
 import type { NavCell, NavigationService, PathId } from './navigation.js';
 
@@ -22,6 +22,25 @@ export class StubNavigationService implements NavigationService {
     this.cellsZ = cellsZ;
     this.blocked = new Uint8Array(cellsX * cellsZ);
     this.paths.clear();
+  }
+
+  applyMapDef(map: MapDef): void {
+    this.resize(map.cellsX, map.cellsZ);
+    const blocked = map.blockedCells;
+    if (blocked === undefined) {
+      return;
+    }
+    for (let cz = 0; cz < map.cellsZ; cz += 1) {
+      const row = blocked[cz];
+      if (row === undefined) {
+        continue;
+      }
+      for (let cx = 0; cx < map.cellsX; cx += 1) {
+        if (row[cx]) {
+          this.setBlocked(cx, cz, true);
+        }
+      }
+    }
   }
 
   setBlocked(cx: number, cz: number, blocked: boolean): void {
@@ -57,12 +76,32 @@ export class StubNavigationService implements NavigationService {
     this.paths.delete(entityKey(entityId));
   }
 
-  nextWaypoint(entityId: EntityId): SubunitCoord | null {
+  nextWaypoint(entityId: EntityId, _current?: SubunitCoord): SubunitCoord | null {
     const path = this.paths.get(entityKey(entityId));
     if (path === undefined) {
       return null;
     }
     return path.destination;
+  }
+
+  planFormation(
+    entityIds: readonly EntityId[],
+    destination: SubunitCoord,
+    formation: { kind: 'none' | 'line' | 'box'; spacingSubunits?: number },
+  ): ReadonlyArray<{ entityId: EntityId; target: SubunitCoord }> {
+    const spacing = formation.spacingSubunits ?? 512;
+    const sorted = [...entityIds].sort((a, b) => a.index - b.index || a.generation - b.generation);
+    if (sorted.length <= 1 || formation.kind === 'none') {
+      return sorted.map((entityId) => ({ entityId, target: { x: destination.x, z: destination.z } }));
+    }
+    const origin = -Math.floor((sorted.length - 1) / 2);
+    return sorted.map((entityId, index) => ({
+      entityId,
+      target: {
+        x: destination.x + (origin + index) * spacing,
+        z: destination.z,
+      },
+    }));
   }
 
   debugSnapshot(): { blocked: Uint8Array; paths: Array<{ entityId: EntityId; cells: NavCell[] }> } {

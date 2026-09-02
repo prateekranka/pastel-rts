@@ -21,6 +21,7 @@ import { CameraDirector } from '../runtime/CameraDirector';
 import {
   BENCHMARKS,
   developerConfigQueryPatch,
+  packV2PublicBaseUrl,
   parseRuntimeConfig,
   pixelRatioForPreset,
   reloadWithQuery,
@@ -31,6 +32,13 @@ import { SNAPSHOT_STRIDE, totalEntities, type SimCounts } from '../sim/types';
 import { LandmarkSystem } from '../world/LandmarkSystem';
 import { TerrainSystem } from '../world/TerrainSystem';
 import { assertChunkLayout } from '../world/chunks';
+import { validatePackV2, type PackV2 } from '@pastel-rts/content-schema';
+import {
+  createInteractionLab,
+  type InteractionLab,
+  type InteractionLabHapticReason,
+} from '../sandbox/createInteractionLab';
+import type { HapticReason } from '../bridge/messages';
 
 export class GameApp {
   private adapter: RendererAdapter | null = null;
@@ -61,6 +69,7 @@ export class GameApp {
   private hud: DiagnosticsHud | null = null;
   private soak: SoakController | null = null;
   private unbindNative: (() => void) | null = null;
+  private lab: InteractionLab | null = null;
 
   async start(canvas: HTMLCanvasElement, config = parseRuntimeConfig()): Promise<void> {
     assertChunkLayout();
@@ -75,8 +84,15 @@ export class GameApp {
     this.iso.setLookAt(MAP_WORLD_SIZE * 0.52, MAP_WORLD_SIZE * 0.48);
     this.terrain = new TerrainSystem(this.scene, config.seed);
     this.landmarks = new LandmarkSystem(this.scene, config.seed);
-    this.entities = new EntityRenderer(this.scene);
-    this.hotReload = new ContentHotReload(this.scene);
+    const labMode = config.mode === 'interaction-lab';
+    if (!labMode) {
+      this.entities = new EntityRenderer(this.scene);
+    }
+    this.hotReload = new ContentHotReload(this.scene, {
+      onV2Event: () => {
+        void this.refreshLabPack();
+      },
+    });
     this.hotReload.start();
 
     this.resizeObserver = new ResizeObserver(() => this.syncSize());
@@ -84,7 +100,11 @@ export class GameApp {
     this.syncSize();
 
     this.controls = new PointerCameraControls(this.canvas, this.iso);
-    this.applyBenchmark(config);
+    if (labMode) {
+      await this.startInteractionLab(config);
+    } else {
+      this.applyBenchmark(config);
+    }
     const hudRoot = document.querySelector('#hud-root');
     if (hudRoot instanceof HTMLElement) {
       this.touchDebug = new TouchDebugOverlay(hudRoot);
@@ -120,7 +140,7 @@ export class GameApp {
     };
     document.addEventListener('visibilitychange', this.visibilityHandler);
 
-    if (config.benchmark === '20-minute-soak' || config.soakMs) {
+    if (!labMode && (config.benchmark === '20-minute-soak' || config.soakMs)) {
       this.beginUnattendedSoak(config.soakMs && config.soakMs > 0 ? config.soakMs : SOAK_DURATION_MS);
     }
 
@@ -134,8 +154,12 @@ export class GameApp {
       const renderTime = time - this.pausedDuration;
       if (!this.paused) {
         this.director.update(dt, this.iso);
-        const count = this.sim.interpolate(this.interpolated, renderTime);
-        this.entities?.applySnapshot(this.interpolated, count);
+        if (this.lab) {
+          this.lab.tick();
+        } else {
+          const count = this.sim.interpolate(this.interpolated, renderTime);
+          this.entities?.applySnapshot(this.interpolated, count);
+        }
       }
       this.terrain?.updateVisibility(this.iso);
       if (this.controls && this.touchDebug) {
@@ -168,6 +192,7 @@ export class GameApp {
     this.paused = true;
     this.pauseStartedAt = performance.now();
     this.sim.pause();
+    this.lab?.runtime.pause();
     this.soak?.recordPause(reason === 'background' ? 'background' : 'pause');
   }
 
@@ -179,6 +204,7 @@ export class GameApp {
     this.paused = false;
     this.lastFrameAt = 0;
     this.sim.resume();
+    this.lab?.runtime.resume();
     this.soak?.recordPause(reason === 'background' ? 'foreground' : 'resume');
   }
 
@@ -196,6 +222,8 @@ export class GameApp {
     this.hud?.dispose();
     this.bridge.dispose();
     this.sim.stop();
+    this.lab?.dispose();
+    this.lab = null;
     this.controls?.dispose();
     this.touchDebug?.dispose();
     this.entities?.dispose();
@@ -225,6 +253,14 @@ export class GameApp {
 
   getSim(): SimClient {
     return this.sim;
+  }
+
+  getInteractionLab(): InteractionLab | null {
+    return this.lab;
+  }
+
+  isInteractionLab(): boolean {
+    return this.lab !== null;
   }
 
   getEntities(): EntityRenderer | null {
@@ -266,7 +302,7 @@ export class GameApp {
       onBenchmark: (name) => reloadWithQuery({ benchmark: name }),
       onDpr: (preset) => reloadWithQuery({ dpr: String(preset) }),
       onTouchDebug: (enabled) => this.setTouchDebugVisible(enabled),
-      onHaptic: () => this.bridge.send({ type: 'requestHaptic', payload: { style: 'medium' } }),
+      onHaptic: () => this.sendHaptic('medium', 'selection'),
       onDownloadReport: () => {
         const report = this.soak?.captureReport();
         if (report) {
@@ -320,8 +356,8 @@ export class GameApp {
       const stats = this.adapter?.getStats() ?? { drawCalls: 0, triangles: 0 };
       this.tracker.sample({
         frameTimeMs,
-        simTimeMs: this.sim.getTickDurationMs(),
-        snapshotLatencyMs: this.sim.getSnapshotLatencyMs(),
+        simTimeMs: this.lab?.runtime.getTickDurationMs() ?? this.sim.getTickDurationMs(),
+        snapshotLatencyMs: this.lab?.runtime.getSnapshotLatencyMs() ?? this.sim.getSnapshotLatencyMs(),
         drawCalls: stats.drawCalls,
         triangles: stats.triangles,
         nowMs,
@@ -330,13 +366,13 @@ export class GameApp {
       const viewport = this.iso.getViewport();
       this.hud?.update({
         ...hud,
-        simTickMs: this.sim.getTickDurationMs(),
-        snapshotLatencyMs: this.sim.getSnapshotLatencyMs(),
+        simTickMs: this.lab?.runtime.getTickDurationMs() ?? this.sim.getTickDurationMs(),
+        snapshotLatencyMs: this.lab?.runtime.getSnapshotLatencyMs() ?? this.sim.getSnapshotLatencyMs(),
         drawCalls: stats.drawCalls,
         triangles: stats.triangles,
         visibleChunks: this.terrain?.getVisibleChunkCount() ?? 0,
-        visibleUnits: this.entities?.getVisibleUnitCount() ?? 0,
-        totalEntities: this.entities?.getVisibleEntityCount() ?? 0,
+        visibleUnits: this.lab?.runtime.getEntityCount() ?? this.entities?.getVisibleUnitCount() ?? 0,
+        totalEntities: this.lab?.runtime.getEntityCount() ?? this.entities?.getVisibleEntityCount() ?? 0,
         renderer: this.adapter?.kind ?? 'webgl',
         rendererBackend: this.adapter?.backend ?? 'webgl',
         rendererRequested: this.adapter?.requested ?? this.config.renderer,
@@ -358,6 +394,64 @@ export class GameApp {
     const needed = totalEntities(counts) * SNAPSHOT_STRIDE;
     if (this.interpolated.length < needed) {
       this.interpolated = new Float32Array(needed);
+    }
+  }
+
+  private sendHaptic(style: 'light' | 'medium' | 'heavy', reason: HapticReason): void {
+    if (!this.config.haptics) {
+      return;
+    }
+    this.bridge.send({ type: 'requestHaptic', payload: { style, reason } });
+  }
+
+  private labHaptic(reason: InteractionLabHapticReason): void {
+    const style = reason === 'selection' ? 'light' : reason === 'invalid' ? 'heavy' : 'medium';
+    this.sendHaptic(style, reason);
+  }
+
+  private async startInteractionLab(config: RuntimeConfig): Promise<void> {
+    const pack = await loadPackV2();
+    const hudRoot = document.querySelector('#hud-root');
+    const canvas = this.canvas;
+    const controls = this.controls;
+    if (!canvas || !controls) {
+      throw new Error('Interaction lab requires a canvas and camera controls');
+    }
+    const labOptions: Parameters<typeof createInteractionLab>[0] = {
+      canvas,
+      scene: this.scene,
+      camera: this.iso,
+      cameraControls: controls,
+      pack,
+      packBaseUrl: packV2PublicBaseUrl(),
+      seed: config.seed,
+      requestHaptic: (reason) => this.labHaptic(reason),
+    };
+    if (hudRoot instanceof HTMLElement) {
+      labOptions.hudRoot = hudRoot;
+    }
+    if (config.scenarioId) {
+      labOptions.scenarioId = config.scenarioId;
+    }
+    if (config.spawnUnitId) {
+      labOptions.spawnUnitId = config.spawnUnitId;
+    }
+    if (config.spawnBuildingId) {
+      labOptions.spawnBuildingId = config.spawnBuildingId;
+    }
+    this.lab = createInteractionLab(labOptions);
+    this.controls?.setEnabled(true);
+  }
+
+  private async refreshLabPack(): Promise<void> {
+    if (!this.lab) {
+      return;
+    }
+    try {
+      const pack = await loadPackV2();
+      this.lab.units.hotReload(pack);
+    } catch (error) {
+      console.warn('Lab pack refresh failed', error);
     }
   }
 
@@ -384,3 +478,11 @@ export class GameApp {
 }
 
 export { parseRuntimeConfig };
+
+async function loadPackV2(): Promise<PackV2> {
+  const response = await fetch(`${packV2PublicBaseUrl()}pack.json`);
+  if (!response.ok) {
+    throw new Error(`Failed to load Pack v2 (${String(response.status)})`);
+  }
+  return validatePackV2(await response.json());
+}

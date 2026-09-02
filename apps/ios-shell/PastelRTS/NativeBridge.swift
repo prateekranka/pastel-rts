@@ -42,6 +42,12 @@ struct NativeInboundMessage {
             else {
                 throw BridgeError.malformed("requestHaptic payload is malformed")
             }
+            if let reason = payload["reason"] as? String {
+                let allowed = ["selection", "move", "place", "invalid"]
+                if !allowed.contains(reason) {
+                    throw BridgeError.malformed("requestHaptic reason is malformed")
+                }
+            }
         case .performanceReport:
             break
         case .runtimeError:

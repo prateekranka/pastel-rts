@@ -11,7 +11,7 @@ export function isMatchUiTarget(target: EventTarget | null): boolean {
   if (!(target instanceof Element)) {
     return false;
   }
-  return Boolean(target.closest('.pastel-match-hud, .pastel-minimap'));
+  return Boolean(target.closest('.pastel-match-hud, .pastel-minimap, .pastel-lab-tools'));
 }
 
 export function assertTouchTarget(element: HTMLElement): boolean {

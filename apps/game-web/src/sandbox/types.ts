@@ -36,7 +36,16 @@ export type LabNavDebugMessage = {
   snapshot: NavDebugSnapshot;
 };
 
-export type LabWorkerOutbound = LabSnapshotMessage | CommandResult | LabNavDebugMessage;
+export type LabChecksumsMessage = {
+  type: 'checksums';
+  checksums: StateChecksum[];
+};
+
+export type LabWorkerOutbound =
+  | LabSnapshotMessage
+  | CommandResult
+  | LabNavDebugMessage
+  | LabChecksumsMessage;
 
 export type LabSnapshotSlot = {
   tick: number;
