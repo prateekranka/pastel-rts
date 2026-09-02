@@ -5,10 +5,43 @@ const LAB_URL = `/?mode=interaction-lab&seed=${String(seedFor('interactionLab'))
 
 async function waitForLab(page: import('@playwright/test').Page): Promise<void> {
   await page.waitForSelector('#game-canvas');
-  await page.waitForFunction(() => {
-    const lab = window.getInteractionLab?.() ?? window.__pastelApp?.getInteractionLab?.();
-    return Boolean(lab?.isReady() && lab.runtime.getEntityCount() > 8);
-  }, { timeout: 20_000 });
+  await page.waitForFunction(
+    () => {
+      const lab = window.getInteractionLab?.() ?? window.__pastelApp?.getInteractionLab?.();
+      return Boolean(lab?.isReady() && lab.runtime.getEntityCount() > 8);
+    },
+    undefined,
+    { timeout: 20_000 },
+  );
+}
+
+async function clientPointForFriendlyUnit(
+  page: import('@playwright/test').Page,
+): Promise<{ x: number; y: number } | null> {
+  return page.evaluate(() => {
+    const app = window.__pastelApp;
+    const lab = window.getInteractionLab?.() ?? app?.getInteractionLab?.();
+    const unit = lab
+      ?.getPickableEntities()
+      .find((entity) => entity.kind === 'unit' && entity.relationship === 'friendly');
+    const camera = app?.getCamera().camera;
+    const canvas = document.querySelector('#game-canvas');
+    if (!unit || !camera || !(canvas instanceof HTMLCanvasElement)) {
+      return null;
+    }
+    const Vector3 = camera.position.constructor as new (x: number, y: number, z: number) => {
+      x: number;
+      y: number;
+      project: (cam: typeof camera) => void;
+    };
+    const projected = new Vector3(unit.x, 0, unit.z);
+    projected.project(camera);
+    const rect = canvas.getBoundingClientRect();
+    return {
+      x: rect.left + (projected.x * 0.5 + 0.5) * rect.width,
+      y: rect.top + (-projected.y * 0.5 + 0.5) * rect.height,
+    };
+  });
 }
 
 test.describe('interaction lab', () => {
@@ -36,8 +69,12 @@ test.describe('interaction lab', () => {
     if (!box) {
       return;
     }
-    // Click near look-at (first scenario unit ~16,20), away from lab tools overlay.
-    await page.mouse.click(box.x + box.width * 0.48, box.y + box.height * 0.52);
+    const unitPoint = await clientPointForFriendlyUnit(page);
+    expect(unitPoint).not.toBeNull();
+    if (!unitPoint) {
+      return;
+    }
+    await page.mouse.click(unitPoint.x, unitPoint.y);
     await page.waitForTimeout(250);
     const selectedBefore = await page.evaluate(() => {
       const lab = window.__pastelApp?.getInteractionLab?.();
@@ -92,9 +129,9 @@ test.describe('interaction lab', () => {
     if (!box || !before) {
       return;
     }
-    await page.mouse.move(box.x + box.width * 0.78, box.y + box.height * 0.62);
+    await page.mouse.move(box.x + box.width * 0.5, box.y + box.height * 0.5);
     await page.mouse.down();
-    await page.mouse.move(box.x + box.width * 0.78 - 160, box.y + box.height * 0.62 - 90);
+    await page.mouse.move(box.x + box.width * 0.5 - 160, box.y + box.height * 0.5 - 90);
     await page.mouse.up();
     const after = await page.evaluate(() => {
       const app = window.__pastelApp;
@@ -129,22 +166,31 @@ test.describe('interaction lab', () => {
         .slice(0, 6);
       lab.selection.selectMany(friendlies.map((entity) => entity.id));
       lab.debugOverlays.set('paths', true);
-      const dest = { x: 40 * 1024, z: 28 * 1024 };
+      const dest = { x: 32 * 1024, z: 24 * 1024 };
+      const tick = lab.runtime.getLatestTick();
       lab.commandClient.issueMove({
         entityIds: friendlies.map((entity) => entity.id),
         destination: dest,
-        issuedAtTick: lab.runtime.getLatestTick(),
-        executeTick: lab.runtime.getLatestTick(),
-        formation: { kind: 'line', spacingSubunits: 512 },
+        issuedAtTick: tick,
+        executeTick: tick,
+        formation: { kind: 'line', spacingSubunits: 1024 },
       });
-      await new Promise((resolve) => setTimeout(resolve, 800));
-      const debug = lab.runtime.getNavDebug();
-      const goals = new Set(
-        (debug?.paths ?? []).map((path) => {
-          const last = path.cells[path.cells.length - 1];
-          return last ? `${String(last.cx)},${String(last.cz)}` : '';
-        }),
-      );
+      let goals = new Set<string>();
+      for (let attempt = 0; attempt < 20; attempt += 1) {
+        await new Promise((resolve) => setTimeout(resolve, 100));
+        const debug = lab.runtime.getNavDebug();
+        goals = new Set(
+          (debug?.paths ?? [])
+            .map((path) => {
+              const last = path.cells[path.cells.length - 1];
+              return last ? `${String(last.cx)},${String(last.cz)}` : '';
+            })
+            .filter((key) => key.length > 0),
+        );
+        if (goals.size >= 2) {
+          break;
+        }
+      }
       return goals.size >= 2;
     });
     expect(distinct).toBe(true);
@@ -164,16 +210,24 @@ test.describe('interaction lab', () => {
         .slice(0, 4);
       lab.selection.selectMany(friendlies.map((entity) => entity.id));
       lab.debugOverlays.set('paths', true);
+      const tick = lab.runtime.getLatestTick();
       lab.commandClient.issueMove({
         entityIds: friendlies.map((entity) => entity.id),
         destination: { x: 70 * 1024, z: 45 * 1024 },
-        issuedAtTick: lab.runtime.getLatestTick(),
-        executeTick: lab.runtime.getLatestTick(),
+        issuedAtTick: tick,
+        executeTick: tick,
       });
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      const beforePaths = lab.runtime.getNavDebug()?.paths ?? [];
+      let beforePaths: Array<{ cells: Array<{ cx: number; cz: number }> }> = [];
+      for (let attempt = 0; attempt < 20; attempt += 1) {
+        await new Promise((resolve) => setTimeout(resolve, 100));
+        beforePaths = lab.runtime.getNavDebug()?.paths ?? [];
+        if (beforePaths.some((path) => path.cells.length > 2)) {
+          break;
+        }
+      }
       const before = JSON.stringify(beforePaths);
-      const mid = beforePaths[0]?.cells[Math.floor((beforePaths[0]?.cells.length ?? 1) / 2)];
+      const longPath = beforePaths.find((path) => path.cells.length > 2) ?? beforePaths[0];
+      const mid = longPath?.cells[Math.floor((longPath?.cells.length ?? 1) / 2)];
       const originCell = mid ?? { cx: 28, cz: 22 };
       lab.commandClient.issuePlaceBuilding({
         archetypeId: 'sunweaver-sanctum',
@@ -181,8 +235,14 @@ test.describe('interaction lab', () => {
         issuedAtTick: lab.runtime.getLatestTick(),
         executeTick: lab.runtime.getLatestTick(),
       });
-      await new Promise((resolve) => setTimeout(resolve, 600));
-      const after = JSON.stringify(lab.runtime.getNavDebug()?.paths ?? []);
+      let after = before;
+      for (let attempt = 0; attempt < 20; attempt += 1) {
+        await new Promise((resolve) => setTimeout(resolve, 100));
+        after = JSON.stringify(lab.runtime.getNavDebug()?.paths ?? []);
+        if (after !== before) {
+          break;
+        }
+      }
       return before !== after && before.length > 2;
     });
     expect(replanned).toBe(true);
@@ -229,7 +289,18 @@ declare global {
   interface Window {
     getInteractionLab?: () => LabHook | null;
     __pastelApp?: {
-      getCamera: () => { lookAt: { x: number; z: number } };
+      getCamera: () => {
+        lookAt: { x: number; z: number };
+        camera: {
+          position: {
+            constructor: new (
+              x: number,
+              y: number,
+              z: number,
+            ) => { x: number; y: number; project: (cam: unknown) => void };
+          };
+        };
+      };
       getInteractionLab?: () => LabHook | null;
     };
   }

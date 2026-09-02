@@ -32,9 +32,9 @@ export class CommandQueue {
     const due: CommandEnvelopeV1[] = [];
     const remaining: PendingCommand[] = [];
     for (const entry of this.pending) {
-      if (entry.envelope.executeTick === tick) {
+      if (entry.envelope.executeTick <= tick) {
         due.push(entry.envelope);
-      } else if (entry.envelope.executeTick > tick) {
+      } else {
         remaining.push(entry);
       }
     }

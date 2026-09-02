@@ -49,7 +49,7 @@ export default defineConfig({
     {
       command: 'npm run preview --workspace @pastel-rts/game-web -- --host 127.0.0.1 --port 4173 --strictPort',
       url: 'http://127.0.0.1:4173',
-      reuseExistingServer: !process.env['CI'],
+      reuseExistingServer: false,
       timeout: 120_000,
     },
     {
@@ -64,7 +64,7 @@ export default defineConfig({
     {
       command: 'npm run preview --workspace @pastel-rts/foundry -- --host 127.0.0.1 --port 4174 --strictPort',
       url: 'http://127.0.0.1:4174',
-      reuseExistingServer: !process.env['CI'],
+      reuseExistingServer: false,
       timeout: 120_000,
     },
   ],
