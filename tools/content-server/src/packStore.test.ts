@@ -150,6 +150,36 @@ describe('PackStore v2 operations', () => {
   it('resolveAssetPath rejects unsafe paths', () => {
     expect(() => store.resolveAssetPath('../pack.json')).toThrow(/invalid path/i);
   });
+
+  it('reads and writes canonical pack.json for v2 packs', () => {
+    const v2Pack = {
+      schemaVersion: 2,
+      id: 'dev-pack-v2',
+      revision: '1',
+      factions: [
+        { id: 'sunweaver', displayName: 'Sunweaver' },
+        { id: 'gravemark', displayName: 'Gravemark' },
+        { id: 'neutral', displayName: 'Neutral' },
+      ],
+      units: [validUnitArchetype],
+      buildings: [],
+    };
+    writeFileSync(join(tempDir, 'pack.json'), `${JSON.stringify(v2Pack, null, 2)}\n`);
+    const v2Store = new PackStore({ packDir: tempDir });
+    const loaded = v2Store.readPackV2();
+    expect(loaded.schemaVersion).toBe(2);
+    expect(loaded.units.some((unit) => unit.id === 'test-scout')).toBe(true);
+    expect(existsSync(join(tempDir, 'pack-v2.json'))).toBe(false);
+
+    v2Store.createBuildingArchetype(validBuildingArchetype, TINY_PNG_BASE64);
+    expect(existsSync(join(tempDir, 'pack-v2.json'))).toBe(false);
+    const rewritten = JSON.parse(readFileSync(join(tempDir, 'pack.json'), 'utf8')) as {
+      schemaVersion: number;
+      buildings: Array<{ id: string }>;
+    };
+    expect(rewritten.schemaVersion).toBe(2);
+    expect(rewritten.buildings.some((building) => building.id === 'test-bastion')).toBe(true);
+  });
 });
 
 describe('PackStore v1 compatibility', () => {
@@ -158,5 +188,16 @@ describe('PackStore v1 compatibility', () => {
     const v1 = store.readPackV1();
     expect(v1.schemaVersion).toBe(1);
     expect(v1.units).toHaveLength(0);
+  });
+
+  it('preserves an existing v1 pack.json when authoring v2 units', () => {
+    const v1Index = { schemaVersion: 1, id: 'dev-pack', units: [] };
+    writeFileSync(join(tempDir, 'pack.json'), `${JSON.stringify(v1Index, null, 2)}\n`);
+    const mixed = new PackStore({ packDir: tempDir });
+    mixed.createUnitArchetype(validUnitArchetype, TINY_PNG_BASE64);
+    const onDisk = JSON.parse(readFileSync(join(tempDir, 'pack.json'), 'utf8')) as { schemaVersion: number };
+    expect(onDisk.schemaVersion).toBe(1);
+    expect(existsSync(join(tempDir, 'pack-v2.json'))).toBe(false);
+    expect(mixed.readPackV2().units.some((unit) => unit.id === 'test-scout')).toBe(true);
   });
 });

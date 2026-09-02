@@ -62,9 +62,10 @@ export class PackStore {
     this.mapsDir = join(this.packDir, 'maps');
     this.scenariosDir = join(this.packDir, 'scenarios');
     this.v1IndexPath = join(this.packDir, 'pack.json');
-    this.v2IndexPath = join(this.packDir, 'pack-v2.json');
+    this.v2IndexPath = join(this.packDir, 'pack.json');
     mkdirSync(this.unitsDir, { recursive: true });
     mkdirSync(this.buildingsDir, { recursive: true });
+    this.materializeCanonicalV2Pack();
   }
 
   readPackV1(): { schemaVersion: number; id: string; units: UnitManifest[] } {
@@ -86,12 +87,13 @@ export class PackStore {
   }
 
   readPackV2(): PackV2 {
-    if (existsSync(this.v2IndexPath)) {
-      return validatePackV2(JSON.parse(readFileSync(this.v2IndexPath, 'utf8')));
-    }
-    const upgraded = upgradePackV1ToV2(this.readPackV1());
+    const canonical = this.readCanonicalV2Pack();
     const diskUnits = this.listUnitArchetypesFromDisk();
     const diskBuildings = this.listBuildingArchetypesFromDisk();
+    if (canonical) {
+      return this.mergeCanonicalWithDisk(canonical, diskUnits, diskBuildings);
+    }
+    const upgraded = upgradePackV1ToV2(this.readPackV1());
     if (diskUnits.length > 0 || diskBuildings.length > 0) {
       return this.buildPackV2Index(diskUnits, diskBuildings, upgraded.revision);
     }
@@ -99,14 +101,18 @@ export class PackStore {
   }
 
   writePackV1Index(): void {
+    if (this.readCanonicalV2Pack()) {
+      return;
+    }
     const index = this.readPackV1();
     atomicWriteJson(this.v1IndexPath, index);
   }
 
   writePackV2Index(units: UnitArchetype[], buildings: BuildingArchetype[]): PackV2 {
-    const previous = existsSync(this.v2IndexPath)
-      ? validatePackV2(JSON.parse(readFileSync(this.v2IndexPath, 'utf8')))
-      : null;
+    if (this.isV1PackJson()) {
+      return this.buildPackV2Index(units, buildings, createInitialRevision());
+    }
+    const previous = this.readCanonicalV2Pack();
     const revision = previous ? bumpRevision(previous.revision) : createInitialRevision();
     const pack = this.buildPackV2Index(units, buildings, revision);
     atomicWriteJson(this.v2IndexPath, pack);
@@ -294,6 +300,79 @@ export class PackStore {
     return absolute;
   }
 
+  private peekPackJson(): { schemaVersion?: unknown } | null {
+    if (!existsSync(this.v1IndexPath)) {
+      return null;
+    }
+    try {
+      const parsed: unknown = JSON.parse(readFileSync(this.v1IndexPath, 'utf8'));
+      if (typeof parsed === 'object' && parsed !== null && !Array.isArray(parsed)) {
+        return parsed as { schemaVersion?: unknown };
+      }
+    } catch {
+      return null;
+    }
+    return null;
+  }
+
+  private isV1PackJson(): boolean {
+    return this.peekPackJson()?.schemaVersion === 1;
+  }
+
+  private readCanonicalV2Pack(): PackV2 | null {
+    if (this.peekPackJson()?.schemaVersion !== 2) {
+      return null;
+    }
+    return validatePackV2(JSON.parse(readFileSync(this.v1IndexPath, 'utf8')));
+  }
+
+  private mergeCanonicalWithDisk(
+    canonical: PackV2,
+    diskUnits: UnitArchetype[],
+    diskBuildings: BuildingArchetype[],
+  ): PackV2 {
+    const units = mergeArchetypesById(canonical.units, diskUnits);
+    const buildings = mergeArchetypesById(canonical.buildings, diskBuildings);
+    const packWithoutHash: Omit<PackV2, 'contentHash'> = {
+      schemaVersion: 2,
+      id: canonical.id,
+      revision: canonical.revision,
+      factions: canonical.factions,
+      units,
+      buildings,
+    };
+    if (canonical.maps) {
+      packWithoutHash.maps = canonical.maps;
+    }
+    if (canonical.scenarios) {
+      packWithoutHash.scenarios = canonical.scenarios;
+    }
+    return { ...packWithoutHash, contentHash: computeContentHash(packWithoutHash) };
+  }
+
+  private materializeCanonicalV2Pack(): void {
+    const pack = this.readCanonicalV2Pack();
+    if (!pack) {
+      return;
+    }
+    for (const unit of pack.units) {
+      const dir = join(this.unitsDir, unit.id);
+      mkdirSync(dir, { recursive: true });
+      const manifest = join(dir, 'manifest.json');
+      if (!existsSync(manifest)) {
+        atomicWriteJson(manifest, unit);
+      }
+    }
+    for (const building of pack.buildings) {
+      const dir = join(this.buildingsDir, building.id);
+      mkdirSync(dir, { recursive: true });
+      const manifest = join(dir, 'manifest.json');
+      if (!existsSync(manifest)) {
+        atomicWriteJson(manifest, building);
+      }
+    }
+  }
+
   private persistUnitArchetype(dir: string, archetype: UnitArchetype, pngBase64?: string): UnitArchetype {
     const validated = validateUnitArchetype(archetype);
     const assetFileName = basenameFromAssetPath(validated.assetPath);
@@ -475,4 +554,15 @@ function isV2UnitArchetype(value: unknown): boolean {
 
 function isV2BuildingArchetype(value: unknown): boolean {
   return isV2UnitArchetype(value);
+}
+
+function mergeArchetypesById<T extends { id: string }>(base: readonly T[], overlay: readonly T[]): T[] {
+  const byId = new Map<string, T>();
+  for (const entry of base) {
+    byId.set(entry.id, entry);
+  }
+  for (const entry of overlay) {
+    byId.set(entry.id, entry);
+  }
+  return [...byId.values()].sort((a, b) => a.id.localeCompare(b.id));
 }
