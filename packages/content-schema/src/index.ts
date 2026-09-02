@@ -11,3 +11,95 @@ export {
   type UnitManifest,
 } from './unitManifest';
 export { detectOpaqueBounds } from './pngBounds';
+
+export {
+  SUBUNITS_PER_CELL,
+  subunitToCell,
+  subunitToWorldFloat,
+  worldFloatToSubunit,
+  type CellCoord,
+  type SubunitCoord,
+  type Tick,
+} from './coords';
+
+export {
+  createEntityId,
+  entityIdsEqual,
+  isNilEntity,
+  packEntityId,
+  unpackEntityId,
+  type EntityGeneration,
+  type EntityId,
+  type EntityIndex,
+} from './ids';
+
+export {
+  DIRECTION_COUNTS,
+  DIRECTION_ORDER_4,
+  DIRECTION_ORDER_8,
+  countSpriteSheetFrames,
+  resolveFrameIndexes,
+  validateAnimationDef,
+  validateSpriteClip,
+  type AnimClipId,
+  type AnimationDef,
+  type DirectionCount,
+  type FallbackAnimationRules,
+  type SpriteClip,
+  type SpriteFrameRef,
+} from './animation';
+
+export {
+  BUILDING_ARCHETYPE_SCHEMA_VERSION,
+  DEFAULT_V1_UPGRADE_SPEED_SUBUNITS_PER_TICK,
+  FACTION_IDS,
+  PACK_V2_SCHEMA_VERSION,
+  PLAYABLE_FACTION_IDS,
+  UNIT_ARCHETYPE_SCHEMA_VERSION,
+  bumpRevision,
+  computeContentHash,
+  createInitialRevision,
+  isValidFactionId,
+  mapLegacyFactionToFactionId,
+  normalizeRevision,
+  upgradePackV1ToV2,
+  validateBuildingArchetype,
+  validatePackV2,
+  validateUnitArchetype,
+  type BuildingArchetype,
+  type BuildableTerrainRules,
+  type CellMaskFootprint,
+  type FactionDef,
+  type FactionId,
+  type Footprint,
+  type MapReference,
+  type PackV1,
+  type PackV2,
+  type PlayableFactionId,
+  type RectFootprint,
+  type ScenarioReference,
+  type ShadowDef,
+  type UnitArchetype,
+  type UnitMovementDef,
+  type Vec2,
+} from './pack';
+
+export {
+  COMMAND_PROTOCOL_VERSION,
+  validateCommandEnvelope,
+  validateCommandPayload,
+  type CommandEnvelopeV1,
+  type CommandKind,
+  type CommandPayload,
+  type CommandRejectReason,
+  type CommandResult,
+  type CommandResultStatus,
+  type MovePayload,
+  type PlaceBuildingPayload,
+  type RemoveBuildingPayload,
+  type RemoveEntityPayload,
+  type SpawnUnitPayload,
+  type StopPayload,
+} from './commands';
+
+export { canonicalize } from './contentHash';

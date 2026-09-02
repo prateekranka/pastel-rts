@@ -1,0 +1,163 @@
+{
+  "schemaVersion": 2,
+  "id": "dev-pack-v2",
+  "revision": "1",
+  "factions": [
+    { "id": "sunweaver", "displayName": "Sunweaver" },
+    { "id": "gravemark", "displayName": "Gravemark" },
+    { "id": "neutral", "displayName": "Neutral" }
+  ],
+  "units": [
+    {
+      "schemaVersion": 2,
+      "id": "sunweaver-scout",
+      "displayName": "Sunweaver Scout",
+      "enabled": true,
+      "factionId": "sunweaver",
+      "assetPath": "units/sunweaver-scout/sheet.png",
+      "sourceWidth": 128,
+      "sourceHeight": 64,
+      "frameWidth": 32,
+      "frameHeight": 32,
+      "margin": { "x": 0, "y": 0 },
+      "spacing": { "x": 0, "y": 0 },
+      "bounds": { "minX": 4, "minY": 2, "maxX": 28, "maxY": 30 },
+      "anchor": { "x": 0.5, "y": 1 },
+      "worldHeight": 1.5,
+      "shadow": { "offsetX": 0, "offsetZ": -0.1, "scale": 1, "opacity": 0.35 },
+      "selectionRadius": 0.6,
+      "collisionRadius": 0.45,
+      "animation": {
+        "directions": 4,
+        "mirrored": true,
+        "directionOrder": ["n", "e", "s", "w"],
+        "clips": {
+          "idle": {
+            "frames": { "start": 0, "end": 3 },
+            "fps": 8,
+            "looping": true
+          },
+          "move": {
+            "frames": { "indexes": [4, 5, 6, 7] },
+            "fps": 12,
+            "looping": true
+          }
+        }
+      },
+      "movement": {
+        "speedSubunitsPerTick": 64,
+        "accelerationRate": 1,
+        "turnRateMilli": 3000,
+        "footprintCategory": "unit-1x1"
+      },
+      "tags": ["infantry", "scout"]
+    },
+    {
+      "schemaVersion": 2,
+      "id": "gravemark-stalker",
+      "displayName": "Gravemark Stalker",
+      "enabled": true,
+      "factionId": "gravemark",
+      "spriteSheetPath": "units/gravemark-stalker/sheet.png",
+      "sourceWidth": 128,
+      "sourceHeight": 64,
+      "frameWidth": 32,
+      "frameHeight": 32,
+      "margin": { "x": 0, "y": 0 },
+      "spacing": { "x": 0, "y": 0 },
+      "bounds": { "minX": 6, "minY": 4, "maxX": 26, "maxY": 30 },
+      "anchor": { "x": 0.5, "y": 1 },
+      "worldHeight": 1.55,
+      "selectionRadius": 0.65,
+      "collisionRadius": 0.5,
+      "animation": {
+        "directions": 4,
+        "mirrored": true,
+        "directionOrder": ["n", "e", "s", "w"],
+        "clips": {
+          "idle": {
+            "frames": { "indexes": [0, 1, 2, 3] },
+            "fps": 6,
+            "looping": true
+          },
+          "move": {
+            "frames": { "indexes": [4, 5, 6, 7] },
+            "fps": 10,
+            "looping": true
+          }
+        }
+      },
+      "movement": {
+        "speedSubunitsPerTick": 72,
+        "accelerationRate": 1.2,
+        "turnRateMilli": 2500,
+        "footprintCategory": "unit-1x1"
+      },
+      "tags": ["infantry"]
+    }
+  ],
+  "buildings": [
+    {
+      "schemaVersion": 2,
+      "id": "sunweaver-sanctum",
+      "displayName": "Sunweaver Sanctum",
+      "enabled": true,
+      "factionId": "sunweaver",
+      "assetPath": "buildings/sunweaver-sanctum/sprite.png",
+      "sourceWidth": 128,
+      "sourceHeight": 128,
+      "bounds": { "minX": 16, "minY": 24, "maxX": 112, "maxY": 120 },
+      "anchor": { "x": 0.5, "y": 1 },
+      "worldHeight": 3.2,
+      "footprint": { "kind": "rect", "cellsW": 3, "cellsH": 3 },
+      "blockedCellMask": [
+        [true, true, true],
+        [true, true, true],
+        [true, true, true]
+      ],
+      "buildableTerrain": {
+        "allowedTerrain": ["grass", "stone"]
+      },
+      "selectionFootprint": { "kind": "rect", "cellsW": 3, "cellsH": 3 },
+      "entrancePoint": { "x": 1536, "z": 0 },
+      "rallyPoint": { "x": 1536, "z": 1536 }
+    },
+    {
+      "schemaVersion": 2,
+      "id": "gravemark-bastion",
+      "displayName": "Gravemark Bastion",
+      "enabled": true,
+      "factionId": "gravemark",
+      "assetPath": "buildings/gravemark-bastion/sprite.png",
+      "sourceWidth": 96,
+      "sourceHeight": 96,
+      "bounds": { "minX": 8, "minY": 12, "maxX": 88, "maxY": 92 },
+      "anchor": { "x": 0.5, "y": 1 },
+      "worldHeight": 2.4,
+      "footprint": { "kind": "rect", "cellsW": 2, "cellsH": 2 },
+      "blockedCellMask": [
+        [true, true],
+        [true, true]
+      ],
+      "buildableTerrain": {
+        "allowedTerrain": ["grass", "dirt"]
+      },
+      "selectionFootprint": { "kind": "rect", "cellsW": 2, "cellsH": 2 },
+      "entrancePoint": { "x": 512, "z": 0 },
+      "rallyPoint": { "x": 1024, "z": 1024 }
+    }
+  ],
+  "maps": [
+    {
+      "id": "lab-grid",
+      "path": "maps/lab-grid.json"
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "lab-skirmish",
+      "path": "scenarios/lab-skirmish.json",
+      "mapId": "lab-grid"
+    }
+  ]
+}
