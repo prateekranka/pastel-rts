@@ -6,9 +6,17 @@ import {
   Scene,
   WebGLRenderer,
 } from 'three';
-import { DEFAULT_DPR_CAP, DEFAULT_SEED, MAP_WORLD_SIZE } from '../config/constants';
+import {
+  DEFAULT_DPR_CAP,
+  DEFAULT_SEED,
+  MAP_WORLD_SIZE,
+  STRESS_COUNTS,
+} from '../config/constants';
 import { palette } from '../config/palette';
 import { IsometricCamera } from '../camera/IsometricCamera';
+import { EntityRenderer } from '../entities/EntityRenderer';
+import { SimClient } from '../sim/SimClient';
+import { SNAPSHOT_STRIDE, totalEntities, type SimCounts } from '../sim/types';
 import { LandmarkSystem } from '../world/LandmarkSystem';
 import { TerrainSystem } from '../world/TerrainSystem';
 import { assertChunkLayout } from '../world/chunks';
@@ -19,17 +27,23 @@ export class GameApp {
   private readonly iso = new IsometricCamera();
   private terrain: TerrainSystem | null = null;
   private landmarks: LandmarkSystem | null = null;
+  private entities: EntityRenderer | null = null;
+  private readonly sim = new SimClient();
+  private interpolated = new Float32Array(totalEntities(STRESS_COUNTS) * SNAPSHOT_STRIDE);
   private animationFrame = 0;
   private disposed = false;
+  private paused = false;
+  private pauseStartedAt = 0;
+  private pausedDuration = 0;
   private readonly lights: Array<AmbientLight | HemisphereLight | DirectionalLight> = [];
   private canvas: HTMLCanvasElement | null = null;
   private resizeObserver: ResizeObserver | null = null;
+  private visibilityHandler: (() => void) | null = null;
 
   async start(canvas: HTMLCanvasElement): Promise<void> {
     assertChunkLayout();
     this.canvas = canvas;
     this.scene.background = new Color(palette.background);
-    this.scene.fog = null;
 
     const renderer = new WebGLRenderer({
       canvas,
@@ -46,16 +60,33 @@ export class GameApp {
     this.iso.setLookAt(MAP_WORLD_SIZE * 0.52, MAP_WORLD_SIZE * 0.48);
     this.terrain = new TerrainSystem(this.scene, DEFAULT_SEED);
     this.landmarks = new LandmarkSystem(this.scene, DEFAULT_SEED);
+    this.entities = new EntityRenderer(this.scene);
+
+    const counts: SimCounts = { ...STRESS_COUNTS };
+    this.sim.start(DEFAULT_SEED, counts, true);
 
     this.resizeObserver = new ResizeObserver(() => this.syncSize());
     this.resizeObserver.observe(canvas.parentElement ?? canvas);
     this.syncSize();
 
+    this.visibilityHandler = () => {
+      if (document.hidden) {
+        this.pause('background');
+      } else {
+        this.resume('background');
+      }
+    };
+    document.addEventListener('visibilitychange', this.visibilityHandler);
+
     const loop = (time: number) => {
       if (this.disposed) {
         return;
       }
-      void time;
+      const renderTime = time - this.pausedDuration;
+      if (!this.paused) {
+        const count = this.sim.interpolate(this.interpolated, renderTime);
+        this.entities?.applySnapshot(this.interpolated, count);
+      }
       this.terrain?.updateVisibility(this.iso);
       this.renderer?.render(this.scene, this.iso.camera);
       this.animationFrame = requestAnimationFrame(loop);
@@ -63,11 +94,35 @@ export class GameApp {
     this.animationFrame = requestAnimationFrame(loop);
   }
 
+  pause(_reason: 'background' | 'native' = 'native'): void {
+    if (this.paused) {
+      return;
+    }
+    this.paused = true;
+    this.pauseStartedAt = performance.now();
+    this.sim.pause();
+  }
+
+  resume(_reason: 'background' | 'native' = 'native'): void {
+    if (!this.paused) {
+      return;
+    }
+    this.pausedDuration += performance.now() - this.pauseStartedAt;
+    this.paused = false;
+    this.sim.resume();
+  }
+
   dispose(): void {
     this.disposed = true;
     cancelAnimationFrame(this.animationFrame);
     this.resizeObserver?.disconnect();
     this.resizeObserver = null;
+    if (this.visibilityHandler) {
+      document.removeEventListener('visibilitychange', this.visibilityHandler);
+      this.visibilityHandler = null;
+    }
+    this.sim.stop();
+    this.entities?.dispose();
     this.terrain?.dispose();
     this.landmarks?.dispose();
     for (const light of this.lights) {
