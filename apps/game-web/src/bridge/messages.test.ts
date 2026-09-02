@@ -17,4 +17,35 @@ describe('native bridge validation', () => {
     expect(() => validateNativeToJs({ type: 'explode' })).toThrow();
     expect(() => validateNativeToJs({ type: 'setDeveloperConfiguration' })).toThrow();
   });
+
+  it('accepts every coarse JS→native and native→JS message', () => {
+    expect(
+      validateJsToNative({
+        type: 'requestHaptic',
+        payload: { style: 'light' },
+      }).type,
+    ).toBe('requestHaptic');
+    expect(
+      validateJsToNative({
+        type: 'performanceReport',
+        payload: { schemaVersion: 1 },
+      }).type,
+    ).toBe('performanceReport');
+    const runtimeError = validateJsToNative({
+      type: 'runtimeError',
+      payload: { message: 'boom', stack: 'trace' },
+    });
+    expect(runtimeError.type).toBe('runtimeError');
+    if (runtimeError.type === 'runtimeError') {
+      expect(runtimeError.payload.message).toBe('boom');
+    }
+    expect(validateNativeToJs({ type: 'pause' }).type).toBe('pause');
+    expect(validateNativeToJs({ type: 'resume' }).type).toBe('resume');
+    expect(
+      validateNativeToJs({
+        type: 'setDeveloperConfiguration',
+        payload: { renderer: 'webgpu', haptics: false },
+      }).type,
+    ).toBe('setDeveloperConfiguration');
+  });
 });

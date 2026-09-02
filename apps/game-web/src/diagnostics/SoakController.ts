@@ -14,6 +14,7 @@ export type SoakHost = {
   getSim: () => SimClient;
   getEntities: () => EntityRenderer | null;
   getTerrain: () => TerrainSystem | null;
+  isAutoCameraEnabled: () => boolean;
 };
 
 export class SoakController {
@@ -43,6 +44,7 @@ export class SoakController {
     this.startedAt = performance.now();
     this.durationMs = durationMs;
     this.pauseEvents.length = 0;
+    this.tracker.setRetainFullSamples(true);
     this.tracker.begin();
     this.timer = setTimeout(() => {
       const report = this.finish();
@@ -92,6 +94,8 @@ export class SoakController {
         visibleUnits: this.host.getEntities()?.getVisibleUnitCount() ?? 0,
         visibleChunks: this.host.getTerrain()?.getVisibleChunkCount() ?? 0,
       },
+      benchmark: config.benchmark,
+      autoCameraMotion: this.host.isAutoCameraEnabled(),
     });
   }
 
@@ -99,6 +103,7 @@ export class SoakController {
     this.running = false;
     this.stopTimer();
     const report = this.captureReport();
+    this.tracker.setRetainFullSamples(false);
     return report;
   }
 

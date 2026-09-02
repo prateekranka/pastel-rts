@@ -5,7 +5,9 @@ import { fileURLToPath } from 'node:url';
 import { validateUnitManifest, type UnitManifest } from '../../../packages/content-schema/src/unitManifest.ts';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '../../..');
-const packDir = join(root, 'content/dev-pack');
+const packDir = process.env['CONTENT_PACK_DIR']
+  ? process.env['CONTENT_PACK_DIR']
+  : join(root, 'content/dev-pack');
 const unitsDir = join(packDir, 'units');
 const PORT = Number(process.env['CONTENT_PORT'] ?? 8787);
 

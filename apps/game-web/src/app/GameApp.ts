@@ -20,6 +20,7 @@ import { createRendererAdapter, type RendererAdapter } from '../renderer/adapter
 import { CameraDirector } from '../runtime/CameraDirector';
 import {
   BENCHMARKS,
+  developerConfigQueryPatch,
   parseRuntimeConfig,
   pixelRatioForPreset,
   reloadWithQuery,
@@ -68,6 +69,7 @@ export class GameApp {
     this.scene.background = new Color(palette.background);
 
     this.adapter = await createRendererAdapter(canvas, config.renderer);
+    this.canvas = this.adapter.canvas;
     this.addLights();
     this.iso.applyNamedPreset(config.zoomStop);
     this.iso.setLookAt(MAP_WORLD_SIZE * 0.52, MAP_WORLD_SIZE * 0.48);
@@ -77,13 +79,12 @@ export class GameApp {
     this.hotReload = new ContentHotReload(this.scene);
     this.hotReload.start();
 
-    this.applyBenchmark(config);
-
     this.resizeObserver = new ResizeObserver(() => this.syncSize());
-    this.resizeObserver.observe(canvas.parentElement ?? canvas);
+    this.resizeObserver.observe(this.canvas.parentElement ?? this.canvas);
     this.syncSize();
 
-    this.controls = new PointerCameraControls(canvas, this.iso);
+    this.controls = new PointerCameraControls(this.canvas, this.iso);
+    this.applyBenchmark(config);
     const hudRoot = document.querySelector('#hud-root');
     if (hudRoot instanceof HTMLElement) {
       this.touchDebug = new TouchDebugOverlay(hudRoot);
@@ -98,11 +99,15 @@ export class GameApp {
     this.soak = new SoakController(this, this.tracker, this.bridge);
     this.tracker.begin();
     this.bindNative();
+    const liveCanvas = this.canvas;
     this.bridge.send({
       type: 'gameReady',
       payload: {
         renderer: this.adapter.kind,
-        viewport: { width: canvas.clientWidth, height: canvas.clientHeight },
+        viewport: {
+          width: liveCanvas?.clientWidth ?? 0,
+          height: liveCanvas?.clientHeight ?? 0,
+        },
       },
     });
 
@@ -116,14 +121,15 @@ export class GameApp {
     document.addEventListener('visibilitychange', this.visibilityHandler);
 
     if (config.benchmark === '20-minute-soak' || config.soakMs) {
-      this.soak.start(config.soakMs && config.soakMs > 0 ? config.soakMs : SOAK_DURATION_MS);
+      this.beginUnattendedSoak(config.soakMs && config.soakMs > 0 ? config.soakMs : SOAK_DURATION_MS);
     }
 
     const loop = (time: number) => {
       if (this.disposed) {
         return;
       }
-      const dt = this.lastFrameAt === 0 ? 16.6 : Math.max(0.01, time - this.lastFrameAt);
+      const isResumeFrame = this.lastFrameAt === 0;
+      const dt = isResumeFrame ? 16.6 : Math.max(0.01, time - this.lastFrameAt);
       this.lastFrameAt = time;
       const renderTime = time - this.pausedDuration;
       if (!this.paused) {
@@ -136,7 +142,9 @@ export class GameApp {
         this.touchDebug.update(this.controls.getDebugSnapshot());
       }
       this.adapter?.render(this.scene, this.iso.camera);
-      this.sample(dt, time);
+      if (!isResumeFrame) {
+        this.sample(dt, time);
+      }
       this.animationFrame = requestAnimationFrame(loop);
     };
     this.animationFrame = requestAnimationFrame(loop);
@@ -169,6 +177,7 @@ export class GameApp {
     }
     this.pausedDuration += performance.now() - this.pauseStartedAt;
     this.paused = false;
+    this.lastFrameAt = 0;
     this.sim.resume();
     this.soak?.recordPause(reason === 'background' ? 'foreground' : 'resume');
   }
@@ -230,6 +239,10 @@ export class GameApp {
     return this.paused;
   }
 
+  isAutoCameraEnabled(): boolean {
+    return this.director.isEnabled();
+  }
+
   setTouchDebugVisible(visible: boolean): void {
     this.config = { ...this.config, touchDebug: visible };
     this.touchDebug?.setVisible(visible);
@@ -237,6 +250,13 @@ export class GameApp {
 
   isTouchDebugVisible(): boolean {
     return this.touchDebug?.isVisible() ?? false;
+  }
+
+  private beginUnattendedSoak(durationMs: number): void {
+    this.director.setEnabled(true);
+    this.director.reset();
+    this.controls?.setEnabled(false);
+    this.soak?.start(durationMs);
   }
 
   private bindHud(): void {
@@ -262,8 +282,11 @@ export class GameApp {
           const report = this.soak.cancelOrFinish();
           downloadReport(report);
           this.bridge.send({ type: 'performanceReport', payload: report });
+          this.applyBenchmark(this.config);
         } else {
-          this.soak.start(this.config.soakMs && this.config.soakMs > 0 ? this.config.soakMs : SOAK_DURATION_MS);
+          this.beginUnattendedSoak(
+            this.config.soakMs && this.config.soakMs > 0 ? this.config.soakMs : SOAK_DURATION_MS,
+          );
         }
       },
     });
@@ -277,17 +300,8 @@ export class GameApp {
         this.resume('native');
       } else {
         const payload = message.payload;
-        if (payload.renderer || payload.benchmark || payload.dprPreset) {
-          const patch: Record<string, string> = {};
-          if (payload.renderer) {
-            patch['renderer'] = payload.renderer;
-          }
-          if (payload.benchmark) {
-            patch['benchmark'] = payload.benchmark;
-          }
-          if (payload.dprPreset) {
-            patch['dpr'] = String(payload.dprPreset);
-          }
+        const patch = developerConfigQueryPatch(this.config, payload);
+        if (patch) {
           reloadWithQuery(patch);
           return;
         }

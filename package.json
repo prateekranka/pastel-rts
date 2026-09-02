@@ -21,7 +21,7 @@
     "test": "npm run test --workspace @pastel-rts/content-schema && npm run test --workspace @pastel-rts/game-web",
     "test:watch": "npm run test:watch --workspace @pastel-rts/game-web",
     "lint": "npm run lint --workspace @pastel-rts/game-web",
-    "test:visual": "npm run build --workspace @pastel-rts/game-web && playwright test",
+    "test:visual": "npm run build && playwright test",
     "ios:sync-web": "node scripts/sync-web-build.mjs",
     "ios:generate": "node scripts/generate-ios-project.mjs"
   },

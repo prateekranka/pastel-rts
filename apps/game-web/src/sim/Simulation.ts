@@ -26,8 +26,26 @@ const DENSE_ORIGIN_X = 72;
 const DENSE_ORIGIN_Z = 68;
 const DENSE_SPAN = 36;
 
+function emptyEntity(): SimEntity {
+  return {
+    kind: 0,
+    faction: 0,
+    homeX: 0,
+    homeZ: 0,
+    x: 0,
+    z: 0,
+    heading: 0,
+    anim: 0,
+    radius: 0,
+    speed: 0,
+    phase: 0,
+  };
+}
+
 export class Simulation {
-  private entities: SimEntity[] = [];
+  /** Reused entity records. `live` is the active count; the rest stay pooled. */
+  private readonly pool: SimEntity[] = [];
+  private live = 0;
   private tick = 0;
   private simTimeMs = 0;
   private rng: () => number = () => 0.5;
@@ -37,16 +55,28 @@ export class Simulation {
     this.rng = createMulberry32(seed >>> 0);
     this.tick = 0;
     this.simTimeMs = 0;
-    this.entities = [];
+    this.live = 0;
     this.spawn(counts.combat, ENTITY_KIND.combat, concentrate, freezeMotion ? 0 : 1.7, freezeMotion ? 0 : 0.22);
     this.spawn(counts.workers, ENTITY_KIND.worker, concentrate, freezeMotion ? 0 : 1.1, freezeMotion ? 0 : 0.28);
     this.spawn(counts.buildings, ENTITY_KIND.building, true, 0, 0);
     this.spawn(counts.props, ENTITY_KIND.prop, false, 0, 0);
   }
 
+  getLiveCount(): number {
+    return this.live;
+  }
+
+  getPoolCapacity(): number {
+    return this.pool.length;
+  }
+
   getCounts(): SimCounts {
     const counts: SimCounts = { combat: 0, workers: 0, buildings: 0, props: 0 };
-    for (const entity of this.entities) {
+    for (let i = 0; i < this.live; i += 1) {
+      const entity = this.pool[i];
+      if (!entity) {
+        continue;
+      }
       if (entity.kind === ENTITY_KIND.combat) {
         counts.combat += 1;
       } else if (entity.kind === ENTITY_KIND.worker) {
@@ -65,7 +95,11 @@ export class Simulation {
     const dt = dtMs / 1000;
     this.tick += 1;
     this.simTimeMs += dtMs;
-    for (const entity of this.entities) {
+    for (let i = 0; i < this.live; i += 1) {
+      const entity = this.pool[i];
+      if (!entity) {
+        continue;
+      }
       if (entity.speed <= 0) {
         entity.anim = (entity.anim + dt * 0.6) % 1;
         continue;
@@ -80,9 +114,8 @@ export class Simulation {
     }
     // Lightweight deterministic CPU work so the worker is not empty.
     let acc = 0;
-    const n = this.entities.length;
-    for (let i = 0; i < n; i += 1) {
-      const entity = this.entities[i];
+    for (let i = 0; i < this.live; i += 1) {
+      const entity = this.pool[i];
       if (!entity) {
         continue;
       }
@@ -93,8 +126,8 @@ export class Simulation {
   }
 
   writeSnapshot(target: Float32Array): void {
-    for (let i = 0; i < this.entities.length; i += 1) {
-      const entity = this.entities[i];
+    for (let i = 0; i < this.live; i += 1) {
+      const entity = this.pool[i];
       if (!entity) {
         continue;
       }
@@ -145,19 +178,21 @@ export class Simulation {
             : FACTION.opposing;
       const homeX = x * CELL_SIZE;
       const homeZ = z * CELL_SIZE;
-      this.entities.push({
-        kind,
-        faction,
-        homeX,
-        homeZ,
-        x: homeX,
-        z: homeZ,
-        heading: this.rng() * Math.PI * 2,
-        anim: this.rng(),
-        radius: kind === ENTITY_KIND.building || kind === ENTITY_KIND.prop ? 0 : radius * (0.7 + this.rng() * 0.8),
-        speed: kind === ENTITY_KIND.building || kind === ENTITY_KIND.prop ? 0 : speed * (0.65 + this.rng() * 0.7),
-        phase: this.rng() * Math.PI * 2,
-      });
+      const entity = this.pool[this.live] ?? (this.pool[this.live] = emptyEntity());
+      entity.kind = kind;
+      entity.faction = faction;
+      entity.homeX = homeX;
+      entity.homeZ = homeZ;
+      entity.x = homeX;
+      entity.z = homeZ;
+      entity.heading = this.rng() * Math.PI * 2;
+      entity.anim = this.rng();
+      entity.radius =
+        kind === ENTITY_KIND.building || kind === ENTITY_KIND.prop ? 0 : radius * (0.7 + this.rng() * 0.8);
+      entity.speed =
+        kind === ENTITY_KIND.building || kind === ENTITY_KIND.prop ? 0 : speed * (0.65 + this.rng() * 0.7);
+      entity.phase = this.rng() * Math.PI * 2;
+      this.live += 1;
     }
   }
 }

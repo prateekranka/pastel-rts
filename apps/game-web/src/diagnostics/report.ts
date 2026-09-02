@@ -45,8 +45,46 @@ export type PerformanceReport = {
   triangleRange: { min: number; max: number };
   longFrames: LongFrame[];
   pauseEvents: PauseEvent[];
+  benchmark: string;
+  autoCameraMotion: boolean;
   physicalValidationStatus: 'awaiting-physical-validation';
 };
+
+export const REQUIRED_PERFORMANCE_REPORT_KEYS = [
+  'schemaVersion',
+  'commit',
+  'buildTime',
+  'timestamp',
+  'durationMs',
+  'userAgent',
+  'viewport',
+  'drawingBuffer',
+  'devicePixelRatio',
+  'pixelRatioCap',
+  'effectivePixelRatio',
+  'renderer',
+  'rendererBackend',
+  'rendererRequested',
+  'rendererInitError',
+  'quality',
+  'entityCounts',
+  'avgFps',
+  'rollingAvgFps',
+  'onePercentLowFps',
+  'avgFrameTimeMs',
+  'p95FrameTimeMs',
+  'p99FrameTimeMs',
+  'avgSimTimeMs',
+  'maxSimTimeMs',
+  'avgSnapshotLatencyMs',
+  'drawCallRange',
+  'triangleRange',
+  'longFrames',
+  'pauseEvents',
+  'benchmark',
+  'autoCameraMotion',
+  'physicalValidationStatus',
+] as const;
 
 export type SampleInput = {
   frameTimesMs: number[];
@@ -68,6 +106,8 @@ export type SampleInput = {
   rendererRequested: RendererKind;
   rendererInitError: string | null;
   entityCounts: PerformanceReport['entityCounts'];
+  benchmark: string;
+  autoCameraMotion: boolean;
 };
 
 export function buildPerformanceReport(input: SampleInput): PerformanceReport {
@@ -107,6 +147,8 @@ export function buildPerformanceReport(input: SampleInput): PerformanceReport {
     triangleRange: range(input.triangles),
     longFrames: input.longFrames.filter((frame) => frame.frameTimeMs >= LONG_FRAME_MS),
     pauseEvents: input.pauseEvents,
+    benchmark: input.benchmark,
+    autoCameraMotion: input.autoCameraMotion,
     physicalValidationStatus: 'awaiting-physical-validation',
   };
 }

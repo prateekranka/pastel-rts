@@ -14,6 +14,7 @@ export type RendererStats = {
 };
 
 export type RendererAdapter = {
+  canvas: HTMLCanvasElement;
   kind: RendererKind;
   requested: RendererKind;
   backend: string;
@@ -53,14 +54,50 @@ export async function createRendererAdapter(
 ): Promise<RendererAdapter> {
   if (requested === 'webgpu') {
     try {
+      await assertWebGpuAvailable();
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      return createWebGlAdapter(canvas, requested, message);
+    }
+    try {
       return await createWebGpuAdapter(canvas);
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
-      const fallback = createWebGlAdapter(canvas, requested, message);
-      return fallback;
+      const fallbackCanvas = replaceCanvasPreservingIdentity(canvas);
+      try {
+        return createWebGlAdapter(fallbackCanvas, requested, message);
+      } catch (fallbackError) {
+        const replaced = replaceCanvasPreservingIdentity(fallbackCanvas);
+        const extra = fallbackError instanceof Error ? fallbackError.message : String(fallbackError);
+        return createWebGlAdapter(replaced, requested, `${message}; ${extra}`);
+      }
     }
   }
   return createWebGlAdapter(canvas, requested, null);
+}
+
+type GpuLike = {
+  requestAdapter: () => Promise<unknown>;
+};
+
+export async function assertWebGpuAvailable(): Promise<void> {
+  const gpu = 'gpu' in navigator ? (navigator as Navigator & { gpu?: GpuLike }).gpu : undefined;
+  if (!gpu) {
+    throw new Error('WebGPU is not available on this browser/device');
+  }
+  const adapter = await gpu.requestAdapter();
+  if (!adapter) {
+    throw new Error('WebGPU adapter request failed');
+  }
+}
+
+export function replaceCanvasPreservingIdentity(canvas: HTMLCanvasElement): HTMLCanvasElement {
+  const next = document.createElement('canvas');
+  for (const attr of Array.from(canvas.attributes)) {
+    next.setAttribute(attr.name, attr.value);
+  }
+  canvas.replaceWith(next);
+  return next;
 }
 
 function createWebGlAdapter(
@@ -76,13 +113,10 @@ function createWebGlAdapter(
   };
   const renderer = new WebGLRenderer(parameters);
   renderer.autoClear = true;
-  return wrap(renderer, 'webgl', requested, 'webgl', initError);
+  return wrap(renderer, canvas, 'webgl', requested, 'webgl', initError);
 }
 
 async function createWebGpuAdapter(canvas: HTMLCanvasElement): Promise<RendererAdapter> {
-  if (!('gpu' in navigator)) {
-    throw new Error('WebGPU is not available on this browser/device');
-  }
   const mod = await import('three/webgpu');
   const renderer = new mod.WebGPURenderer({
     canvas,
@@ -96,17 +130,19 @@ async function createWebGpuAdapter(canvas: HTMLCanvasElement): Promise<RendererA
       ? String((renderer.backend as { name?: string }).name ?? 'webgpu')
       : 'webgpu';
   const kind: RendererKind = backend.toLowerCase().includes('webgl') ? 'webgl' : 'webgpu';
-  return wrap(renderer as unknown as GpuRenderer, kind, 'webgpu', backend, null);
+  return wrap(renderer as unknown as GpuRenderer, canvas, kind, 'webgpu', backend, null);
 }
 
 function wrap(
   renderer: GpuRenderer,
+  canvas: HTMLCanvasElement,
   kind: RendererKind,
   requested: RendererKind,
   backend: string,
   initError: string | null,
 ): RendererAdapter {
   return {
+    canvas,
     kind,
     requested,
     backend,

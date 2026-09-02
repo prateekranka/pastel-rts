@@ -6,6 +6,7 @@ export class TouchDebugOverlay {
 
   constructor(host: HTMLElement) {
     this.root = document.createElement('div');
+    this.root.className = 'pastel-touch-debug';
     this.root.style.cssText = [
       'position:absolute',
       'left:12px',

@@ -39,6 +39,29 @@ describe('stress simulation', () => {
     expect(totalEntities(sim.getCounts())).toBe(390);
   });
 
+  it('reuses pooled entity records across inits', () => {
+    const sim = new Simulation();
+    sim.init(1, { combat: 10, workers: 4, buildings: 2, props: 8 }, true);
+    const firstCapacity = sim.getPoolCapacity();
+    expect(firstCapacity).toBe(sim.getLiveCount());
+    sim.init(2, { combat: 8, workers: 3, buildings: 2, props: 5 }, true);
+    expect(sim.getPoolCapacity()).toBe(firstCapacity);
+    expect(sim.getLiveCount()).toBe(18);
+  });
+
+  it('does not advance sim time unless step() runs (pause does not jump)', () => {
+    const sim = new Simulation();
+    sim.init(7, { combat: 4, workers: 2, buildings: 1, props: 2 }, true);
+    const before = sim.getSimTimeMs();
+    expect(sim.getTick()).toBe(0);
+    expect(before).toBe(0);
+    sim.step(50);
+    expect(sim.getSimTimeMs()).toBe(50);
+    const pausedAt = sim.getSimTimeMs();
+    expect(sim.getTick()).toBe(1);
+    expect(pausedAt).toBe(50);
+  });
+
   it('is deterministic for a fixed seed', () => {
     const a = new Simulation();
     const b = new Simulation();

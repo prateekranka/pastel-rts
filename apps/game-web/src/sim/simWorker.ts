@@ -13,6 +13,8 @@ const simulation = new Simulation();
 let timer: ReturnType<typeof setInterval> | null = null;
 let running = false;
 let counts: SimCounts = { combat: 0, workers: 0, buildings: 0, props: 0 };
+/** Next snapshot buffer. The previous buffer is transferred to the main thread. */
+let nextPayload: Float32Array | null = null;
 
 function stopTimer(): void {
   if (timer !== null) {
@@ -31,7 +33,12 @@ function tick(): void {
     return;
   }
   const { tickDurationMs } = simulation.step(TICK_MS);
-  const payload = new Float32Array(simulation.requiredPayloadLength(counts));
+  const needed = simulation.requiredPayloadLength(counts);
+  const payload =
+    nextPayload && nextPayload.length === needed && nextPayload.buffer.byteLength === needed * 4
+      ? nextPayload
+      : new Float32Array(needed);
+  nextPayload = new Float32Array(needed);
   simulation.writeSnapshot(payload);
   const message: SimSnapshotMessage = {
     type: 'snapshot',

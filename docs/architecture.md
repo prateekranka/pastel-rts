@@ -43,15 +43,17 @@ Default dense scene:
 ## Simulation and render threads
 
 - Simulation runs at a fixed **20 Hz in a Web Worker**.
-- The main thread renders at display refresh and interpolates compact `Float32Array` snapshots.
+- The main thread renders at display refresh and interpolates compact `Float32Array` snapshots from the previous snapshot toward the current one, clocked from when the current snapshot arrived.
+- Snapshot buffers are pooled in the worker (the in-flight buffer is transferred; the next buffer is preallocated). Simulation entities are pooled across population resets.
 - No SharedArrayBuffer / COOP-COEP is required.
-- Pause on `document.hidden` and on native `pause`; resume does not fast-forward missed ticks.
+- Pause on `document.hidden` and on native `pause`; resume does not fast-forward missed ticks. The first resumed frame is omitted from FPS sampling so a background interval cannot appear as one long frame.
+- Foundry SSE (`EventSource /dev-content/events`) is **dev-only**. Production preview and bundled iOS builds do not open that connection.
 
 ## Rendering
 
 - Fixed isometric `OrthographicCamera` (no yaw/pitch from the player).
 - Instanced sprite-like quads from a generated nearest-neighbour atlas with padding.
-- `WebGLRenderer` is the baseline. `WebGPURenderer` is a developer-selected benchmark (`?renderer=webgpu`); init failure falls back to WebGL and is shown in diagnostics.
+- `WebGLRenderer` is the baseline. `WebGPURenderer` is a developer-selected benchmark (`?renderer=webgpu`); availability is checked before the canvas is claimed. If `init()` still fails after a WebGPU context is taken, the canvas is replaced so WebGL fallback can proceed. Failure is shown in diagnostics.
 - Default DPR cap is 1.5; presets are 1.0, 1.25, 1.5, and native.
 
 ## Content pipeline
@@ -60,4 +62,4 @@ Content Foundry uploads one transparent PNG, auto-detects opaque bounds, authors
 
 ## Performance reporting
 
-Diagnostics record FPS, 1% low, frame-time percentiles, sim tick duration, snapshot latency, draw calls, triangles, visible chunks/units, renderer, DPR, CSS viewport, backing-buffer size, and elapsed time. Soak mode defaults to **20 minutes** (`SOAK_DURATION_MS`). Tests may pass `?soakMs=` for a short run. Reports include `physicalValidationStatus: awaiting-physical-validation` until a device filing replaces that process.
+Diagnostics record FPS, 1% low, frame-time percentiles (p95/p99), sim tick duration, snapshot latency, draw calls, triangles, visible chunks/units, renderer, DPR, CSS viewport, backing-buffer size, and elapsed time. Soak mode defaults to **20 minutes** (`SOAK_DURATION_MS`). HUD-started soaks enable the same automatic camera motion as `?benchmark=20-minute-soak`. Tests may pass `?soakMs=` for a short run. Reports include `physicalValidationStatus: awaiting-physical-validation`, live viewport/DPR/UA/renderer/timestamp, `benchmark`, and `autoCameraMotion`. Full sample series are retained only while a report is recording.

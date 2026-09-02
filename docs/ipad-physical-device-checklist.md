@@ -23,7 +23,7 @@ Status for this repository until a device run is filed: **awaiting physical vali
 - [ ] 20-minute **soak** (`benchmark=20-minute-soak` or HUD “Start 20-min soak”). No continuous finger input; periodic camera motion is automatic.
 - [ ] Camera **pan** (one finger) and **pinch zoom**; confirm 70-percent default and snap-to-stop after pinch.
 - [ ] **Background / resume**: Home out for ~10s, return. Sim should not leap forward.
-- [ ] **Memory-growth observation**: Xcode Memory Gauge or Instruments over the soak. Object/mesh counts must not climb without bound.
+- [ ] **Memory-growth observation**: Xcode Memory Gauge or Instruments over the soak. Object/mesh counts must not climb without bound. Idle diagnostics sample arrays are capped; full series exist only during an active soak/report.
 - [ ] **Saved performance report**: JSON downloaded in Safari/WKWebView or written under the app Documents `performance-reports/` folder. Confirm it contains timestamp, UA, viewport, DPR, renderer.
 - [ ] **Sprite shimmer inspection**: pan/zoom slowly across instanced proxies; nearest-neighbour atlas should stay crisp at zoom stops without crawling seams.
 

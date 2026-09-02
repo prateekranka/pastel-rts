@@ -60,10 +60,13 @@ export class TerrainSystem {
         this.chunks.push(this.createChunk(cx, cz));
       }
     }
+    if (this.chunks.length !== TOTAL_CHUNKS) {
+      throw new Error(`Expected ${TOTAL_CHUNKS} chunk meshes, got ${this.chunks.length}`);
+    }
   }
 
   getTotalChunks(): number {
-    return TOTAL_CHUNKS;
+    return this.chunks.length;
   }
 
   getVisibleChunkCount(): number {

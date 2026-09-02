@@ -14,10 +14,14 @@ Physical iPad status: **awaiting physical validation**. Do not treat desktop FPS
 
 Requires Node **22** (see `.nvmrc`). npm workspaces — do not switch to pnpm, Yarn, Bun, or Turborepo.
 
+Lockfile install (the root install step):
+
 ```bash
 nvm use
 npm ci
 ```
+
+Root scripts: `npm ci` (install), `npm run dev`, `npm run build`, `npm run typecheck`, `npm test`, `npm run test:visual`, `npm run lint`.
 
 ## Game runtime (Three.js)
 
@@ -86,6 +90,8 @@ iOS compile needs macOS + Xcode. Linux cloud agents cannot run `xcodebuild`; CI 
 4. Every report records live viewport, DPR, renderer, user agent, and timestamp. It never hard-codes an iPad model.
 
 Tests may use `?soakMs=2000`. The soak **mode** itself is 20 minutes (`SOAK_DURATION_MS`).
+
+Memory / leak observation: the HUD rolling window is ~5s and idle sample arrays are capped at 10s. Full frame-time series are retained only while a soak/report is recording. On device, use Xcode Memory Gauge or Instruments over the 20-minute soak and confirm object/mesh counts do not climb without bound. `GameApp.dispose()` drops renderer, worker, controls, terrain, entities, and hot-reload GPU resources.
 
 ## Connecting a physical iPad
 

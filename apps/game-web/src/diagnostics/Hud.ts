@@ -9,6 +9,8 @@ export type HudModel = {
   onePercentLowFps: number;
   currentFrameTimeMs: number;
   avgFrameTimeMs: number;
+  p95FrameTimeMs: number;
+  p99FrameTimeMs: number;
   simTickMs: number;
   snapshotLatencyMs: number;
   drawCalls: number;
@@ -115,7 +117,7 @@ export class DiagnosticsHud {
   update(model: HudModel): void {
     this.metrics.textContent = [
       `FPS ${model.currentFps.toFixed(1)}  avg ${model.rollingAvgFps.toFixed(1)}  1% low ${model.onePercentLowFps.toFixed(1)}`,
-      `frame ${model.currentFrameTimeMs.toFixed(2)}ms  avg ${model.avgFrameTimeMs.toFixed(2)}ms`,
+      `frame ${model.currentFrameTimeMs.toFixed(2)}ms  avg ${model.avgFrameTimeMs.toFixed(2)}ms  p95 ${model.p95FrameTimeMs.toFixed(2)}ms  p99 ${model.p99FrameTimeMs.toFixed(2)}ms`,
       `sim ${model.simTickMs.toFixed(2)}ms  snapshot latency ${model.snapshotLatencyMs.toFixed(2)}ms`,
       `draw calls ${model.drawCalls}  tris ${model.triangles}`,
       `chunks ${model.visibleChunks}  units ${model.visibleUnits}  entities ${model.totalEntities}`,

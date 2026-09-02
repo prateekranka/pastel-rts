@@ -18,6 +18,7 @@ struct ContentView: View {
                     Text("Loading battlefield…")
                         .foregroundStyle(Color(red: 0.95, green: 0.90, blue: 0.82))
                 }
+                .safeAreaPadding()
             }
             if let errorMessage {
                 VStack(alignment: .leading, spacing: 12) {
@@ -28,12 +29,14 @@ struct ContentView: View {
                     Button("Retry") {
                         self.errorMessage = nil
                         loading = true
+                        config.loadGeneration += 1
                     }
                 }
                 .padding(24)
                 .background(.ultraThinMaterial)
                 .clipShape(RoundedRectangle(cornerRadius: 16))
                 .padding()
+                .safeAreaPadding()
             }
             VStack {
                 HStack {
@@ -47,6 +50,7 @@ struct ContentView: View {
                             .clipShape(Circle())
                     }
                     .padding()
+                    .safeAreaPadding()
                 }
                 Spacer()
             }

@@ -6,6 +6,7 @@ import {
   type DprPreset,
   type ZoomStopName,
 } from '../config/constants';
+import type { DeveloperConfigurationPayload } from '../bridge/messages';
 import { type SimCounts } from '../sim/types';
 
 export const BENCHMARK_NAMES = [
@@ -151,6 +152,27 @@ export function reloadWithQuery(patch: Record<string, string>): void {
     url.searchParams.set(key, value);
   }
   window.location.assign(url.toString());
+}
+
+/**
+ * Native `setDeveloperConfiguration` always includes the current renderer.
+ * Only reload when a field actually differs from the running config.
+ */
+export function developerConfigQueryPatch(
+  current: RuntimeConfig,
+  payload: DeveloperConfigurationPayload,
+): Record<string, string> | null {
+  const patch: Record<string, string> = {};
+  if (payload.renderer && payload.renderer !== current.renderer) {
+    patch['renderer'] = payload.renderer;
+  }
+  if (payload.benchmark && payload.benchmark !== current.benchmark) {
+    patch['benchmark'] = payload.benchmark;
+  }
+  if (payload.dprPreset !== undefined && String(payload.dprPreset) !== String(current.dprPreset)) {
+    patch['dpr'] = String(payload.dprPreset);
+  }
+  return Object.keys(patch).length > 0 ? patch : null;
 }
 
 export function pixelRatioForPreset(preset: DprPreset, devicePixelRatio: number): number {

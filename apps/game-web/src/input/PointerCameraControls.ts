@@ -63,6 +63,7 @@ export class PointerCameraControls {
     this.bind(window, 'pointercancel', (event) => this.onPointerUp(event as PointerEvent));
     this.bind(canvas, 'wheel', (event) => this.onWheel(event as WheelEvent), { passive: false });
     this.bind(canvas, 'contextmenu', (event) => event.preventDefault());
+    this.bind(canvas, 'selectstart', (event) => event.preventDefault());
     this.bind(canvas, 'dragstart', (event) => event.preventDefault());
     this.bind(canvas, 'gesturestart', (event) => event.preventDefault());
     canvas.style.touchAction = 'none';

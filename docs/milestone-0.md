@@ -35,3 +35,8 @@ The original scaffold (`ae93b6d`) declared an `apps/game-web` workspace and an i
 ## Commands
 
 See the root `README.md` for install, dev, foundry, tests, iOS generation, soak, and bundled vs dev-server flows.
+
+Automated coverage that lands with this milestone:
+
+- Unit: schema, camera/70-percent, zoom stops, stats, report fields, bridge messages, interpolation alpha, entity pooling, chunk layout, terrain dispose, renderer fallback helpers, pointer pinch-lift / Pencil, DPR/benchmark presets.
+- Playwright (strict visual + interaction): pan, wheel zoom, HUD metrics/collapse, touch-debug overlay, WebGPU request path, pause/resume, short soak JSON, Foundry PNG upload → bounds → save to `content/dev-pack`.

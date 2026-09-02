@@ -2,9 +2,9 @@ import { defineConfig } from 'vite';
 
 export default defineConfig({
   base: './',
-  server: {
+  preview: {
     host: true,
-    port: 5174,
+    port: 4174,
     strictPort: true,
     proxy: {
       '/dev-content': {

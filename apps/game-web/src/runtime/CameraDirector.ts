@@ -10,6 +10,10 @@ export class CameraDirector {
     this.enabled = enabled;
   }
 
+  isEnabled(): boolean {
+    return this.enabled;
+  }
+
   reset(): void {
     this.elapsed = 0;
   }

@@ -116,7 +116,7 @@ export class SimClient {
       return count;
     }
     const span = Math.max(TICK_MS, curr.simTimeMs - prev.simTimeMs);
-    const alpha = clamp((renderTimeMs - prev.receivedAtMs) / span, 0, 1);
+    const alpha = interpolationAlpha(renderTimeMs, curr.receivedAtMs, span);
     const a = prev.payload;
     const b = curr.payload;
     for (let i = 0; i < count; i += 1) {
@@ -136,6 +136,15 @@ export class SimClient {
   private post(message: SimControlMessage): void {
     this.worker?.postMessage(message);
   }
+}
+
+/** Alpha 0 = previous snapshot, 1 = current. Clocked from when `curr` arrived. */
+export function interpolationAlpha(
+  renderTimeMs: number,
+  currentReceivedAtMs: number,
+  spanMs: number,
+): number {
+  return clamp((renderTimeMs - currentReceivedAtMs) / Math.max(1, spanMs), 0, 1);
 }
 
 function lerp(a: number, b: number, t: number): number {
