@@ -88,9 +88,11 @@ export class GameApp {
     if (hudRoot instanceof HTMLElement) {
       this.touchDebug = new TouchDebugOverlay(hudRoot);
       this.touchDebug.setVisible(config.touchDebug);
-      this.hud = new DiagnosticsHud(hudRoot);
-      this.hud.syncConfig(config);
-      this.bindHud();
+      if (config.benchmark !== 'visual-capture') {
+        this.hud = new DiagnosticsHud(hudRoot);
+        this.hud.syncConfig(config);
+        this.bindHud();
+      }
     }
 
     this.soak = new SoakController(this, this.tracker, this.bridge);
@@ -147,7 +149,7 @@ export class GameApp {
     this.director.setEnabled(def.autoPan);
     this.director.reset();
     this.ensureBuffer(def.counts);
-    this.sim.setPopulation(config.seed, def.counts, def.concentrate);
+    this.sim.setPopulation(config.seed, def.counts, def.concentrate, def.freezeAnimation);
     this.controls?.setEnabled(!def.autoPan && !def.freezeAnimation);
   }
 

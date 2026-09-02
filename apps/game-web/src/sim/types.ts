@@ -30,6 +30,7 @@ export type SimInitMessage = {
   seed: number;
   counts: SimCounts;
   concentrate: boolean;
+  freezeMotion: boolean;
 };
 
 export type SimControlMessage =
@@ -37,7 +38,7 @@ export type SimControlMessage =
   | { type: 'start' }
   | { type: 'pause' }
   | { type: 'resume' }
-  | { type: 'setCounts'; counts: SimCounts; concentrate: boolean; seed: number }
+  | { type: 'setCounts'; counts: SimCounts; concentrate: boolean; seed: number; freezeMotion: boolean }
   | { type: 'terminate' };
 
 export type SimSnapshotMessage = {

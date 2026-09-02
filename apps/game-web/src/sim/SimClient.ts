@@ -25,7 +25,7 @@ export class SimClient {
   private lastTickDurationMs = 0;
   private paused = false;
 
-  start(seed: number, counts: SimCounts, concentrate: boolean): void {
+  start(seed: number, counts: SimCounts, concentrate: boolean, freezeMotion = false): void {
     this.stop();
     this.worker = new Worker(new URL('./simWorker.ts', import.meta.url), { type: 'module' });
     this.worker.onmessage = (event: MessageEvent<SimSnapshotMessage>) => {
@@ -46,18 +46,18 @@ export class SimClient {
         payload: event.data.payload,
       };
     };
-    this.post({ type: 'init', seed, counts, concentrate });
+    this.post({ type: 'init', seed, counts, concentrate, freezeMotion });
     this.post({ type: 'start' });
   }
 
-  setPopulation(seed: number, counts: SimCounts, concentrate: boolean): void {
+  setPopulation(seed: number, counts: SimCounts, concentrate: boolean, freezeMotion = false): void {
     if (!this.worker) {
-      this.start(seed, counts, concentrate);
+      this.start(seed, counts, concentrate, freezeMotion);
       return;
     }
     this.prev = null;
     this.curr = null;
-    this.post({ type: 'setCounts', seed, counts, concentrate });
+    this.post({ type: 'setCounts', seed, counts, concentrate, freezeMotion });
     if (!this.paused) {
       this.post({ type: 'start' });
     }

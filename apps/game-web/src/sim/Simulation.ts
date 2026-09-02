@@ -33,13 +33,13 @@ export class Simulation {
   private rng: () => number = () => 0.5;
   private cpuSink = 0;
 
-  init(seed: number, counts: SimCounts, concentrate: boolean): void {
+  init(seed: number, counts: SimCounts, concentrate: boolean, freezeMotion = false): void {
     this.rng = createMulberry32(seed >>> 0);
     this.tick = 0;
     this.simTimeMs = 0;
     this.entities = [];
-    this.spawn(counts.combat, ENTITY_KIND.combat, concentrate, 1.7, 0.22);
-    this.spawn(counts.workers, ENTITY_KIND.worker, concentrate, 1.1, 0.28);
+    this.spawn(counts.combat, ENTITY_KIND.combat, concentrate, freezeMotion ? 0 : 1.7, freezeMotion ? 0 : 0.22);
+    this.spawn(counts.workers, ENTITY_KIND.worker, concentrate, freezeMotion ? 0 : 1.1, freezeMotion ? 0 : 0.28);
     this.spawn(counts.buildings, ENTITY_KIND.building, true, 0, 0);
     this.spawn(counts.props, ENTITY_KIND.prop, false, 0, 0);
   }

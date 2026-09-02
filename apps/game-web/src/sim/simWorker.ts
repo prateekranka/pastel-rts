@@ -51,7 +51,7 @@ self.onmessage = (event: MessageEvent<SimControlMessage>) => {
     case 'init':
     case 'setCounts': {
       counts = message.counts;
-      simulation.init(message.seed, message.counts, message.concentrate);
+      simulation.init(message.seed, message.counts, message.concentrate, message.freezeMotion);
       running = false;
       stopTimer();
       break;
