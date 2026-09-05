@@ -90,12 +90,13 @@ export function createRuntimePreviewProjection(
 
   const projectGroundRadius = (x: number, z: number, radius: number): ProjectedGroundRadius => {
     const center = projectWorldPoint(x, 0, z);
-    const xEdge = projectWorldPoint(x + radius * CELL_SIZE, 0, z);
-    const zEdge = projectWorldPoint(x, 0, z + radius * CELL_SIZE);
+    const worldRadius = radius * CELL_SIZE;
+    const worldXEdge = projectWorldPoint(x + worldRadius, 0, z);
+    const worldZEdge = projectWorldPoint(x, 0, z + worldRadius);
     return {
       center,
-      radiusX: Math.max(1, Math.hypot(xEdge.x - center.x, xEdge.y - center.y)),
-      radiusY: Math.max(1, Math.hypot(zEdge.x - center.x, zEdge.y - center.y)),
+      radiusX: Math.hypot(worldXEdge.x - center.x, worldZEdge.x - center.x),
+      radiusY: Math.hypot(worldXEdge.y - center.y, worldZEdge.y - center.y),
     };
   };
 
