@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { seedFor } from '../src/qa/deterministicSeeds';
+import { routeIsolatedContent } from './support/isolated-content';
 
 const LAB_URL = `/?mode=interaction-lab&seed=${String(seedFor('interactionLab'))}&renderer=webgl&dpr=1&zoom=70-percent`;
 
@@ -46,6 +47,7 @@ async function clientPointForFriendlyUnit(
 
 test.describe('interaction lab', () => {
   test.beforeEach(async ({ page }) => {
+    await routeIsolatedContent(page);
     await page.addInitScript(() => {
       Object.defineProperty(window, 'devicePixelRatio', { get: () => 1 });
     });

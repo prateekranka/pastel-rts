@@ -1,8 +1,14 @@
 import { expect, test } from '@playwright/test';
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { routeIsolatedContent } from '../../game-web/e2e/support/isolated-content';
 
 const PACK_DIR = process.env['CONTENT_PACK_DIR'] ?? '/tmp/pastel-foundry-e2e';
+const CONTENT_PORT = process.env['CONTENT_PORT'] ?? '8787';
+
+test.beforeEach(async ({ page }) => {
+  await routeIsolatedContent(page);
+});
 
 /** Minimal 32×32 PNG as base64 */
 const TINY_PNG_BASE64 =
@@ -185,7 +191,7 @@ test.describe('Content server v2 routes', () => {
   });
 
   test('rejects unsafe asset paths', async ({ request }) => {
-    const response = await request.post('http://127.0.0.1:8787/v2/units', {
+    const response = await request.post(`http://127.0.0.1:${CONTENT_PORT}/v2/units`, {
       data: {
         archetype: {
           schemaVersion: 2,
