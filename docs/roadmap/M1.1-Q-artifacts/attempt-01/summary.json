@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "evidence": "M1.1-Q",
+  "status": "failed-before-completion",
+  "startedAt": "2026-09-05T16:57:04.389Z",
+  "finishedAt": "2026-09-05T16:57:04.393Z",
+  "wallClockDurationMs": 4,
+  "measuredSoak": {
+    "warmupMs": 30000,
+    "targetMs": 1200000,
+    "actualMs": null,
+    "completed": false
+  },
+  "fatalError": "mkdirSync is not defined",
+  "blockers": [
+    {
+      "at": "2026-09-05T16:57:04.393Z",
+      "message": "Probe terminated before its planned completion path",
+      "error": "mkdirSync is not defined"
+    }
+  ],
+  "repository": {
+    "path": "/home/bobbyranka/Projects/pastel-rts-m11-soak",
+    "sourceCommit": "8a84af0",
+    "observedHead": "9e88c5a46431ab827a80de0ee5b2dcb1fa4a3e8a",
+    "productEdits": false
+  },
+  "execution": {
+    "probePath": "/tmp/m11-q-replacement-leak-soak.mjs",
+    "model": "gpt-5.6-luna",
+    "provider": "openai-codex",
+    "sessionId": "20260905_221134_e76588",
+    "requestedEffort": "max",
+    "fastMode": false,
+    "delegation": false
+  },
+  "ports": {
+    "game": 30373,
+    "foundry": 30374,
+    "content": 30387
+  },
+  "checkpoints": [],
+  "replacements": [],
+  "browserEvents": {
+    "console": [],
+    "pageErrors": [],
+    "requestFailed": [],
+    "httpErrors": []
+  }
+}

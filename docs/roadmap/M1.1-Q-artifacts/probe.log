@@ -1,0 +1,41 @@
+M1.1-Q probe start 2026-09-05T17:02:26.708Z
+Repository: /home/bobbyranka/Projects/pastel-rts-m11-soak
+Required source: 8a84af0
+Ports: game=30373 foundry=30374 content=30387
+Target URL: http://127.0.0.1:30373/?mode=interaction-lab&content=studio&scenario=interaction-lab-alien-fantasy&seed=42&renderer=webgl&dpr=1&zoom=70-percent
+Owned studio wrapper PID 4083557
+game ready: http://127.0.0.1:30373/
+foundry ready: http://127.0.0.1:30374/
+content ready: http://127.0.0.1:30387/health
+Initial publication revision 3; draft 3; entity fixture 25
+Art status did not settle within 30000 ms; recording the live status and continuing.
+Lab ready at 2026-09-05T17:03:03.119Z; warmup 30000 ms
+Baseline captured at tick 1224; resources={"textures":7,"geometries":17}
+Measured replacement soak start 2026-09-05T17:03:33.968Z; target 1200000 ms
+Art status did not settle within 30000 ms; recording the live status and continuing.
+Replacement 1/12 alternate-gravemark-stalker 4 at soak 121939 ms
+Art status did not settle within 30000 ms; recording the live status and continuing.
+Replacement 2/12 original-sunweaver-scout 5 at soak 212067 ms
+Art status did not settle within 30000 ms; recording the live status and continuing.
+Replacement 3/12 alternate-gravemark-stalker 6 at soak 301675 ms
+Art status did not settle within 30000 ms; recording the live status and continuing.
+Replacement 4/12 original-sunweaver-scout 7 at soak 391825 ms
+Art status did not settle within 30000 ms; recording the live status and continuing.
+Replacement 5/12 alternate-gravemark-stalker 8 at soak 482007 ms
+Art status did not settle within 30000 ms; recording the live status and continuing.
+Replacement 6/12 original-sunweaver-scout 9 at soak 572135 ms
+Art status did not settle within 30000 ms; recording the live status and continuing.
+Replacement 7/12 alternate-gravemark-stalker 10 at soak 661808 ms
+Art status did not settle within 30000 ms; recording the live status and continuing.
+Replacement 8/12 original-sunweaver-scout 11 at soak 751992 ms
+Art status did not settle within 30000 ms; recording the live status and continuing.
+Replacement 9/12 alternate-gravemark-stalker 12 at soak 842131 ms
+Art status did not settle within 30000 ms; recording the live status and continuing.
+Replacement 10/12 original-sunweaver-scout 13 at soak 932116 ms
+Art status did not settle within 30000 ms; recording the live status and continuing.
+Replacement 11/12 alternate-gravemark-stalker 14 at soak 1022062 ms
+Art status did not settle within 30000 ms; recording the live status and continuing.
+Replacement 12/12 original-sunweaver-scout 15 at soak 1112405 ms
+BLOCKER: Runtime browser errors were captured during the soak
+Final captured at measured soak 1210872 ms; runtime errors=1
+M1.1-Q probe end 2026-09-05T17:23:47.222Z blockers=1 fatal=no
