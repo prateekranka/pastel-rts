@@ -1,37 +1,49 @@
 # M1.1 progress
 
-Active scope: M1.1 only. M2–M7 inactive. E1/N1 require separate approval. Numbered roadmap uploads remain unchanged.
+M1.1 only. M2–M7 remain inactive. E1 and N1 need separate approval. No merge or roadmap advancement is authorized.
 
-Coordinator: gpt-6-astra/openai-codex, current CLI requests medium. Workers: explicit gpt-5.6-luna/openai-codex/max, fast OFF. No profile configuration changes or inherited delegation. Request/persisted-metadata limitations are in docs/roadmap/M1.1-routing-addendum.md.
+## Current gate
 
-Integrated checkpoints:
-- Original animated fixtures, deterministic generation, relative production web/iOS packaging and dev:studio.
-- Safe publication foundation A/A2: drafts, revisions, source preservation, references, validation, historical assets, acknowledgements.
-- Foundry D: library and editor workflow, runtime projection preview. D2 fixes projected ground-circle footprint; coordinator reran 9 Foundry tests and game typecheck successfully.
-- Runtime E checkpoint fe1a725 integrated as 6208146. Coordinator ran root typecheck, lint, tests and build on its combined code with A2/D; all passed. E's original smoke captures used an explicit sandbox override and are rejected. No browser acceptance is inferred from that worker report.
+Local functional checks pass. Overall ENGINEERING PASS remains pending current CI and the final independent review receipt. HUMAN DESIGN ACCEPTANCE and PHYSICAL-DEVICE VALIDATION remain pending.
 
-Current validation:
-- Last complete root test run: schema 40, simulation 19, navigation 21, content server 18, game web 76 passed. Foundry is verified separately until lane F wires it into root test.
-- F is integrated at 34fbbb3. Correctly seeded coordinator Foundry/API browser run at 853df6a passed all 9 tests. An earlier empty-pack invocation was invalid for fixture-dependent assertions; correction is in docs/roadmap/M1.1-recovery-evidence.md.
-- Provider recovery was confirmed by actual Luna smoke session 20260905_185350_ad6f16. Existing G/H/I sessions resumed with explicit approved pins after confirming no duplicate workers or owned listeners. No profile or credential changes.
-- Studio I integrated at 4136c5b. Coordinator started combined studio on 25373/25374/25387 with a disposable fixture. All three HTTP endpoints returned200; SIGINT produced exit0 and all owned ports were freed. Duplicate-port invocation failed explicitly with exit1. Walkthrough exists at docs/roadmap/M1.1-WALKTHROUGH.md; bundle section awaits G.
-- G/G2 integrated through809b1cd. Coordinator passed6bundle unit tests and the2fresh browser reproduction/refusal tests. The stronger G2 run issued a real pointer move, observed acceptance and motion, exported a non-empty command log, and matched the actual checksum sequence in a fresh context. Evidence: docs/roadmap/M1.1-G2-coordinator-artifacts.
-- J integrated atf9a80a8. Coordinator ran all9Foundry tests with automatic disposable fixture selection; all passed without an explicit pack path or worker override.
-- Root content:validate, qa:scenario (twice) and qa:bundle passed. Repeated scenario files were byte-identical; receipts are in docs/roadmap/M1.1-final-cli-artifacts.
-- Final combined runtime/browser gate and independent review remain pending. H is correcting the visible diagnostics/minimap overlap as well as testing publication lifecycle. No whole-milestone pass.
-- Existing macOS CI run 33965323173 compiled iOS Simulator successfully at 6308242772c224b20e9a813dd2398c6fa6828b23. Web browser step failed, so overall CI is not passing. Native compile is not simulator launch or physical iPad proof.
-- Linux timing is not iPad/GPU performance proof. An unchanged desktop timing test failed once and passed on rerun; its threshold was not relaxed.
+## Verified implementation
 
-Outstanding engineering work:
-- Verify combined runtime against actual A2/D: published initial load, hot replacement/disposal, SSE reconnect, acknowledgement and rules restart.
-- Fix/verify blocker readback, replay and pause behavior. Preserve simulation/navigation packages.
-- Implement and exercise actual UI bounded bug export/reproduction; CLI JSON-only artifacts do not substitute for that path.
-- Run full focused/integrated browser gates and fresh independent review, document non-coder walkthrough and final artifacts.
+The integrated product source is d23642d. It includes safe draft/publication revisions, exact-version runtime loading, restart acknowledgement for rule changes, original animated fixtures, shared projection previews, Foundry workbench controls, library/dependency/reference workflows, scenario and seed controls, save/load/compare, and real bug-bundle export/reproduction. The framing PNG was reconciled at 9a17c16 after review confirmed only intended G control rows differed. No tolerance was changed.
 
-Publication: draft stacked PR #4, https://github.com/prateekranka/pastel-rts/pull/4, base cursor/milestone-1-interaction-lab-29a7. Git HTTPS credential helper also supports scoped gh calls without config changes. No merge or history rewrite. Checkpoints are pushed; final gate is not claimed.
+Coordinator execution:
 
-Process isolation: do not stop unrelated service on 8787. Coordinator test ports 14373/14374/14387; lane F 20373/20374/20387. E-owned 193xx servers were cleaned up by its owner.
+- All workspace typechecks, configured lint, unit tests and both web builds passed.
+- `ios:sync-web` and validation of its copied content pack passed.
+- Final isolated developer-mode browser run at 9a17c16: 32 passed; one production-only test skipped by mode. No retries.
+- Separate production-preview test, without a content server: one passed.
+- Real pointer movement was accepted, exported as a non-empty command log, and reproduced in a fresh browser context with the exact checksum sequence. Tampered checksums and mismatched historical revisions were refused without changing the scene.
+- Two CLI scenario outputs were byte-identical. Content validation and bug-bundle CLI checks passed.
+- Studio startup returned healthy game, Foundry and content endpoints. SIGINT freed all owned ports. Duplicate ports were refused.
+- Simulation and navigation packages have no diff from prerequisite 6be785f. Numbered uploads have no diff from preserved input commit f88998d.
 
-ENGINEERING PASS: pending.
-HUMAN DESIGN ACCEPTANCE: pending.
-PHYSICAL-DEVICE VALIDATION: pending.
+Evidence directories: docs/roadmap/M1.1-final-isolated-artifacts, M1.1-final-offline-artifacts, M1.1-G2-coordinator-artifacts, M1.1-final-cli-artifacts. Detailed build and preservation receipt: docs/roadmap/M1.1-d23642d-verification.md.
+
+## Remaining engineering work
+
+Remote CI run 33975185566 at 9a17c16 failed because it ran the full developer-workbench suite against production preview. The compiled Foundry origin was 5173, while the harness expected 4173; developer-only controls differed from the framing baseline; studio lifecycle tests were skipped by mode. Luna lane M owns the narrow workflow correction: full developer-mode suite plus a separate real offline-preview check. No test or security gate may be removed.
+
+The independent K reviewer initially mistook Playwright's deliberate magenta diagnostics mask for a render defect. The real unmasked screenshot has the teal diagnostics panel. K is checking this provenance and writing the final independent verdict. Human design acceptance is not delegated.
+
+An unchanged native pause timing assertion failed once while separate SwiftShader browser runs overlapped. It passed in the complete isolated rerun, without threshold or source changes. The failure evidence remains under docs/roadmap/M1.1-native-pause-failure. Desktop software-renderer results do not prove iPad timing.
+
+## Routing and publication
+
+Coordinator: gpt-6-astra/openai-codex, CLI-requested medium, fast off. Workers: explicitly pinned gpt-5.6-luna/openai-codex, requested max, fast off. Recovery smoke session 20260905_185350_ad6f16 succeeded. No provider, profile, credential or security configuration was changed. Session metadata is retained where available; unavailable raw wire fields are not claimed.
+
+Draft milestone PR: https://github.com/prateekranka/pastel-rts/pull/4
+Base remains the unmerged M1 prerequisite PR #3. No existing PR was merged.
+
+Built web archive:
+/home/bobbyranka/Projects/pastel-rts/artifacts/m1.1/pastel-rts-m1.1-d23642d-web.tar.gz
+This contains built game and Foundry static files. Studio editing still needs the source content server. It is not an iOS binary.
+
+Walkthrough: docs/roadmap/M1.1-WALKTHROUGH.md.
+
+Existing macOS CI has compiled the simulator target. Linux cannot provide an Xcode simulator launch or physical iPad validation. Final native CI status still needs exact-current-run confirmation. No physical performance, human design pass, or whole-milestone completion is claimed.
+
+All user work, retained lane worktrees and remaining uncommitted evidence stay in place. No later milestone or optional experiment was started.

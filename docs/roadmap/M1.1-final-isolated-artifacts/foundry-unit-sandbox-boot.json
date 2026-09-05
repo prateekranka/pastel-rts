@@ -1,0 +1,188 @@
+{
+  "schemaVersion": 1,
+  "label": "unit-sandbox",
+  "stage": "boot",
+  "project": "foundry",
+  "testTitle": "M1.1-C Foundry imports unit sheets, saves content, and launches sandbox",
+  "screenshotPath": "/home/bobbyranka/Projects/pastel-rts/docs/roadmap/M1.1-final-isolated-artifacts/foundry-unit-sandbox-boot.png",
+  "capturedAt": "2026-09-05T15:44:31.999Z",
+  "runtime": {
+    "url": "http://127.0.0.1:14373/?mode=interaction-lab&content=studio&seed=1&scenario=interaction-lab-alien-fantasy&revision=11&touchDebug=1&spawnUnit=m11c-unit-1788623066546",
+    "title": "Pastel RTS — Milestone 0",
+    "canvasCount": 2,
+    "canvases": [
+      {
+        "width": 1280,
+        "height": 800,
+        "cssWidth": 1280,
+        "cssHeight": 800
+      },
+      {
+        "width": 160,
+        "height": 160,
+        "cssWidth": 130,
+        "cssHeight": 130
+      }
+    ],
+    "webglRenderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+    "bodyText": "0\nFormation: none\nFormation: line\nFormation: box\nSelect\nStop\ncontent studio  revision 11\nhash 51816ec1…96e4  rules e872243e…6a7c\nscenario interaction-lab-alien-fantasy  seed 1\nlab-skirmish\ninteraction-lab-alien-fantasy\nm11-fixture-gallery\nLoad scenario\nApply seed\nE2E Scout\nFoundry Proxy\nM1.1-C Sheet Unit\nSunweaver Infantry\nSunweaver Scout H Pinned Event 1788623055604\nSunweaver Walker (Proxy)\nSpawn\nSunweaver Sanctum\nPlace\nNav debug\nReset match\nExport save\nImport save\nReplay check\nExport bug bundle\nReproduce bug bundle\nExport a JSON-only bug bundle. On a fresh lab page, choose the file with Reproduce bug bundle. The check uses the same scenario, seed, commands, and checksum sequence.\nSelect revision\nRestart pending\nAcknowledge\ngesture: idle\nlookAt: 22.00, 22.00\nzoom: 44.0 cells (70-percent)\npan Δ: 0.000, 0.000\npinch scale: 1.000\npointers (0):\n  none\nDiagnostics\nCollapse\nFPS 10.0  avg 7.6  1% low 3.2\nframe 99.90ms  avg 131.48ms  p95 203.31ms  p99 294.02ms\nsim 0.90ms  nav-debug 0.00ms  snapshot latency 964.50ms\ndraw calls 26  tris 4856  textures 9  geometries 19\nchunks 9  units 26  entities 26\nrenderer webgl (webgl) requested webgl\ninit error: none\nDPR cap 1.5  effective 1.00\nviewport 1280×800  buffer 1280×800\nelapsed 2.4s  soak idle\ncontent revision 11  phase ready\ncontent manifest 570d87c10bbf2a42198c2685eae2f6ac5817ed95dab98aeae6fff84aad24c08a\ncontent visual 9aa7d2ce2eab0214120e7bf7a83fecf5dc103274791e0be68a5df383b22406c8\ncontent rules e872243e43005699d3a2b8b1ffa0a872f273199f81ae8f4a0b17491af2f06a7c\ncontent assets /dev-content/v2/revisions/11/assets/\ncontent error: none\nRenderer\nWebGL\nWebGPU\nBenchmark\nidle-base\nnormal-midgame\ndense-battle\ncamera-pan-stress\nmaximum-population\n2x-stress\n20-minute-soak\nvisual-capture\nDPR\n1\n1.25\n1.5\nnative\nTouch debug\nHaptic\nDownload report\nStart 20-min soak"
+  },
+  "metadata": {
+    "url": "http://127.0.0.1:14373/?mode=interaction-lab&content=studio&seed=1&scenario=interaction-lab-alien-fantasy&revision=11&touchDebug=1&spawnUnit=m11c-unit-1788623066546",
+    "spawnResults": [
+      {
+        "status": "accepted"
+      },
+      {
+        "status": "accepted"
+      },
+      {
+        "status": "accepted"
+      },
+      {
+        "status": "accepted"
+      },
+      {
+        "status": "accepted"
+      },
+      {
+        "status": "accepted"
+      },
+      {
+        "status": "accepted"
+      },
+      {
+        "status": "accepted"
+      },
+      {
+        "status": "accepted"
+      },
+      {
+        "status": "accepted"
+      },
+      {
+        "status": "accepted"
+      },
+      {
+        "status": "accepted"
+      },
+      {
+        "status": "accepted"
+      },
+      {
+        "status": "accepted"
+      },
+      {
+        "status": "accepted"
+      },
+      {
+        "status": "accepted"
+      },
+      {
+        "status": "accepted"
+      },
+      {
+        "status": "accepted"
+      },
+      {
+        "status": "accepted"
+      },
+      {
+        "status": "accepted"
+      },
+      {
+        "status": "accepted"
+      },
+      {
+        "status": "accepted"
+      },
+      {
+        "status": "accepted"
+      },
+      {
+        "status": "accepted"
+      },
+      {
+        "status": "accepted"
+      },
+      {
+        "status": "accepted"
+      }
+    ],
+    "note": "The sandbox boot is verified separately from whether the runtime pack acknowledges the newly saved Foundry ID."
+  },
+  "browserDiagnostics": [
+    {
+      "kind": "console",
+      "type": "debug",
+      "text": "[vite] connecting...",
+      "location": {
+        "url": "http://127.0.0.1:14373/@vite/client",
+        "line": 788,
+        "column": 8,
+        "lineNumber": 788,
+        "columnNumber": 8
+      }
+    },
+    {
+      "kind": "console",
+      "type": "debug",
+      "text": "[vite] connected.",
+      "location": {
+        "url": "http://127.0.0.1:14373/@vite/client",
+        "line": 911,
+        "column": 14,
+        "lineNumber": 911,
+        "columnNumber": 14
+      }
+    },
+    {
+      "kind": "console",
+      "type": "warning",
+      "text": "[.WebGL-0x1f7400146000]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+      "location": {
+        "url": "http://127.0.0.1:14373/?mode=interaction-lab&content=studio&seed=1&scenario=interaction-lab-alien-fantasy&revision=11&touchDebug=1&spawnUnit=m11c-unit-1788623066546",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "kind": "console",
+      "type": "warning",
+      "text": "[.WebGL-0x1f7400146000]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+      "location": {
+        "url": "http://127.0.0.1:14373/?mode=interaction-lab&content=studio&seed=1&scenario=interaction-lab-alien-fantasy&revision=11&touchDebug=1&spawnUnit=m11c-unit-1788623066546",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "kind": "console",
+      "type": "warning",
+      "text": "[.WebGL-0x1f7400146000]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+      "location": {
+        "url": "http://127.0.0.1:14373/?mode=interaction-lab&content=studio&seed=1&scenario=interaction-lab-alien-fantasy&revision=11&touchDebug=1&spawnUnit=m11c-unit-1788623066546",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "kind": "console",
+      "type": "warning",
+      "text": "[.WebGL-0x1f7400146000]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)",
+      "location": {
+        "url": "http://127.0.0.1:14373/?mode=interaction-lab&content=studio&seed=1&scenario=interaction-lab-alien-fantasy&revision=11&touchDebug=1&spawnUnit=m11c-unit-1788623066546",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    }
+  ]
+}
