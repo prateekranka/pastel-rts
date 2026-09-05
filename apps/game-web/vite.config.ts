@@ -1,9 +1,9 @@
-import { cpSync, createReadStream, existsSync, mkdirSync, statSync } from 'node:fs';
+import { cpSync, createReadStream, existsSync, mkdirSync, rmSync, statSync } from 'node:fs';
 import { dirname, extname, join, normalize, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { execSync } from 'node:child_process';
 import type { IncomingMessage, ServerResponse } from 'node:http';
-import { defineConfig, type Plugin, type PreviewServer, type ViteDevServer } from 'vite';
+import { defineConfig, type Plugin, type ViteDevServer } from 'vite';
 
 function gitCommit(): string {
   try {
@@ -14,8 +14,12 @@ function gitCommit(): string {
 }
 
 const gameWebRoot = dirname(fileURLToPath(import.meta.url));
-const packV2Root = resolve(gameWebRoot, '../../content/dev-pack-v2');
+const packV2Root = resolve(process.env['PACK_V2_DIR'] ?? resolve(gameWebRoot, '../../content/dev-pack-v2'));
 const PACK_PREFIX = '/content/dev-pack-v2';
+const contentPort = Number(process.env['CONTENT_PORT'] ?? 8787);
+const gamePort = Number(process.env['GAME_PORT'] ?? 5173);
+const gameHost = process.env['GAME_HOST'] ?? '127.0.0.1';
+const previewPort = Number(process.env['PREVIEW_PORT'] ?? 4173);
 
 const MIME: Record<string, string> = {
   '.json': 'application/json; charset=utf-8',
@@ -46,7 +50,12 @@ function servePackV2(req: IncomingMessage, res: ServerResponse, next: () => void
 }
 
 function copyPackV2ToDist(outDir: string): void {
-  const dest = join(outDir, 'content/dev-pack-v2');
+  const resolvedOutDir = resolve(outDir);
+  if (!existsSync(join(packV2Root, 'pack.json'))) {
+    throw new Error(`Missing Pack v2 source at ${join(packV2Root, 'pack.json')}`);
+  }
+  const dest = join(resolvedOutDir, 'content/dev-pack-v2');
+  rmSync(dest, { recursive: true, force: true });
   mkdirSync(dest, { recursive: true });
   cpSync(packV2Root, dest, { recursive: true });
 }
@@ -55,9 +64,6 @@ function packV2Plugin(): Plugin {
   return {
     name: 'pastel-pack-v2',
     configureServer(server: ViteDevServer) {
-      server.middlewares.use(servePackV2);
-    },
-    configurePreviewServer(server: PreviewServer) {
       server.middlewares.use(servePackV2);
     },
     writeBundle(options) {
@@ -76,27 +82,27 @@ export default defineConfig({
     __APP_BUILD_TIME__: JSON.stringify(new Date().toISOString()),
   },
   server: {
-    host: true,
-    port: 5173,
+    host: gameHost,
+    port: gamePort,
     strictPort: true,
     fs: {
       allow: [resolve(gameWebRoot, '../..')],
     },
     proxy: {
       '/dev-content': {
-        target: 'http://127.0.0.1:8787',
+        target: `http://127.0.0.1:${contentPort}`,
         rewrite: (path) => path.replace(/^\/dev-content/, ''),
       },
       '/dev-content-ws': {
-        target: 'ws://127.0.0.1:8787',
+        target: `ws://127.0.0.1:${contentPort}`,
         ws: true,
         rewrite: (path) => path.replace(/^\/dev-content-ws/, '/ws'),
       },
     },
   },
   preview: {
-    host: true,
-    port: 4173,
+    host: gameHost,
+    port: previewPort,
     strictPort: true,
   },
   worker: {

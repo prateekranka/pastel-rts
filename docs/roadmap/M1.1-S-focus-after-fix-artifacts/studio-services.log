@@ -1,0 +1,30 @@
+[content] > pastel-rts@0.0.0 dev:content
+[content] > npm run start --workspace @pastel-rts/content-server
+[foundry] > @pastel-rts/foundry@0.0.0 dev
+[foundry] > vite --host --port 5174 --strictPort --config /home/bobbyranka/Projects/pastel-rts-m11-texture-lifetime/scripts/studio-foundry.vite.mjs --host 127.0.0.1 --port 30374 --strictPort
+[game] > @pastel-rts/game-web@0.0.0 dev
+[game] > vite --host --host 127.0.0.1 --port 30373 --strictPort
+[content] > @pastel-rts/content-server@0.0.0 start
+[content] > tsx src/server.ts
+[content] Content server listening on http://127.0.0.1:30387
+[content] Writing packs to /tmp/pastel-rts-m11-q-tnyY7S/content-pack
+[foundry]   VITE v6.4.3  ready in 2872 ms
+[foundry]   ➜  Local:   http://127.0.0.1:30374/
+[game]   VITE v6.4.3  ready in 2838 ms
+[game]   ➜  Local:   http://127.0.0.1:30373/
+Studio ready (loopback only)
+  Studio game:       http://127.0.0.1:30373/?mode=interaction-lab&content=studio
+  Bundled/offline:   http://127.0.0.1:30373/?mode=interaction-lab
+  Foundry:           http://127.0.0.1:30374/
+  Content:           http://127.0.0.1:30387/health
+  Fixture pack:      http://127.0.0.1:30373/content/dev-pack-v2/pack.json
+  Pack dir: /tmp/pastel-rts-m11-q-tnyY7S/content-pack
+Press Ctrl-C to stop the three owned services.
+Studio shutdown requested. Stopping owned services.
+[content] npm error Lifecycle script `start` failed with error:
+[content] npm error code 143
+[content] npm error path /home/bobbyranka/Projects/pastel-rts-m11-texture-lifetime/tools/content-server
+[content] npm error workspace @pastel-rts/content-server@0.0.0
+[content] npm error location /home/bobbyranka/Projects/pastel-rts-m11-texture-lifetime/tools/content-server
+[content] npm error command failed
+[content] npm error command sh -c tsx src/server.ts

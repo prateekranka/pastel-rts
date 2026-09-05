@@ -1,5 +1,17 @@
+import {
+  runtimeContentFromBundle,
+  type ContentClientStatus,
+  type ContentInstallReason,
+  type LoadedRuntimeContent,
+} from '../content/PublishedContentClient';
 import type { Scene } from 'three';
-import type { CommandResult, MapDef, MoveFormation, MoveFormationKind, PackV2 } from '@pastel-rts/content-schema';
+import type {
+  CommandResult,
+  MapDef,
+  MoveFormation,
+  MoveFormationKind,
+  PackV2,
+} from '@pastel-rts/content-schema';
 import { NavigationService } from '@pastel-rts/navigation';
 import { runSimulationReplay } from '@pastel-rts/simulation';
 import { MatchRuntime } from '../app/MatchRuntime';
@@ -16,6 +28,15 @@ import { isMatchUiTarget } from '../ui/touchTargets';
 import { BuildingRenderSystem } from '../buildings/BuildingRenderSystem';
 import { validateBuildingPlacement } from '../buildings/placementValidation';
 import { DebugOverlayState } from '../qa/DebugOverlayState';
+import {
+  BUG_BUNDLE_LIMITS,
+  downloadBugBundle,
+  exportBugBundle as buildBugBundle,
+  importAndReproduceBugBundle,
+  type BugBundle,
+  type BugBundleReplayResult,
+  type BugBundleRuntime,
+} from '../qa/bugBundle';
 import { seedFor } from '../qa/deterministicSeeds';
 import { EntityRegistry } from './EntityRegistry';
 import { InteractionFeedback } from './InteractionFeedback';
@@ -24,7 +45,7 @@ import { ScenarioController } from './ScenarioController';
 import { UnitRenderSystem } from './UnitRenderSystem';
 import { BuildingPlacementController } from './placement/BuildingPlacementController';
 import { CommandRecorder, ReplayInspector } from './replay/CommandRecorder';
-import { SpawnPalette, BuildPalette } from './palettes/SpawnPalette';
+import { SpawnPalette, BuildPalette, refreshPaletteOptions } from './palettes/SpawnPalette';
 import { alienFantasyProtectedCells, INTERACTION_LAB_ALIEN_FANTASY_ID } from './mapPresets';
 import {
   entityIdKey,
@@ -43,6 +64,11 @@ export type InteractionLabOptions = {
   cameraControls: PointerCameraControls;
   pack: PackV2;
   packBaseUrl?: string;
+  content?: LoadedRuntimeContent;
+  contentStatus?: () => ContentClientStatus | null;
+  onSelectRevision?: (revision: string) => Promise<void>;
+  onRestartRevision?: () => Promise<void>;
+  onAcknowledge?: () => Promise<void>;
   hudRoot?: HTMLElement;
   seed?: number;
   scenarioId?: string;
@@ -75,8 +101,26 @@ export type InteractionLab = {
   tick: () => void;
   dispose: () => void;
   loadScenario: (scenarioId: string) => Promise<void>;
+  applyContent: (content: LoadedRuntimeContent, reason?: ContentInstallReason) => Promise<void>;
+  getContent: () => LoadedRuntimeContent;
   getPickableEntities: () => readonly PickableEntity[];
+  getDiagnostics: () => InteractionLabDiagnostics;
+  exportBugBundle: () => BugBundle;
+  importBugBundle: (value: unknown) => Promise<BugBundleReplayResult>;
   isReady: () => boolean;
+};
+
+export type InteractionLabDiagnostics = {
+  content: LoadedRuntimeContent['identity'];
+  scenarioId: string | null;
+  seed: number;
+  tick: number;
+  entityCount: number;
+  commandCount: number;
+  checksumCount: number;
+  missingUnitAssets: number;
+  missingBuildingAssets: number;
+  error: string | null;
 };
 
 function isInteractionLabMode(search: string): boolean {
@@ -97,7 +141,9 @@ function hapticStyleToReason(style: 'light' | 'medium' | 'heavy'): InteractionLa
 /** Factory for Milestone 1 interaction sandbox — GameApp calls with one line. */
 export function createInteractionLab(options: InteractionLabOptions): InteractionLab {
   const seed = options.seed ?? seedFor('interactionLab');
-  const packBaseUrl = options.packBaseUrl ?? './content/dev-pack-v2/';
+  let activePack = options.pack;
+  let activePackBaseUrl = options.packBaseUrl ?? './content/dev-pack-v2/';
+  let activeContent = options.content ?? runtimeContentFromBundle(activePack, activePackBaseUrl);
   const registry = new EntityRegistry();
   const selection = new SelectionController();
   const hitTest = new HitTestService();
@@ -111,6 +157,7 @@ export function createInteractionLab(options: InteractionLabOptions): Interactio
   let formationKind: MoveFormationKind = 'none';
   let selectModeActive = false;
   let readyResolved = false;
+  let labDisposed = false;
   let resolveReady: () => void = () => undefined;
   const ready = new Promise<void>((resolve) => {
     resolveReady = resolve;
@@ -121,13 +168,13 @@ export function createInteractionLab(options: InteractionLabOptions): Interactio
 
   const units = new UnitRenderSystem({
     scene: options.scene,
-    pack: options.pack,
-    packBaseUrl,
+    pack: activePack,
+    packBaseUrl: activePackBaseUrl,
   });
   const buildings = new BuildingRenderSystem({
     scene: options.scene,
-    pack: options.pack,
-    packBaseUrl,
+    pack: activePack,
+    packBaseUrl: activePackBaseUrl,
   });
   const debugOverlays = new DebugOverlayState(DEFAULT_DEBUG_OVERLAYS);
   const navDebug = new NavigationDebugRenderer(options.scene, debugOverlays.getFlags());
@@ -139,7 +186,7 @@ export function createInteractionLab(options: InteractionLabOptions): Interactio
     originCell: { cx: number; cz: number },
     blocked: boolean,
   ): void {
-    const archetype = options.pack.buildings.find((building) => building.id === archetypeId);
+    const archetype = activePack.buildings.find((building) => building.id === archetypeId);
     if (!archetype) {
       return;
     }
@@ -170,20 +217,21 @@ export function createInteractionLab(options: InteractionLabOptions): Interactio
 
   function handleCommandResult(result: CommandResult): void {
     recorder.onResult(result);
-    if (result.status === 'accepted' && result.spawnedId) {
-      const pending = pendingSpawns.get(result.commandId);
-      if (pending) {
-        registry.set(result.spawnedId, pending);
-        if (pending.kind === 'unit') {
-          units.registerEntityArchetype(entityIdKey(result.spawnedId), pending.archetypeId);
-        } else {
-          buildings.registerEntityArchetype(entityIdKey(result.spawnedId), pending.archetypeId);
-          if (pending.originCell) {
-            applyPreviewOccupancy(pending.archetypeId, pending.originCell, true);
-          }
+    scenario.recordCommandResult(result);
+    const pending = pendingSpawns.get(result.commandId);
+    if (result.status === 'accepted' && result.spawnedId && pending) {
+      registry.set(result.spawnedId, pending);
+      if (pending.kind === 'unit') {
+        units.registerEntityArchetype(entityIdKey(result.spawnedId), pending.archetypeId);
+      } else {
+        buildings.registerEntityArchetype(entityIdKey(result.spawnedId), pending.archetypeId);
+        if (pending.originCell) {
+          applyPreviewOccupancy(pending.archetypeId, pending.originCell, true);
         }
-        pendingSpawns.delete(result.commandId);
       }
+    }
+    if (pending) {
+      pendingSpawns.delete(result.commandId);
     }
   }
 
@@ -225,6 +273,7 @@ export function createInteractionLab(options: InteractionLabOptions): Interactio
     commandLog?: import('@pastel-rts/content-schema').CommandEnvelopeV1[];
     replayToTick?: number;
   }): void => {
+    activePack = params.pack;
     registry.clear();
     pendingSpawns.clear();
     selection.clear();
@@ -253,17 +302,25 @@ export function createInteractionLab(options: InteractionLabOptions): Interactio
   };
 
   const scenario = new ScenarioController({
-    pack: options.pack,
+    pack: activePack,
+    packBaseUrl: activePackBaseUrl,
+    contentIdentity: activeContent.identity,
     loadScenarioJson:
       options.loadScenarioJson ??
       (async (path) => {
-        const response = await fetch(`${packBaseUrl}${path}`);
+        const response = await fetch(`${activePackBaseUrl}${path}`);
+        if (!response.ok) {
+          throw new Error(`Scenario asset failed to load (${String(response.status)})`);
+        }
         return response.json() as Promise<unknown>;
       }),
     loadMapJson:
       options.loadMapJson ??
       (async (path) => {
-        const response = await fetch(`${packBaseUrl}${path}`);
+        const response = await fetch(`${activePackBaseUrl}${path}`);
+        if (!response.ok) {
+          throw new Error(`Map asset failed to load (${String(response.status)})`);
+        }
         return response.json() as Promise<unknown>;
       }),
     onInitLab: (params) => initRuntime(params),
@@ -275,11 +332,11 @@ export function createInteractionLab(options: InteractionLabOptions): Interactio
       const current = scenario.getCurrentScenario();
       const map = scenario.getCurrentMap();
       return runSimulationReplay({
-        pack: options.pack,
+        pack: activePack,
         navFactory: () => new NavigationService(),
         commands,
         totalTicks,
-        simulationConfig: { seed },
+        simulationConfig: { seed: scenario.getSeed() },
         ...(current ? { scenario: current } : {}),
         ...(map ? { map } : {}),
       }).checksums;
@@ -292,7 +349,7 @@ export function createInteractionLab(options: InteractionLabOptions): Interactio
 
   const placement = new BuildingPlacementController({
     scene: options.scene,
-    pack: options.pack,
+    pack: activePack,
     onPlace: (archetypeId, originCell) => {
       commandClient.issuePlaceBuilding({
         archetypeId,
@@ -304,7 +361,7 @@ export function createInteractionLab(options: InteractionLabOptions): Interactio
     },
     validate: (archetypeId, originCell) =>
       validateBuildingPlacement({
-        pack: options.pack,
+        pack: activePack,
         nav: previewNav,
         archetypeId,
         originCell,
@@ -313,12 +370,17 @@ export function createInteractionLab(options: InteractionLabOptions): Interactio
   });
 
   const hydrateFromSnapshot = (count: number): void => {
+    const liveIds = [] as Array<import('@pastel-rts/content-schema').EntityId>;
     for (let index = 0; index < count; index += 1) {
       const parsed = parseSnapshotEntity(buffer, index);
-      if (parsed.id.generation === 0 || registry.get(parsed.id)) {
+      if (parsed.id.generation === 0) {
         continue;
       }
-      const archetypeId = resolveArchetypeId(options.pack, parsed.kind, parsed.archetypeIndex);
+      liveIds.push(parsed.id);
+      if (registry.get(parsed.id)) {
+        continue;
+      }
+      const archetypeId = resolveArchetypeId(activePack, parsed.kind, parsed.archetypeIndex);
       if (!archetypeId) {
         continue;
       }
@@ -328,6 +390,10 @@ export function createInteractionLab(options: InteractionLabOptions): Interactio
       } else {
         buildings.registerEntityArchetype(entityIdKey(parsed.id), archetypeId);
       }
+    }
+    for (const key of registry.reconcile(liveIds)) {
+      units.unregisterEntity(key);
+      buildings.unregisterEntity(key);
     }
   };
 
@@ -341,14 +407,20 @@ export function createInteractionLab(options: InteractionLabOptions): Interactio
       }
       let record = registry.get(parsed.id);
       if (!record) {
-        const archetypeId = resolveArchetypeId(options.pack, parsed.kind, parsed.archetypeIndex);
+        const archetypeId = resolveArchetypeId(activePack, parsed.kind, parsed.archetypeIndex);
         if (!archetypeId) {
           continue;
         }
         record = { archetypeId, kind: parsed.kind };
+        registry.set(parsed.id, record);
+        if (record.kind === 'unit') {
+          units.registerEntityArchetype(entityIdKey(parsed.id), record.archetypeId);
+        } else {
+          buildings.registerEntityArchetype(entityIdKey(parsed.id), record.archetypeId);
+        }
       }
-      const unitArchetype = options.pack.units.find((unit) => unit.id === record.archetypeId);
-      const buildingArchetype = options.pack.buildings.find(
+      const unitArchetype = activePack.units.find((unit) => unit.id === record.archetypeId);
+      const buildingArchetype = activePack.buildings.find(
         (building) => building.id === record.archetypeId,
       );
       const radius =
@@ -359,6 +431,67 @@ export function createInteractionLab(options: InteractionLabOptions): Interactio
       entities.push(snapshotToPickable(parsed, record.archetypeId, radius, worldHeight));
     }
     return entities;
+  };
+
+  const getBugRuntime = (): BugBundleRuntime => {
+    const requestedRenderer = new URLSearchParams(
+      typeof window === 'undefined' ? '' : window.location.search,
+    ).get('renderer');
+    const renderer = requestedRenderer === 'webgpu' ? 'webgpu' : 'webgl';
+    const width = Math.max(1, Math.round(options.canvas.clientWidth || options.canvas.width || 1));
+    const height = Math.max(1, Math.round(options.canvas.clientHeight || options.canvas.height || 1));
+    const dpr = typeof window !== 'undefined' && Number.isFinite(window.devicePixelRatio)
+      ? window.devicePixelRatio
+      : 1;
+    return { renderer, viewport: { width, height }, dpr, mode: 'interaction-lab' };
+  };
+
+  const getBugDiagnostics = (): Record<string, unknown> => {
+    const unitArt = units.getArtDiagnostics();
+    const buildingArt = buildings.getArtDiagnostics();
+    const currentScenario = scenario.getCurrentScenario();
+    const checksums = scenario.getChecksums();
+    return {
+      activeRevision: activeContent.identity.revision,
+      contentHash: activeContent.identity.contentHash,
+      simulationRulesHash: activeContent.identity.simulationRulesHash,
+      scenarioId: currentScenario?.id ?? 'none',
+      seed: scenario.getSeed(),
+      tick: runtime.getLatestTick(),
+      entityCount: runtime.getEntityCount(),
+      commandCount: scenario.getCommandLog().length,
+      checksumCount: checksums.length,
+      checksum: checksums[checksums.length - 1]?.hash ?? 0,
+      missingUnitAssets: unitArt.assets.filter((asset) => asset.state === 'missing').length,
+      missingBuildingAssets: buildingArt.filter((asset) => asset.state === 'missing').length,
+    };
+  };
+
+  const exportCurrentBugBundle = (): BugBundle => {
+    scenario.setReplayToTick(runtime.getLatestTick());
+    return buildBugBundle({
+      pack: activePack,
+      save: scenario.exportSaveDocument(),
+      runtime: getBugRuntime(),
+      diagnostics: getBugDiagnostics(),
+    });
+  };
+
+  const importCurrentBugBundle = async (value: unknown): Promise<BugBundleReplayResult> => {
+    const result = importAndReproduceBugBundle(value, {
+      getRuntimeContent: () => ({
+        pack: activePack,
+        identity: { ...activeContent.identity },
+        scenario: scenario.getCurrentScenario(),
+        map: scenario.getCurrentMap(),
+      }),
+      exportSave: () => scenario.exportSaveDocument(),
+      importSave: (save) => scenario.importSaveDocument(save),
+    });
+    replay.setRecorded([...result.bundle.replay.commands], [...result.bundle.replay.checksums]);
+    contentError = null;
+    refreshTools();
+    return result;
   };
 
   const getFormation = (): MoveFormation | undefined => {
@@ -400,8 +533,79 @@ export function createInteractionLab(options: InteractionLabOptions): Interactio
   let matchHud: MatchHud | null = null;
   let minimap: Minimap | null = null;
   let toolsRoot: HTMLDivElement | null = null;
-  const spawnPalette = new SpawnPalette(options.pack, 'sunweaver');
-  const buildPalette = new BuildPalette(options.pack, 'sunweaver');
+  const spawnPalette = new SpawnPalette(activePack, 'sunweaver');
+  const buildPalette = new BuildPalette(activePack, 'sunweaver');
+  let contentError: string | null = null;
+  let refreshTools = (): void => undefined;
+  let nextToolsRefreshAt = 0;
+
+  const applyContent = async (
+    content: LoadedRuntimeContent,
+    reason: ContentInstallReason = 'refresh',
+  ): Promise<void> => {
+    if (labDisposed) {
+      throw new Error('Interaction lab is disposed');
+    }
+    const previous = activeContent;
+    const previousPack = activePack;
+    const previousBaseUrl = activePackBaseUrl;
+    try {
+      activePack = content.pack;
+      activePackBaseUrl = content.assetBaseUrl;
+      if (reason === 'restart') {
+        scenario.setContent(content);
+        await scenario.reloadCurrentScenario();
+      } else {
+        scenario.setContent(content);
+      }
+      if (labDisposed) {
+        throw new Error('Interaction lab is disposed');
+      }
+      activeContent = content;
+      activePack = content.pack;
+      activePackBaseUrl = content.assetBaseUrl;
+      units.hotReload(content.pack, content.assetBaseUrl);
+      buildings.hotReload(content.pack, content.assetBaseUrl);
+      spawnPalette.setPack(content.pack);
+      buildPalette.setPack(content.pack);
+      placement.setPack(content.pack);
+      resetPreviewOccupancy(scenario.getCurrentMap() ?? undefined, scenario.getCurrentScenario() ?? undefined);
+      contentError = null;
+      refreshTools();
+    } catch (error) {
+      contentError = error instanceof Error ? error.message : String(error);
+      // Candidate replacement is transactional. Restore the last good visual
+      // and content lookup state. A restart candidate may already have reinit'd
+      // the worker, so reload the prior immutable scenario as well.
+      try {
+        scenario.setContent(previous);
+        activeContent = previous;
+        activePack = previousPack;
+        activePackBaseUrl = previousBaseUrl;
+        if (reason === 'restart') {
+          await scenario.reloadCurrentScenario();
+        }
+        units.hotReload(previousPack, previousBaseUrl);
+        buildings.hotReload(previousPack, previousBaseUrl);
+        spawnPalette.setPack(previousPack);
+        buildPalette.setPack(previousPack);
+        placement.setPack(previousPack);
+        resetPreviewOccupancy(scenario.getCurrentMap() ?? undefined, scenario.getCurrentScenario() ?? undefined);
+      } catch (rollbackError) {
+        contentError = `${contentError}; rollback failed`;
+        throw rollbackError;
+      } finally {
+        refreshTools();
+      }
+      throw error;
+    }
+  };
+  const loadScenario = async (scenarioId: string): Promise<void> => {
+    await scenario.loadNamedScenario(scenarioId);
+    contentError = null;
+    refreshTools();
+  };
+
   if (options.hudRoot) {
     matchHud = new MatchHud(options.hudRoot);
     matchHud.setHandlers({
@@ -425,9 +629,38 @@ export function createInteractionLab(options: InteractionLabOptions): Interactio
         options.camera.setLookAt(worldX, worldZ);
       },
     });
-    toolsRoot = mountLabTools(options.hudRoot, {
+    const toolHandle = mountLabTools(options.hudRoot, {
       spawnPalette,
       buildPalette,
+      scenario,
+      getContent: () => activeContent,
+      contentStatus: options.contentStatus,
+      onSelectRevision: options.onSelectRevision,
+      onRestartRevision: options.onRestartRevision,
+      onAcknowledge: options.onAcknowledge,
+      onLoadScenario: loadScenario,
+      onSeed: (nextSeed) => {
+        scenario.setSeed(nextSeed);
+        scenario.reset();
+      },
+      onSave: () => {
+        scenario.setReplayToTick(runtime.getLatestTick());
+        downloadJson('pastel-rts-save.json', scenario.exportSaveDocument());
+      },
+      onImport: (value) => {
+        scenario.importSaveDocument(value);
+        replay.setRecorded([...scenario.getCommandLog()], [...scenario.getChecksums()]);
+        contentError = null;
+      },
+      onReplay: () => {
+        scenario.setReplayToTick(runtime.getLatestTick());
+        replay.setRecorded([...scenario.getCommandLog()], [...scenario.getChecksums()]);
+        return replay.runReplay(runtime.getLatestTick());
+      },
+      onExportBugBundle: () => {
+        downloadBugBundle(exportCurrentBugBundle());
+      },
+      onImportBugBundle: importCurrentBugBundle,
       onSpawn: (archetypeId) => {
         const look = options.camera.lookAt;
         commandClient.issueSpawnUnit({
@@ -445,6 +678,8 @@ export function createInteractionLab(options: InteractionLabOptions): Interactio
         debugOverlays.set('staticBlockers', enabled);
       },
     });
+    toolsRoot = toolHandle.root;
+    refreshTools = toolHandle.refresh;
   }
 
   debugOverlays.subscribe((flags) => {
@@ -453,7 +688,8 @@ export function createInteractionLab(options: InteractionLabOptions): Interactio
   });
 
   const tick = (): void => {
-    const count = runtime.interpolate(buffer, performance.now());
+    const now = performance.now();
+    const count = runtime.interpolate(buffer, now);
     hydrateFromSnapshot(count);
     units.applySnapshot(buffer, count);
     buildings.applySnapshot(buffer, count);
@@ -464,6 +700,11 @@ export function createInteractionLab(options: InteractionLabOptions): Interactio
       resolveReady();
     }
     const pickable = getPickableEntities();
+    scenario.setReplayToTick(runtime.getLatestTick());
+    if (now >= nextToolsRefreshAt) {
+      nextToolsRefreshAt = now + 250;
+      refreshTools();
+    }
     if (matchHud) {
       matchHud.render({
         aggregates: aggregateSelection(
@@ -481,6 +722,10 @@ export function createInteractionLab(options: InteractionLabOptions): Interactio
   };
 
   const dispose = (): void => {
+    if (labDisposed) {
+      return;
+    }
+    labDisposed = true;
     interaction.dispose();
     runtime.stop();
     units.dispose();
@@ -493,12 +738,12 @@ export function createInteractionLab(options: InteractionLabOptions): Interactio
     toolsRoot?.remove();
   };
 
-  const loadScenario = async (scenarioId: string): Promise<void> => {
-    await scenario.loadNamedScenario(scenarioId);
-  };
-
   const boot = async (): Promise<void> => {
     await loadScenario(options.scenarioId ?? INTERACTION_LAB_ALIEN_FANTASY_ID);
+    if (!readyResolved) {
+      readyResolved = true;
+      resolveReady();
+    }
     if (options.spawnUnitId) {
       const look = options.camera.lookAt;
       commandClient.issueSpawnUnit({
@@ -514,7 +759,9 @@ export function createInteractionLab(options: InteractionLabOptions): Interactio
   };
 
   void boot().catch((error: unknown) => {
+    contentError = error instanceof Error ? error.message : String(error);
     console.warn('Interaction lab failed to load scenario', error);
+    refreshTools();
     if (!readyResolved) {
       readyResolved = true;
       resolveReady();
@@ -543,51 +790,196 @@ export function createInteractionLab(options: InteractionLabOptions): Interactio
     tick,
     dispose,
     loadScenario,
+    applyContent,
+    getContent: () => activeContent,
     getPickableEntities,
+    getDiagnostics: () => {
+      const unitArt = units.getArtDiagnostics();
+      const buildingArt = buildings.getArtDiagnostics();
+      return {
+        content: { ...activeContent.identity },
+        scenarioId: scenario.getCurrentScenario()?.id ?? null,
+        seed: scenario.getSeed(),
+        tick: runtime.getLatestTick(),
+        entityCount: runtime.getEntityCount(),
+        commandCount: scenario.getCommandLog().length,
+        checksumCount: scenario.getChecksums().length,
+        missingUnitAssets: unitArt.assets.filter((asset) => asset.state === 'missing').length,
+        missingBuildingAssets: buildingArt.filter((asset) => asset.state === 'missing').length,
+        error: contentError,
+      };
+    },
+    exportBugBundle: exportCurrentBugBundle,
+    importBugBundle: importCurrentBugBundle,
     isReady: () => readyResolved,
   };
 }
+
+type LabToolsHandle = {
+  root: HTMLDivElement;
+  refresh: () => void;
+};
 
 function mountLabTools(
   host: HTMLElement,
   options: {
     spawnPalette: SpawnPalette;
     buildPalette: BuildPalette;
+    scenario: ScenarioController;
+    getContent: () => LoadedRuntimeContent;
+    contentStatus: (() => ContentClientStatus | null) | undefined;
+    onSelectRevision: ((revision: string) => Promise<void>) | undefined;
+    onRestartRevision: (() => Promise<void>) | undefined;
+    onAcknowledge: (() => Promise<void>) | undefined;
+    onLoadScenario: (scenarioId: string) => Promise<void>;
+    onSeed: (seed: number) => void;
+    onSave: () => void;
+    onImport: (value: unknown) => void;
+    onReplay: () => boolean;
+    onExportBugBundle: () => void;
+    onImportBugBundle: (value: unknown) => Promise<BugBundleReplayResult>;
     onSpawn: (archetypeId: string) => void;
     onBuild: (archetypeId: string) => void;
     onNavDebug: (enabled: boolean) => void;
   },
-): HTMLDivElement {
+): LabToolsHandle {
   const root = document.createElement('div');
   root.className = 'pastel-lab-tools';
   root.innerHTML = `
     <style>
-      .pastel-lab-tools { position:fixed; left:12px; top:12px; z-index:21; display:flex; gap:6px; flex-wrap:wrap; max-width:42vw; }
-      .pastel-lab-tools button, .pastel-lab-tools select {
+      .pastel-lab-tools { position:fixed; left:12px; top:12px; z-index:21; display:grid; gap:6px; max-width:min(520px,92vw); color:#e8f4f2; font:13px/1.2 Arial, 'Liberation Sans', sans-serif; }
+      .pastel-lab-tools .lab-row { display:flex; gap:6px; flex-wrap:wrap; align-items:center; }
+      .pastel-lab-tools button, .pastel-lab-tools select, .pastel-lab-tools input {
         min-height:44px; min-width:44px; pointer-events:auto; border:1px solid rgba(255,255,255,.18);
-        border-radius:10px; background:rgba(12,36,40,.88); color:#e8f4f2; font:13px/1.2 ui-sans-serif,system-ui,sans-serif;
+        border-radius:10px; background:rgba(12,36,40,.9); color:#e8f4f2; font:13px/1.2 Arial, 'Liberation Sans', sans-serif; padding:0 9px;
       }
+      .pastel-lab-tools input[type=number] { width:100px; }
+      .pastel-lab-tools input[data-role=revision] { width:150px; }
+      .pastel-lab-tools .lab-status { max-width:520px; padding:7px 9px; border-radius:10px; background:rgba(12,36,40,.9); white-space:pre-wrap; }
+      .pastel-lab-tools .lab-status[data-state=error] { border-color:#ff6b8a; color:#ffd9e2; }
+      .pastel-lab-tools .lab-status[data-state=warn] { border-color:#f5c56b; color:#ffe8b3; }
+        .pastel-lab-tools .lab-help { max-width:520px; padding:7px 9px; border-radius:10px; background:rgba(12,36,40,.78); color:#c9dedb; }
     </style>
-    <select data-role="spawn" aria-label="Spawn unit"></select>
-    <button type="button" data-action="spawn">Spawn</button>
-    <select data-role="build" aria-label="Place building"></select>
-    <button type="button" data-action="build">Place</button>
-    <button type="button" data-action="nav">Nav debug</button>
+    <div class="lab-status" data-role="status" aria-live="polite"></div>
+    <div class="lab-row">
+      <select data-role="scenario" aria-label="Scenario preset"></select>
+      <button type="button" data-action="load-scenario">Load scenario</button>
+      <input data-role="seed" type="number" step="1" aria-label="Scenario seed" />
+      <button type="button" data-action="apply-seed">Apply seed</button>
+    </div>
+    <div class="lab-row">
+      <select data-role="spawn" aria-label="Spawn unit"></select>
+      <button type="button" data-action="spawn">Spawn</button>
+      <select data-role="build" aria-label="Place building"></select>
+      <button type="button" data-action="build">Place</button>
+      <button type="button" data-action="nav">Nav debug</button>
+    </div>
+    <div class="lab-row">
+      <button type="button" data-action="reset">Reset match</button>
+      <button type="button" data-action="save">Export save</button>
+      <button type="button" data-action="import">Import save</button>
+      <input data-role="import-file" type="file" accept="application/json,.json" hidden />
+      <button type="button" data-action="replay">Replay check</button>
+    </div>
+    <div class="lab-row">
+      <button type="button" data-action="bug-export">Export bug bundle</button>
+      <button type="button" data-action="bug-import">Reproduce bug bundle</button>
+      <input data-role="bug-import-file" type="file" accept="application/json,.json" aria-label="Bug bundle JSON file" hidden />
+    </div>
+    <div class="lab-help" data-role="bug-help">Export a JSON-only bug bundle. On a fresh lab page, choose the file with Reproduce bug bundle. The check uses the same scenario, seed, commands, and checksum sequence.</div>
+    <div class="lab-row">
+      <input data-role="revision" type="text" placeholder="revision" aria-label="Content revision" />
+      <button type="button" data-action="select-revision">Select revision</button>
+      <button type="button" data-action="restart-revision">Restart pending</button>
+      <button type="button" data-action="ack">Acknowledge</button>
+    </div>
   `;
   const spawnSelect = root.querySelector('[data-role="spawn"]') as HTMLSelectElement;
   const buildSelect = root.querySelector('[data-role="build"]') as HTMLSelectElement;
-  for (const entry of options.spawnPalette.list()) {
-    const option = document.createElement('option');
-    option.value = entry.archetypeId;
-    option.textContent = entry.displayName;
-    spawnSelect.append(option);
-  }
-  for (const entry of options.buildPalette.list()) {
-    const option = document.createElement('option');
-    option.value = entry.archetypeId;
-    option.textContent = entry.displayName;
-    buildSelect.append(option);
-  }
+  const scenarioSelect = root.querySelector('[data-role="scenario"]') as HTMLSelectElement;
+  const seedInput = root.querySelector('[data-role="seed"]') as HTMLInputElement;
+  const revisionInput = root.querySelector('[data-role="revision"]') as HTMLInputElement;
+  const importFile = root.querySelector('[data-role="import-file"]') as HTMLInputElement;
+  const bugImportFile = root.querySelector('[data-role="bug-import-file"]') as HTMLInputElement;
+  const status = root.querySelector('[data-role="status"]') as HTMLDivElement;
+  let notice = '';
+
+  const setNotice = (message: string): void => {
+    notice = message;
+    refresh();
+  };
+
+  const runAsync = (action: () => Promise<void>, success: string): void => {
+    void action()
+      .then(() => setNotice(success))
+      .catch((error: unknown) => {
+        setNotice(`Action failed: ${error instanceof Error ? error.message : String(error)}`);
+      });
+  };
+
+  const refresh = (): void => {
+    refreshPaletteOptions(spawnSelect, options.spawnPalette.list());
+    refreshPaletteOptions(buildSelect, options.buildPalette.list());
+    const selectedScenario = scenarioSelect.value;
+    scenarioSelect.replaceChildren();
+    for (const preset of options.scenario.getScenarioPresets()) {
+      const option = document.createElement('option');
+      option.value = preset.id;
+      option.textContent = preset.id;
+      scenarioSelect.append(option);
+    }
+    if ([...scenarioSelect.options].some((option) => option.value === selectedScenario)) {
+      scenarioSelect.value = selectedScenario;
+    } else if (options.scenario.getCurrentScenario()) {
+      scenarioSelect.value = options.scenario.getCurrentScenario()!.id;
+    }
+    seedInput.value = String(options.scenario.getSeed());
+
+    const content = options.getContent();
+    const clientStatus = options.contentStatus?.();
+    const phase = clientStatus?.phase ?? 'ready';
+    const revision = clientStatus?.activeRevision ?? content.identity.revision;
+    const lines = [
+      `content ${content.identity.source}  revision ${revision}`,
+      `hash ${shortHash(content.identity.contentHash)}  rules ${shortHash(content.identity.simulationRulesHash)}`,
+      `scenario ${options.scenario.getCurrentScenario()?.id ?? 'none'}  seed ${String(options.scenario.getSeed())}`,
+    ];
+    let state: 'normal' | 'warn' | 'error' = 'normal';
+    if (phase === 'restart-required') {
+      state = 'warn';
+      lines.push(`restart required for revision ${clientStatus?.pendingRevision ?? clientStatus?.availableRevision ?? 'unknown'}`);
+    } else if (phase === 'reconnecting') {
+      state = 'warn';
+      lines.push(`content stream reconnecting (attempt ${String(clientStatus?.reconnectAttempt ?? 0)})`);
+    } else if (phase === 'failed') {
+      state = 'error';
+    }
+    if (clientStatus?.error) {
+      state = 'error';
+      lines.push(`content error: ${clientStatus.error}`);
+    }
+    if (notice) {
+      lines.push(notice);
+      if (/^Bug bundle (?:rejected|export failed)/u.test(notice)) {
+        state = 'error';
+      }
+    }
+    status.textContent = lines.join('\n');
+    status.dataset['state'] = state;
+    const restartButton = root.querySelector('[data-action="restart-revision"]');
+    if (restartButton instanceof HTMLButtonElement) {
+      restartButton.disabled = options.onRestartRevision === undefined || phase !== 'restart-required';
+    }
+    const selectButton = root.querySelector('[data-action="select-revision"]');
+    if (selectButton instanceof HTMLButtonElement) {
+      selectButton.disabled = options.onSelectRevision === undefined;
+    }
+    const ackButton = root.querySelector('[data-action="ack"]');
+    if (ackButton instanceof HTMLButtonElement) {
+      ackButton.disabled = options.onAcknowledge === undefined;
+    }
+  };
+
   root.querySelector('[data-action="spawn"]')?.addEventListener('click', () => {
     if (spawnSelect.value) {
       options.onSpawn(spawnSelect.value);
@@ -598,14 +990,136 @@ function mountLabTools(
       options.onBuild(buildSelect.value);
     }
   });
+  root.querySelector('[data-action="load-scenario"]')?.addEventListener('click', () => {
+    if (scenarioSelect.value) {
+      runAsync(() => options.onLoadScenario(scenarioSelect.value), `Loaded ${scenarioSelect.value}`);
+    }
+  });
+  root.querySelector('[data-action="apply-seed"]')?.addEventListener('click', () => {
+    const nextSeed = Number(seedInput.value);
+    if (!Number.isSafeInteger(nextSeed)) {
+      setNotice('Seed must be a safe integer');
+      return;
+    }
+    try {
+      options.onSeed(nextSeed);
+      setNotice(`Applied seed ${String(nextSeed)}`);
+    } catch (error) {
+      setNotice(`Seed failed: ${error instanceof Error ? error.message : String(error)}`);
+    }
+  });
+  root.querySelector('[data-action="reset"]')?.addEventListener('click', () => {
+    try {
+      options.scenario.reset();
+      setNotice('Match reset');
+    } catch (error) {
+      setNotice(`Reset failed: ${error instanceof Error ? error.message : String(error)}`);
+    }
+  });
+  root.querySelector('[data-action="save"]')?.addEventListener('click', () => {
+    try {
+      options.onSave();
+      setNotice('Save exported with exact revision and map identity');
+    } catch (error) {
+      setNotice(`Export failed: ${error instanceof Error ? error.message : String(error)}`);
+    }
+  });
+  root.querySelector('[data-action="import"]')?.addEventListener('click', () => importFile.click());
+  importFile.addEventListener('change', () => {
+    const file = importFile.files?.[0];
+    importFile.value = '';
+    if (!file) {
+      return;
+    }
+    void file.text()
+      .then((text) => {
+        const parsed: unknown = JSON.parse(text) as unknown;
+        options.onImport(parsed);
+        setNotice('Save imported and runtime reinitialized from recorded inputs');
+      })
+      .catch((error: unknown) => {
+        setNotice(`Import rejected: ${error instanceof Error ? error.message : String(error)}`);
+      });
+  });
+  root.querySelector('[data-action="bug-export"]')?.addEventListener('click', () => {
+    try {
+      options.onExportBugBundle();
+      setNotice('Bug bundle exported. It contains JSON-only content identity and exact replay data.');
+    } catch (error) {
+      setNotice(`Bug bundle export failed: ${error instanceof Error ? error.message : String(error)}`);
+    }
+  });
+  root.querySelector('[data-action="bug-import"]')?.addEventListener('click', () => bugImportFile.click());
+  bugImportFile.addEventListener('change', () => {
+    const file = bugImportFile.files?.[0];
+    bugImportFile.value = '';
+    if (!file) {
+      return;
+    }
+    if (file.size > BUG_BUNDLE_LIMITS.maxArtifactBytes) {
+      setNotice(`Bug bundle rejected: file exceeds ${String(BUG_BUNDLE_LIMITS.maxArtifactBytes)} bytes`);
+      return;
+    }
+    void file
+      .text()
+      .then((text) => JSON.parse(text) as unknown)
+      .then((value) => options.onImportBugBundle(value))
+      .then((result) => {
+        setNotice(`Bug bundle reproduced: ${String(result.actual.length)} checksum samples matched exactly.`);
+      })
+      .catch((error: unknown) => {
+        setNotice(`Bug bundle rejected: ${error instanceof Error ? error.message : String(error)}`);
+      });
+  });
+  root.querySelector('[data-action="replay"]')?.addEventListener('click', () => {
+    try {
+      setNotice(options.onReplay() ? 'Replay check passed' : 'Replay check failed');
+    } catch (error) {
+      setNotice(`Replay failed: ${error instanceof Error ? error.message : String(error)}`);
+    }
+  });
+  root.querySelector('[data-action="select-revision"]')?.addEventListener('click', () => {
+    const revision = revisionInput.value.trim();
+    if (!revision || !options.onSelectRevision) {
+      setNotice('Enter a revision before selecting');
+      return;
+    }
+    runAsync(() => options.onSelectRevision!(revision), `Revision ${revision} loaded or queued`);
+  });
+  root.querySelector('[data-action="restart-revision"]')?.addEventListener('click', () => {
+    if (options.onRestartRevision) {
+      runAsync(options.onRestartRevision, 'Pending revision restarted and installed');
+    }
+  });
+  root.querySelector('[data-action="ack"]')?.addEventListener('click', () => {
+    if (options.onAcknowledge) {
+      runAsync(options.onAcknowledge, 'Revision acknowledgement sent');
+    }
+  });
   let navOn = false;
   root.querySelector('[data-action="nav"]')?.addEventListener('click', () => {
     navOn = !navOn;
     options.onNavDebug(navOn);
+    setNotice(`Navigation debug ${navOn ? 'on' : 'off'}`);
   });
   root.addEventListener('pointerdown', (event) => event.stopPropagation());
   host.append(root);
-  return root;
+  refresh();
+  return { root, refresh };
+}
+
+function shortHash(value: string): string {
+  return value.length > 12 ? `${value.slice(0, 8)}…${value.slice(-4)}` : value;
+}
+
+function downloadJson(fileName: string, value: unknown): void {
+  const blob = new Blob([`${JSON.stringify(value, null, 2)}\n`], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement('a');
+  anchor.href = url;
+  anchor.download = fileName;
+  anchor.click();
+  URL.revokeObjectURL(url);
 }
 
 export { isInteractionLabMode, INTERACTION_LAB_ALIEN_FANTASY_ID };

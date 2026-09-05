@@ -54,6 +54,7 @@ export function requireString(value: unknown, label: string): string {
 }
 
 const ID_PATTERN = /^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/;
+const MAX_PATH_DECODE_PASSES = 8;
 
 export function isValidContentId(id: string): boolean {
   return ID_PATTERN.test(id) && id.length <= 64;
@@ -66,13 +67,43 @@ export function requireContentId(value: unknown, label: string): string {
   return value;
 }
 
+/**
+ * Check the decoded form as well as the submitted form. This prevents a
+ * caller from hiding traversal separators behind URI encoding.
+ */
 export function isSafeAssetPath(path: string): boolean {
-  return (
-    path.trim().length > 0 &&
-    !path.includes('..') &&
-    !path.startsWith('/') &&
-    !path.includes('\\')
-  );
+  if (path.length === 0 || path.trim().length === 0 || path !== path.trim()) {
+    return false;
+  }
+  let decoded = path;
+  let stable = false;
+  for (let pass = 0; pass < MAX_PATH_DECODE_PASSES; pass += 1) {
+    let next: string;
+    try {
+      next = decodeURIComponent(decoded);
+    } catch {
+      return false;
+    }
+    if (next === decoded) {
+      stable = true;
+      break;
+    }
+    decoded = next;
+  }
+  if (!stable) {
+    return false;
+  }
+  if (
+    decoded.length === 0 ||
+    decoded.startsWith('/') ||
+    decoded.includes(String.fromCharCode(92)) ||
+    decoded.includes(String.fromCharCode(0)) ||
+    decoded.includes(':')
+  ) {
+    return false;
+  }
+  const segments = decoded.split('/');
+  return segments.every((segment) => segment.length > 0 && segment !== '.' && segment !== '..');
 }
 
 export function requireSafeAssetPath(value: unknown, label: string): string {

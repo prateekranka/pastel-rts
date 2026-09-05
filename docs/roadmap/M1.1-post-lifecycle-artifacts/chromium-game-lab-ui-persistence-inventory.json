@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "label": "game-lab",
+  "stage": "ui-persistence-inventory",
+  "project": "chromium",
+  "testTitle": "M1.1-C game command, blocker, save/load, and replay audit",
+  "screenshotPath": "/home/bobbyranka/Projects/pastel-rts/docs/roadmap/M1.1-post-lifecycle-artifacts/chromium-game-lab-ui-persistence-inventory.png",
+  "capturedAt": "2026-09-05T18:22:31.855Z",
+  "runtime": {
+    "url": "http://127.0.0.1:14373/?mode=interaction-lab&scenario=interaction-lab-alien-fantasy&seed=42&renderer=webgl&dpr=1&zoom=70-percent",
+    "title": "Pastel RTS — Milestone 0",
+    "canvasCount": 2,
+    "canvases": [
+      {
+        "width": 1280,
+        "height": 800,
+        "cssWidth": 1280,
+        "cssHeight": 800
+      },
+      {
+        "width": 160,
+        "height": 160,
+        "cssWidth": 130,
+        "cssHeight": 130
+      }
+    ],
+    "webglRenderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+    "bodyText": "0\nFormation: none\nFormation: line\nFormation: box\nSelect\nStop\ncontent bundle  revision 3\nhash c1eea326…0995  rules 7675a3e1…b1fd\nscenario interaction-lab-alien-fantasy  seed 42\nlab-skirmish\ninteraction-lab-alien-fantasy\nm11-fixture-gallery\nLoad scenario\nApply seed\nSunweaver Scout\nSunweaver Infantry\nSunweaver Walker (Proxy)\nSpawn\nSunweaver Sanctum\nPlace\nNav debug\nReset match\nExport save\nImport save\nReplay check\nExport bug bundle\nReproduce bug bundle\nExport a JSON-only bug bundle. On a fresh lab page, choose the file with Reproduce bug bundle. The check uses the same scenario, seed, commands, and checksum sequence.\nSelect revision\nRestart pending\nAcknowledge\nDiagnostics\nCollapse\nFPS 4.0  avg 8.1  1% low 2.6\nframe 250.00ms  avg 123.02ms  p95 250.00ms  p99 299.98ms\nsim 1.10ms  nav-debug 0.20ms  snapshot latency 1318.20ms\ndraw calls 93  tris 5072  textures 7  geometries 86\nchunks 9  units 26  entities 26\nrenderer webgl (webgl) requested webgl\ninit error: none\nDPR cap 1  effective 1.00\nviewport 1280×800  buffer 1280×800\nelapsed 14.5s  soak idle\ncontent revision 3  phase ready\ncontent manifest none\ncontent visual 5c35bc7369b4d2c99ce84c7f2e1e4515389dd7da59005eb6c18bd3d98f153d58\ncontent rules 7675a3e17dd711d341c27c240326efd33aa0405110ade623885e219f5305b1fd\ncontent assets /content/dev-pack-v2/\ncontent error: none\nRenderer\nWebGL\nWebGPU\nBenchmark\nidle-base\nnormal-midgame\ndense-battle\ncamera-pan-stress\nmaximum-population\n2x-stress\n20-minute-soak\nvisual-capture\nDPR\n1\n1.25\n1.5\nnative\nTouch debug\nHaptic\nDownload report\nStart 20-min soak"
+  },
+  "metadata": {
+    "playerButtons": [
+      "Select",
+      "Stop",
+      "Load scenario",
+      "Apply seed",
+      "Spawn",
+      "Place",
+      "Nav debug",
+      "Reset match",
+      "Export save",
+      "Import save",
+      "Replay check",
+      "Export bug bundle",
+      "Reproduce bug bundle",
+      "Select revision",
+      "Restart pending",
+      "Acknowledge",
+      "Collapse",
+      "Haptic",
+      "Download report",
+      "Start 20-min soak"
+    ],
+    "persistenceControls": [
+      "Load scenario",
+      "Export save",
+      "Import save",
+      "Replay check",
+      "Download report"
+    ],
+    "note": "The public scenario save/load and replay APIs were exercised. No player-facing save/load/replay controls were found in the M1 HUD."
+  },
+  "browserDiagnostics": [
+    {
+      "kind": "console",
+      "type": "debug",
+      "text": "[vite] connecting...",
+      "location": {
+        "url": "http://127.0.0.1:14373/@vite/client",
+        "line": 788,
+        "column": 8,
+        "lineNumber": 788,
+        "columnNumber": 8
+      }
+    },
+    {
+      "kind": "console",
+      "type": "debug",
+      "text": "[vite] connected.",
+      "location": {
+        "url": "http://127.0.0.1:14373/@vite/client",
+        "line": 911,
+        "column": 14,
+        "lineNumber": 911,
+        "columnNumber": 14
+      }
+    }
+  ]
+}

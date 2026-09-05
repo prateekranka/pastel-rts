@@ -1,0 +1,10 @@
+M1.1-Q2 probe start 2026-09-05T18:41:12.955Z
+Repository: /home/bobbyranka/Projects/pastel-rts-m11-soak-final
+Required source: 6e4d580
+Ports: game=33373 foundry=33374 content=33387
+Target URL: http://127.0.0.1:33373/?mode=interaction-lab&content=studio&scenario=interaction-lab-alien-fantasy&seed=42&renderer=webgl&dpr=1&zoom=70-percent
+Owned studio wrapper PID 4132491
+BLOCKER: Owned studio service wrapper exited before probe completion
+FATAL: game did not become ready at http://127.0.0.1:33373/: fetch failed
+BLOCKER: Probe terminated before its planned completion path
+M1.1-Q2 probe end 2026-09-05T18:42:13.028Z blockers=2 fatal=yes

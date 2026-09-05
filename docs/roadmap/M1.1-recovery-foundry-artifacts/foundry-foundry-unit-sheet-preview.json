@@ -1,0 +1,132 @@
+{
+  "schemaVersion": 1,
+  "label": "foundry-unit",
+  "stage": "sheet-preview",
+  "project": "foundry",
+  "testTitle": "M1.1-C Foundry imports unit sheets, saves content, and launches sandbox",
+  "screenshotPath": "/home/bobbyranka/Projects/pastel-rts/docs/roadmap/M1.1-C-artifacts/foundry-foundry-unit-sheet-preview.png",
+  "capturedAt": "2026-09-05T13:25:33.127Z",
+  "runtime": {
+    "url": "http://127.0.0.1:14374/#/unit/new?id=m11c-unit-1788614731262",
+    "title": "Pastel RTS Content Foundry",
+    "canvasCount": 13,
+    "canvases": [
+      {
+        "width": 128,
+        "height": 64,
+        "cssWidth": 128,
+        "cssHeight": 64
+      },
+      {
+        "width": 48,
+        "height": 48,
+        "cssWidth": 48,
+        "cssHeight": 48
+      },
+      {
+        "width": 48,
+        "height": 48,
+        "cssWidth": 48,
+        "cssHeight": 48
+      },
+      {
+        "width": 48,
+        "height": 48,
+        "cssWidth": 48,
+        "cssHeight": 48
+      },
+      {
+        "width": 48,
+        "height": 48,
+        "cssWidth": 48,
+        "cssHeight": 48
+      },
+      {
+        "width": 48,
+        "height": 48,
+        "cssWidth": 48,
+        "cssHeight": 48
+      },
+      {
+        "width": 48,
+        "height": 48,
+        "cssWidth": 48,
+        "cssHeight": 48
+      },
+      {
+        "width": 48,
+        "height": 48,
+        "cssWidth": 48,
+        "cssHeight": 48
+      },
+      {
+        "width": 48,
+        "height": 48,
+        "cssWidth": 48,
+        "cssHeight": 48
+      },
+      {
+        "width": 320,
+        "height": 220,
+        "cssWidth": 320,
+        "cssHeight": 220
+      },
+      {
+        "width": 320,
+        "height": 220,
+        "cssWidth": 320,
+        "cssHeight": 220
+      },
+      {
+        "width": 320,
+        "height": 220,
+        "cssWidth": 320,
+        "cssHeight": 220
+      },
+      {
+        "width": 320,
+        "height": 220,
+        "cssWidth": 320,
+        "cssHeight": 220
+      }
+    ],
+    "webglRenderer": null,
+    "bodyText": "V1 proxy\nLibrary\nUnit editor\nBuilding editor\nStudio\nGame\nFoundry\nContent\nContent connected\nPublished 5 · Draft 6 · Rules change: restart/retest required\nRuntime pending: interaction-lab-alien-fantasy has not acknowledged revision 5\n\nFOUNDRY / RUNTIME CONTENT\n\nUnit Editor\n\nReplace a sprite sheet without changing its stable ID. Draft edits stay local to the content service until you publish a revision.\n\nUndo\nRedo\n1 DRAFT\n→\n2 VALIDATE\n→\n3 PREVIEW\n→\n4 PUBLISH REVISION\n→\n5 REVERT\nSave draft\nValidate saved draft\nPreview draft\nPublish revision\nRetained revision\nSelect retained revision…\nRevision 3 · 2026-09-05T13:25:17\nRevision 4 · 2026-09-05T13:25:25\nRevision 5 · 2026-09-05T13:25:28\nRevert selected\n\nSave and validate affect the draft only. Publish creates a new immutable revision. Revert creates another publication from retained source content.\n\nIdentity and source\nStable ID\n\nThe stable ID is the runtime identity. Replacement keeps this ID and preserves retained publication sources.\n\nDisplay name\nFaction\nsunweaver\ngravemark\nneutral\nReplace source PNG\n\nSource dimensions: 128×64 px\n\nSandbox context\nScenario ID\nSeed\nSheet layout\nLayout\nOne frame\nHorizontal strip\nRegular grid\nFrame width (px)\nFrame height (px)\nMargin X (px)\nMargin Y (px)\nSpacing X (px)\nSpacing Y (px)\nGrid columns\nGrid rows\nAnimation\nDirections\n1 (billboard)\n4 (N/E/S/W)\n8 (octants)\nMirror west facings\nIdle FPS\nMove FPS\nIdle frame indexes\nMove frame indexes\nIdle loop\nMove loop\nWorld scale and selection\nAnchor X\nAnchor Y\nWorld height (cells)\nSelection radius (cells)\nCollision radius (cells)\nSpeed (subunits/tick)\nPreview overlays\nFrame grid\nGround/footprints\nDirection labels\nSave draft\nTest in Sandbox\n\nManifest valid for the current draft fields.\n\nRuntime projection\n\nThese previews use the runtime IsometricCamera, world height, anchor, and footprint units. They are not square thumbnail fits.\n\nSource + frame grid\nSelected frame\nIdle\nMove\nDirections\nN\nE\nS\nW\nGameplay zoom · runtime default\n70-percent · runtime camera\nDraft manifest\n{\n  \"schemaVersion\": 2,\n  \"id\": \"m11c-unit-1788614731262\",\n  \"displayName\": \"M1.1-C Sheet Unit\",\n  \"enabled\": true,\n  \"factionId\": \"sunweaver\",\n  \"assetPath\": \"units/m11c-unit-1788614731262/sheet.png\",\n  \"sourceWidth\": 128,\n  \"sourceHeight\": 64,\n  \"frameWidth\": 32,\n  \"frameHeight\": 32,\n  \"margin\": {\n    \"x\": 0,\n    \"y\": 0\n  },\n  \"spacing\": {\n    \"x\": 0,\n    \"y\": 0\n  },\n  \"bounds\": {\n    \"minX\": 4,\n    \"minY\": 4,\n    \"maxX\": 28,\n    \"maxY\": 32\n  },\n  \"anchor\": {\n    \"x\": 0.5,\n    \"y\": 1\n  },\n  \"worldHeight\": 1.5,\n  \"selectionRadius\": 0.6,\n  \"collisionRadius\": 0.45,\n  \"animation\": {\n    \"directions\": 4,\n    \"mirrored\": true,\n    \"clips\": {\n      \"idle\": {\n        \"frames\": {\n          \"kind\": \"indexes\",\n          \"indexes\": [\n            0,\n            1,\n            2,\n            3\n          ]\n        },\n        \"fps\": 8,\n        \"looping\": true,\n        \"assetPath\": \"units/m11c-unit-1788614731262/sheet.png\"\n      },\n      \"move\": {\n        \"frames\": {\n          \"kind\": \"indexes\",\n          \"indexes\": [\n            4,\n            5,\n            6,\n            7\n          ]\n        },\n        \"fps\": 12,\n        \"looping\": true,\n        \"assetPath\": \"units/m11c-unit-1788614731262/sheet.png\"\n      }\n    }\n  },\n  \"movement\": {\n    \"speedSubunitsPerTick\": 64,\n    \"accelerationRate\": 1,\n    \"turnRateMilli\": 3000,\n    \"footprintCategory\": \"unit-1x1\"\n  }\n}"
+  },
+  "metadata": {
+    "id": "m11c-unit-1788614731262",
+    "sourceDimensions": [
+      128,
+      64
+    ],
+    "frameWidth": 32,
+    "directions": 4,
+    "mirrored": true
+  },
+  "browserDiagnostics": [
+    {
+      "kind": "console",
+      "type": "debug",
+      "text": "[vite] connecting...",
+      "location": {
+        "url": "http://127.0.0.1:14374/@vite/client",
+        "line": 788,
+        "column": 8,
+        "lineNumber": 788,
+        "columnNumber": 8
+      }
+    },
+    {
+      "kind": "console",
+      "type": "debug",
+      "text": "[vite] connected.",
+      "location": {
+        "url": "http://127.0.0.1:14374/@vite/client",
+        "line": 911,
+        "column": 14,
+        "lineNumber": 911,
+        "columnNumber": 14
+      }
+    }
+  ]
+}

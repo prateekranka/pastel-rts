@@ -1,0 +1,17 @@
+M1.1-G exact CLI examples
+
+These commands use the repository root as the working directory. All paths are absolute.
+
+1. Build a deterministic scenario artifact from the real PackV2 files:
+
+npm run qa:scenario -- --pack /home/bobbyranka/Projects/pastel-rts-m11-bundle/content/dev-pack-v2/pack.json --scenario /home/bobbyranka/Projects/pastel-rts-m11-bundle/content/dev-pack-v2/scenarios/interaction-lab-alien-fantasy.json --map /home/bobbyranka/Projects/pastel-rts-m11-bundle/content/dev-pack-v2/maps/interaction-lab-alien-fantasy.json --commands /home/bobbyranka/Projects/pastel-rts-m11-bundle/docs/roadmap/M1.1-G-artifacts/m11g-empty-commands.json --seed 42 --ticks 52 --output /home/bobbyranka/Projects/pastel-rts-m11-bundle/docs/roadmap/M1.1-G-artifacts/m11g-qa-scenario.json
+
+2. Bundle that scenario artifact with bounded diagnostics:
+
+npm run qa:bundle -- --scenario /home/bobbyranka/Projects/pastel-rts-m11-bundle/docs/roadmap/M1.1-G-artifacts/m11g-qa-scenario.json --diagnostics /home/bobbyranka/Projects/pastel-rts-m11-bundle/docs/roadmap/M1.1-G-artifacts/m11g-diagnostics.json --output /home/bobbyranka/Projects/pastel-rts-m11-bundle/docs/roadmap/M1.1-G-artifacts/m11g-qa-bundle.json
+
+Optional explicit steps input:
+
+npm run qa:bundle -- --scenario /home/bobbyranka/Projects/pastel-rts-m11-bundle/docs/roadmap/M1.1-G-artifacts/m11g-qa-scenario.json --diagnostics /home/bobbyranka/Projects/pastel-rts-m11-bundle/docs/roadmap/M1.1-G-artifacts/m11g-diagnostics.json --steps /home/bobbyranka/Projects/pastel-rts-m11-bundle/docs/roadmap/M1.1-G-artifacts/m11g-steps.json --output /home/bobbyranka/Projects/pastel-rts-m11-bundle/docs/roadmap/M1.1-G-artifacts/m11g-qa-bundle-with-steps.json
+
+The runtime Export bug bundle control is separate. It writes qa-bug-bundle JSON and declares JSON-only asset coverage. The qa:bundle script consumes E’s qa-scenario artifact format.

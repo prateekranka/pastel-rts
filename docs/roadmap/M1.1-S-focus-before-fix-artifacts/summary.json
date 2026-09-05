@@ -1,0 +1,1871 @@
+{
+  "schemaVersion": 1,
+  "evidence": "M1.1-S-focus",
+  "status": "completed-with-blockers",
+  "startedAt": "2026-09-05T17:46:15.203Z",
+  "finishedAt": "2026-09-05T17:51:39.789Z",
+  "wallClockDurationMs": 324586,
+  "measuredSoak": {
+    "warmupMs": 5000,
+    "targetMs": 60000,
+    "actualMs": 279492,
+    "startedAt": "2026-09-05T17:47:00.280Z",
+    "endedAt": "2026-09-05T17:51:39.789Z",
+    "completed": true
+  },
+  "repository": {
+    "path": "/home/bobbyranka/Projects/pastel-rts-m11-texture-lifetime",
+    "sourceCommit": "e0c21a2",
+    "observedHead": "e0c21a295e0460b27b0cae56ead28476987c9301",
+    "productEdits": false
+  },
+  "execution": {
+    "probePath": "/tmp/m11-s-focus.mjs",
+    "model": "gpt-5.6-luna",
+    "provider": "openai-codex",
+    "sessionId": "20260905_221134_e76588",
+    "requestedEffort": "max",
+    "fastMode": false,
+    "delegation": false,
+    "command": "node /tmp/m11-s-focus.mjs",
+    "serviceCommand": "/home/bobbyranka/.local/share/mise/installs/node/26.7.0/bin/node /home/bobbyranka/Projects/pastel-rts-m11-texture-lifetime/scripts/dev-studio.mjs --game-port 30373 --foundry-port 30374 --content-port 30387 --pack-dir /tmp/pastel-rts-m11-q-COb5eJ/content-pack",
+    "servicePid": 4102587,
+    "serviceExit": null
+  },
+  "fixture": {
+    "gameUrl": "http://127.0.0.1:30373/?mode=interaction-lab&content=studio&scenario=interaction-lab-alien-fantasy&seed=42&renderer=webgl&dpr=1&zoom=70-percent",
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "rendererRequested": "webgl",
+    "deviceScaleFactor": 1,
+    "devicePixelRatioObserved": 1,
+    "chromiumPath": "/usr/bin/chromium",
+    "chromiumIgnoreDefaultArgs": [
+      "--disable-dev-shm-usage"
+    ],
+    "ports": {
+      "game": 30373,
+      "foundry": 30374,
+      "content": 30387
+    },
+    "sourcePackDir": "/home/bobbyranka/Projects/pastel-rts-m11-texture-lifetime/content/dev-pack-v2",
+    "disposablePackDir": "/tmp/pastel-rts-m11-q-COb5eJ/content-pack",
+    "scenarioId": "interaction-lab-alien-fantasy",
+    "seed": 42,
+    "expectedEntityCount": 25,
+    "originalScoutAsset": {
+      "path": "units/sunweaver-scout/sheet.png",
+      "sha256": "a45428e676c023c7a68859662e5cfe4eb5b1177e8e42134dc0b31652f0cffd29",
+      "byteLength": 1844
+    },
+    "alternateAsset": {
+      "path": "units/gravemark-stalker/sheet.png",
+      "sha256": "9ad9d1c80ecba6e287ed4801bc9c8937a2a1930f00f849d311581aac6c156683",
+      "byteLength": 1728
+    },
+    "originalCopyInventoryDigest": "c0c5224aef342da91e00208b4e96755224f6817e40d2dfd664da61ef26bcc461",
+    "disposableCopyInventoryDigest": "c0c5224aef342da91e00208b4e96755224f6817e40d2dfd664da61ef26bcc461"
+  },
+  "initialPublication": {
+    "currentRevision": "3",
+    "draftRevision": "3",
+    "metadata": {
+      "schemaVersion": 1,
+      "revision": "3",
+      "packId": "dev-pack-v2",
+      "manifestPath": ".content-publication/revisions/3/pack.json",
+      "manifestHash": "f6b4c20ade0c029ea5c8eec8d203aadd002fed4e2aed41176848ebcd467cb05f",
+      "visualContentHash": "46c4c80e590768a9337bac599e3f74a580d30e5967a6f2b8aa9c41aa3533892a",
+      "simulationRulesHash": "c39e7796863a923af79d1acb847a7d614e3bec219723091732ec388a729e4018",
+      "restartRequired": false,
+      "assets": [
+        {
+          "kind": "data",
+          "assetPath": "maps/interaction-lab-alien-fantasy.json",
+          "storagePath": ".content-publication/revisions/3/assets/maps/interaction-lab-alien-fantasy.json",
+          "sha256": "8a09566d0c8379912395e2f187e9de2c7df5e559594368bf5a0947cd45d567dc",
+          "byteLength": 169
+        },
+        {
+          "kind": "data",
+          "assetPath": "maps/lab-grid.json",
+          "storagePath": ".content-publication/revisions/3/assets/maps/lab-grid.json",
+          "sha256": "0ed06af57e7db77b66c9f737e5c08924650cc3ff80290e39f5f06cadae26a715",
+          "byteLength": 127
+        },
+        {
+          "kind": "data",
+          "assetPath": "maps/m11-fixture-gallery.json",
+          "storagePath": ".content-publication/revisions/3/assets/maps/m11-fixture-gallery.json",
+          "sha256": "20a71971555721dc99a1ffc8b0987fa59cb261f6ab59c65593b3496ecb265f1a",
+          "byteLength": 152
+        },
+        {
+          "kind": "data",
+          "assetPath": "scenarios/interaction-lab-alien-fantasy.json",
+          "storagePath": ".content-publication/revisions/3/assets/scenarios/interaction-lab-alien-fantasy.json",
+          "sha256": "538f1787c424a2e5d9b421185713ffe3002681ebdc3488c9d98fbe4f669df112",
+          "byteLength": 2966
+        },
+        {
+          "kind": "data",
+          "assetPath": "scenarios/lab-skirmish.json",
+          "storagePath": ".content-publication/revisions/3/assets/scenarios/lab-skirmish.json",
+          "sha256": "bacab5818f3d0375ea6bc3592698fa266274657ed05b224e12d4af67a1021e63",
+          "byteLength": 533
+        },
+        {
+          "kind": "data",
+          "assetPath": "scenarios/m11-fixture-gallery.json",
+          "storagePath": ".content-publication/revisions/3/assets/scenarios/m11-fixture-gallery.json",
+          "sha256": "91aad835d4bd6a446240a589ee413b2f6bfab93300dee916d051a79599a39824",
+          "byteLength": 1018
+        },
+        {
+          "kind": "runtime",
+          "assetPath": "buildings/gravemark-bastion/sprite.png",
+          "storagePath": ".content-publication/revisions/3/assets/buildings/gravemark-bastion/sprite.png",
+          "sha256": "9fd2fb079c825a9bd32a7f69a87899b5a19cae94142ab555dd0bbf2d021ba0cd",
+          "byteLength": 452,
+          "width": 96,
+          "height": 96
+        },
+        {
+          "kind": "runtime",
+          "assetPath": "buildings/neutral-cyan-beacon/sprite.png",
+          "storagePath": ".content-publication/revisions/3/assets/buildings/neutral-cyan-beacon/sprite.png",
+          "sha256": "79f51fcaee66fe865230e1bee210a3f8100e2118ae3c863bcbcc7d3a4121a151",
+          "byteLength": 348,
+          "width": 64,
+          "height": 64
+        },
+        {
+          "kind": "runtime",
+          "assetPath": "buildings/sunweaver-sanctum/sprite.png",
+          "storagePath": ".content-publication/revisions/3/assets/buildings/sunweaver-sanctum/sprite.png",
+          "sha256": "3b2c1b253c1ec159e21d59073d986e23b2050869ac4c48146850b441e9def28e",
+          "byteLength": 742,
+          "width": 128,
+          "height": 128
+        },
+        {
+          "kind": "runtime",
+          "assetPath": "units/gravemark-stalker/sheet.png",
+          "storagePath": ".content-publication/revisions/3/assets/units/gravemark-stalker/sheet.png",
+          "sha256": "9ad9d1c80ecba6e287ed4801bc9c8937a2a1930f00f849d311581aac6c156683",
+          "byteLength": 1728,
+          "width": 128,
+          "height": 256
+        },
+        {
+          "kind": "runtime",
+          "assetPath": "units/gravemark-walker-proxy/sheet.png",
+          "storagePath": ".content-publication/revisions/3/assets/units/gravemark-walker-proxy/sheet.png",
+          "sha256": "2ffbf2d536c9c8aeb1cf9175c38b6c1f60e3a0804e358367fddc7f3471705944",
+          "byteLength": 359,
+          "width": 64,
+          "height": 64
+        },
+        {
+          "kind": "runtime",
+          "assetPath": "units/sunweaver-scout/sheet.png",
+          "storagePath": ".content-publication/revisions/3/assets/units/sunweaver-scout/sheet.png",
+          "sha256": "a45428e676c023c7a68859662e5cfe4eb5b1177e8e42134dc0b31652f0cffd29",
+          "byteLength": 1844,
+          "width": 128,
+          "height": 256
+        },
+        {
+          "kind": "runtime",
+          "assetPath": "units/sunweaver-walker-proxy/sheet.png",
+          "storagePath": ".content-publication/revisions/3/assets/units/sunweaver-walker-proxy/sheet.png",
+          "sha256": "b28db8306360dad8e6af9db774296e83cd44e57c826228ff17fd38a0507ec7fb",
+          "byteLength": 357,
+          "width": 64,
+          "height": 64
+        }
+      ],
+      "createdAt": "2026-09-05T17:46:17.323Z",
+      "legacyManifestPath": ".content-publication/revisions/3/pack-v1.json"
+    },
+    "pack": {
+      "revision": "3",
+      "contentHash": "7fad4bce34dccd487c237ae63782ce0f61ba9db7f6feded5cfa8b6b0b2b6aee8"
+    }
+  },
+  "replacementContract": {
+    "requestedCycles": 8,
+    "successfulCycles": 8,
+    "exactPublishedRevisions": [
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9",
+      "10",
+      "11"
+    ],
+    "activeRevisionSequence": [
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9",
+      "10",
+      "11",
+      "11"
+    ],
+    "uniquePublishedRevisionCount": 8,
+    "uniqueVisualContentHashCount": 9,
+    "visualHashSequence": [
+      "46c4c80e590768a9337bac599e3f74a580d30e5967a6f2b8aa9c41aa3533892a",
+      "0debd01a28594da1810e9a3f3f5a01cb2f0d589042cedf6caa0e4c72779b4cd9",
+      "4a2aadf302aa9c21b079abdf0d8791ed3eae097ef8cf61ad4880f1ff815d96d3",
+      "8fe7c4e8e2f98609e3f87906bb5932468e8cd3a22877c7681ae91151e0b4de64",
+      "db75df63faccdd29fc5939fc46ae147ee627b0a61cc65f7ea7fa57a973eb7fa1",
+      "e3100446ae6e9f9a735c71ced80d9b3b7a981f4f35f2279ca6040042f1f84faf",
+      "574e8b72ede637f4e7e57769cb6e346ebfc2e426fd1d0f92f0ab7f8251d587d3",
+      "2baecd2de2103365486ca0ee9015ed3a54e2581f399623da0a7437835f77b05d",
+      "984f89bcc35512b2b4c535172175b97621340c480ac3c57dbb9eaccc36a78c03",
+      "984f89bcc35512b2b4c535172175b97621340c480ac3c57dbb9eaccc36a78c03"
+    ],
+    "simulationRulesHash": "c39e7796863a923af79d1acb847a7d614e3bec219723091732ec388a729e4018",
+    "rulesHashSequence": [
+      "c39e7796863a923af79d1acb847a7d614e3bec219723091732ec388a729e4018",
+      "c39e7796863a923af79d1acb847a7d614e3bec219723091732ec388a729e4018",
+      "c39e7796863a923af79d1acb847a7d614e3bec219723091732ec388a729e4018",
+      "c39e7796863a923af79d1acb847a7d614e3bec219723091732ec388a729e4018",
+      "c39e7796863a923af79d1acb847a7d614e3bec219723091732ec388a729e4018",
+      "c39e7796863a923af79d1acb847a7d614e3bec219723091732ec388a729e4018",
+      "c39e7796863a923af79d1acb847a7d614e3bec219723091732ec388a729e4018",
+      "c39e7796863a923af79d1acb847a7d614e3bec219723091732ec388a729e4018",
+      "c39e7796863a923af79d1acb847a7d614e3bec219723091732ec388a729e4018",
+      "c39e7796863a923af79d1acb847a7d614e3bec219723091732ec388a729e4018"
+    ],
+    "entityCountSequence": [
+      25,
+      25,
+      25,
+      25,
+      25,
+      25,
+      25,
+      25,
+      25,
+      25
+    ],
+    "acknowledgements": [
+      {
+        "runtimeId": "game-web-interaction-lab",
+        "scenarioId": "interaction-lab-alien-fantasy",
+        "revision": "4",
+        "simulationRulesHash": "c39e7796863a923af79d1acb847a7d614e3bec219723091732ec388a729e4018",
+        "restartRequired": false,
+        "updatedAt": "2026-09-05T17:47:05.417Z"
+      },
+      {
+        "runtimeId": "game-web-interaction-lab",
+        "scenarioId": "interaction-lab-alien-fantasy",
+        "revision": "5",
+        "simulationRulesHash": "c39e7796863a923af79d1acb847a7d614e3bec219723091732ec388a729e4018",
+        "restartRequired": false,
+        "updatedAt": "2026-09-05T17:47:37.952Z"
+      },
+      {
+        "runtimeId": "game-web-interaction-lab",
+        "scenarioId": "interaction-lab-alien-fantasy",
+        "revision": "6",
+        "simulationRulesHash": "c39e7796863a923af79d1acb847a7d614e3bec219723091732ec388a729e4018",
+        "restartRequired": false,
+        "updatedAt": "2026-09-05T17:48:10.541Z"
+      },
+      {
+        "runtimeId": "game-web-interaction-lab",
+        "scenarioId": "interaction-lab-alien-fantasy",
+        "revision": "7",
+        "simulationRulesHash": "c39e7796863a923af79d1acb847a7d614e3bec219723091732ec388a729e4018",
+        "restartRequired": false,
+        "updatedAt": "2026-09-05T17:48:43.232Z"
+      },
+      {
+        "runtimeId": "game-web-interaction-lab",
+        "scenarioId": "interaction-lab-alien-fantasy",
+        "revision": "8",
+        "simulationRulesHash": "c39e7796863a923af79d1acb847a7d614e3bec219723091732ec388a729e4018",
+        "restartRequired": false,
+        "updatedAt": "2026-09-05T17:49:16.179Z"
+      },
+      {
+        "runtimeId": "game-web-interaction-lab",
+        "scenarioId": "interaction-lab-alien-fantasy",
+        "revision": "9",
+        "simulationRulesHash": "c39e7796863a923af79d1acb847a7d614e3bec219723091732ec388a729e4018",
+        "restartRequired": false,
+        "updatedAt": "2026-09-05T17:49:50.591Z"
+      },
+      {
+        "runtimeId": "game-web-interaction-lab",
+        "scenarioId": "interaction-lab-alien-fantasy",
+        "revision": "10",
+        "simulationRulesHash": "c39e7796863a923af79d1acb847a7d614e3bec219723091732ec388a729e4018",
+        "restartRequired": false,
+        "updatedAt": "2026-09-05T17:50:24.736Z"
+      },
+      {
+        "runtimeId": "game-web-interaction-lab",
+        "scenarioId": "interaction-lab-alien-fantasy",
+        "revision": "11",
+        "simulationRulesHash": "c39e7796863a923af79d1acb847a7d614e3bec219723091732ec388a729e4018",
+        "restartRequired": false,
+        "updatedAt": "2026-09-05T17:51:04.349Z"
+      }
+    ],
+    "records": [
+      {
+        "cycle": 1,
+        "target": "alternate-gravemark-stalker",
+        "ok": true,
+        "revision": "4",
+        "draftBeforeRevision": "3",
+        "draftAfterRevision": "4",
+        "metadata": {
+          "schemaVersion": 1,
+          "revision": "4",
+          "packId": "dev-pack-v2",
+          "manifestPath": ".content-publication/revisions/4/pack.json",
+          "manifestHash": "5753ef40411342f3477fd4e0fdefbbb970bb26bc9abe89c470567b8823daf164",
+          "visualContentHash": "0debd01a28594da1810e9a3f3f5a01cb2f0d589042cedf6caa0e4c72779b4cd9",
+          "simulationRulesHash": "c39e7796863a923af79d1acb847a7d614e3bec219723091732ec388a729e4018",
+          "restartRequired": false,
+          "assets": [
+            {
+              "kind": "data",
+              "assetPath": "maps/interaction-lab-alien-fantasy.json",
+              "storagePath": ".content-publication/revisions/4/assets/maps/interaction-lab-alien-fantasy.json",
+              "sha256": "8a09566d0c8379912395e2f187e9de2c7df5e559594368bf5a0947cd45d567dc",
+              "byteLength": 169
+            },
+            {
+              "kind": "data",
+              "assetPath": "maps/lab-grid.json",
+              "storagePath": ".content-publication/revisions/4/assets/maps/lab-grid.json",
+              "sha256": "0ed06af57e7db77b66c9f737e5c08924650cc3ff80290e39f5f06cadae26a715",
+              "byteLength": 127
+            },
+            {
+              "kind": "data",
+              "assetPath": "maps/m11-fixture-gallery.json",
+              "storagePath": ".content-publication/revisions/4/assets/maps/m11-fixture-gallery.json",
+              "sha256": "20a71971555721dc99a1ffc8b0987fa59cb261f6ab59c65593b3496ecb265f1a",
+              "byteLength": 152
+            },
+            {
+              "kind": "data",
+              "assetPath": "scenarios/interaction-lab-alien-fantasy.json",
+              "storagePath": ".content-publication/revisions/4/assets/scenarios/interaction-lab-alien-fantasy.json",
+              "sha256": "538f1787c424a2e5d9b421185713ffe3002681ebdc3488c9d98fbe4f669df112",
+              "byteLength": 2966
+            },
+            {
+              "kind": "data",
+              "assetPath": "scenarios/lab-skirmish.json",
+              "storagePath": ".content-publication/revisions/4/assets/scenarios/lab-skirmish.json",
+              "sha256": "bacab5818f3d0375ea6bc3592698fa266274657ed05b224e12d4af67a1021e63",
+              "byteLength": 533
+            },
+            {
+              "kind": "data",
+              "assetPath": "scenarios/m11-fixture-gallery.json",
+              "storagePath": ".content-publication/revisions/4/assets/scenarios/m11-fixture-gallery.json",
+              "sha256": "91aad835d4bd6a446240a589ee413b2f6bfab93300dee916d051a79599a39824",
+              "byteLength": 1018
+            },
+            {
+              "kind": "runtime",
+              "assetPath": "buildings/gravemark-bastion/sprite.png",
+              "storagePath": ".content-publication/revisions/4/assets/buildings/gravemark-bastion/sprite.png",
+              "sha256": "9fd2fb079c825a9bd32a7f69a87899b5a19cae94142ab555dd0bbf2d021ba0cd",
+              "byteLength": 452,
+              "width": 96,
+              "height": 96
+            },
+            {
+              "kind": "runtime",
+              "assetPath": "buildings/neutral-cyan-beacon/sprite.png",
+              "storagePath": ".content-publication/revisions/4/assets/buildings/neutral-cyan-beacon/sprite.png",
+              "sha256": "79f51fcaee66fe865230e1bee210a3f8100e2118ae3c863bcbcc7d3a4121a151",
+              "byteLength": 348,
+              "width": 64,
+              "height": 64
+            },
+            {
+              "kind": "runtime",
+              "assetPath": "buildings/sunweaver-sanctum/sprite.png",
+              "storagePath": ".content-publication/revisions/4/assets/buildings/sunweaver-sanctum/sprite.png",
+              "sha256": "3b2c1b253c1ec159e21d59073d986e23b2050869ac4c48146850b441e9def28e",
+              "byteLength": 742,
+              "width": 128,
+              "height": 128
+            },
+            {
+              "kind": "runtime",
+              "assetPath": "units/gravemark-stalker/sheet.png",
+              "storagePath": ".content-publication/revisions/4/assets/units/gravemark-stalker/sheet.png",
+              "sha256": "9ad9d1c80ecba6e287ed4801bc9c8937a2a1930f00f849d311581aac6c156683",
+              "byteLength": 1728,
+              "width": 128,
+              "height": 256
+            },
+            {
+              "kind": "runtime",
+              "assetPath": "units/gravemark-walker-proxy/sheet.png",
+              "storagePath": ".content-publication/revisions/4/assets/units/gravemark-walker-proxy/sheet.png",
+              "sha256": "2ffbf2d536c9c8aeb1cf9175c38b6c1f60e3a0804e358367fddc7f3471705944",
+              "byteLength": 359,
+              "width": 64,
+              "height": 64
+            },
+            {
+              "kind": "runtime",
+              "assetPath": "units/sunweaver-scout/sheet.png",
+              "storagePath": ".content-publication/revisions/4/assets/units/sunweaver-scout/sheet.png",
+              "sha256": "9ad9d1c80ecba6e287ed4801bc9c8937a2a1930f00f849d311581aac6c156683",
+              "byteLength": 1728,
+              "width": 128,
+              "height": 256
+            },
+            {
+              "kind": "runtime",
+              "assetPath": "units/sunweaver-walker-proxy/sheet.png",
+              "storagePath": ".content-publication/revisions/4/assets/units/sunweaver-walker-proxy/sheet.png",
+              "sha256": "b28db8306360dad8e6af9db774296e83cd44e57c826228ff17fd38a0507ec7fb",
+              "byteLength": 357,
+              "width": 64,
+              "height": 64
+            }
+          ],
+          "createdAt": "2026-09-05T17:47:04.629Z",
+          "legacyManifestPath": ".content-publication/revisions/4/pack-v1.json",
+          "parentRevision": "3"
+        },
+        "asset": {
+          "path": "units/sunweaver-scout/sheet.png",
+          "responseStatus": 200,
+          "byteLength": 1728,
+          "servedSha256": "9ad9d1c80ecba6e287ed4801bc9c8937a2a1930f00f849d311581aac6c156683",
+          "metadataSha256": "9ad9d1c80ecba6e287ed4801bc9c8937a2a1930f00f849d311581aac6c156683",
+          "expectedInputSha256": "9ad9d1c80ecba6e287ed4801bc9c8937a2a1930f00f849d311581aac6c156683",
+          "servedMatchesMetadata": true,
+          "servedMatchesExpectedInput": true
+        },
+        "acknowledgement": {
+          "runtimeId": "game-web-interaction-lab",
+          "scenarioId": "interaction-lab-alien-fantasy",
+          "revision": "4",
+          "simulationRulesHash": "c39e7796863a923af79d1acb847a7d614e3bec219723091732ec388a729e4018",
+          "restartRequired": false,
+          "updatedAt": "2026-09-05T17:47:05.417Z"
+        },
+        "runtimeRevision": "4",
+        "runtimeTick": 1441,
+        "runtimeEntityCount": 25,
+        "error": null
+      },
+      {
+        "cycle": 2,
+        "target": "original-sunweaver-scout",
+        "ok": true,
+        "revision": "5",
+        "draftBeforeRevision": "4",
+        "draftAfterRevision": "5",
+        "metadata": {
+          "schemaVersion": 1,
+          "revision": "5",
+          "packId": "dev-pack-v2",
+          "manifestPath": ".content-publication/revisions/5/pack.json",
+          "manifestHash": "6aec10004b2ba86c89c072bfe59d07188a770a97626ab7c077441e0945919466",
+          "visualContentHash": "4a2aadf302aa9c21b079abdf0d8791ed3eae097ef8cf61ad4880f1ff815d96d3",
+          "simulationRulesHash": "c39e7796863a923af79d1acb847a7d614e3bec219723091732ec388a729e4018",
+          "restartRequired": false,
+          "assets": [
+            {
+              "kind": "data",
+              "assetPath": "maps/interaction-lab-alien-fantasy.json",
+              "storagePath": ".content-publication/revisions/5/assets/maps/interaction-lab-alien-fantasy.json",
+              "sha256": "8a09566d0c8379912395e2f187e9de2c7df5e559594368bf5a0947cd45d567dc",
+              "byteLength": 169
+            },
+            {
+              "kind": "data",
+              "assetPath": "maps/lab-grid.json",
+              "storagePath": ".content-publication/revisions/5/assets/maps/lab-grid.json",
+              "sha256": "0ed06af57e7db77b66c9f737e5c08924650cc3ff80290e39f5f06cadae26a715",
+              "byteLength": 127
+            },
+            {
+              "kind": "data",
+              "assetPath": "maps/m11-fixture-gallery.json",
+              "storagePath": ".content-publication/revisions/5/assets/maps/m11-fixture-gallery.json",
+              "sha256": "20a71971555721dc99a1ffc8b0987fa59cb261f6ab59c65593b3496ecb265f1a",
+              "byteLength": 152
+            },
+            {
+              "kind": "data",
+              "assetPath": "scenarios/interaction-lab-alien-fantasy.json",
+              "storagePath": ".content-publication/revisions/5/assets/scenarios/interaction-lab-alien-fantasy.json",
+              "sha256": "538f1787c424a2e5d9b421185713ffe3002681ebdc3488c9d98fbe4f669df112",
+              "byteLength": 2966
+            },
+            {
+              "kind": "data",
+              "assetPath": "scenarios/lab-skirmish.json",
+              "storagePath": ".content-publication/revisions/5/assets/scenarios/lab-skirmish.json",
+              "sha256": "bacab5818f3d0375ea6bc3592698fa266274657ed05b224e12d4af67a1021e63",
+              "byteLength": 533
+            },
+            {
+              "kind": "data",
+              "assetPath": "scenarios/m11-fixture-gallery.json",
+              "storagePath": ".content-publication/revisions/5/assets/scenarios/m11-fixture-gallery.json",
+              "sha256": "91aad835d4bd6a446240a589ee413b2f6bfab93300dee916d051a79599a39824",
+              "byteLength": 1018
+            },
+            {
+              "kind": "runtime",
+              "assetPath": "buildings/gravemark-bastion/sprite.png",
+              "storagePath": ".content-publication/revisions/5/assets/buildings/gravemark-bastion/sprite.png",
+              "sha256": "9fd2fb079c825a9bd32a7f69a87899b5a19cae94142ab555dd0bbf2d021ba0cd",
+              "byteLength": 452,
+              "width": 96,
+              "height": 96
+            },
+            {
+              "kind": "runtime",
+              "assetPath": "buildings/neutral-cyan-beacon/sprite.png",
+              "storagePath": ".content-publication/revisions/5/assets/buildings/neutral-cyan-beacon/sprite.png",
+              "sha256": "79f51fcaee66fe865230e1bee210a3f8100e2118ae3c863bcbcc7d3a4121a151",
+              "byteLength": 348,
+              "width": 64,
+              "height": 64
+            },
+            {
+              "kind": "runtime",
+              "assetPath": "buildings/sunweaver-sanctum/sprite.png",
+              "storagePath": ".content-publication/revisions/5/assets/buildings/sunweaver-sanctum/sprite.png",
+              "sha256": "3b2c1b253c1ec159e21d59073d986e23b2050869ac4c48146850b441e9def28e",
+              "byteLength": 742,
+              "width": 128,
+              "height": 128
+            },
+            {
+              "kind": "runtime",
+              "assetPath": "units/gravemark-stalker/sheet.png",
+              "storagePath": ".content-publication/revisions/5/assets/units/gravemark-stalker/sheet.png",
+              "sha256": "9ad9d1c80ecba6e287ed4801bc9c8937a2a1930f00f849d311581aac6c156683",
+              "byteLength": 1728,
+              "width": 128,
+              "height": 256
+            },
+            {
+              "kind": "runtime",
+              "assetPath": "units/gravemark-walker-proxy/sheet.png",
+              "storagePath": ".content-publication/revisions/5/assets/units/gravemark-walker-proxy/sheet.png",
+              "sha256": "2ffbf2d536c9c8aeb1cf9175c38b6c1f60e3a0804e358367fddc7f3471705944",
+              "byteLength": 359,
+              "width": 64,
+              "height": 64
+            },
+            {
+              "kind": "runtime",
+              "assetPath": "units/sunweaver-scout/sheet.png",
+              "storagePath": ".content-publication/revisions/5/assets/units/sunweaver-scout/sheet.png",
+              "sha256": "a45428e676c023c7a68859662e5cfe4eb5b1177e8e42134dc0b31652f0cffd29",
+              "byteLength": 1844,
+              "width": 128,
+              "height": 256
+            },
+            {
+              "kind": "runtime",
+              "assetPath": "units/sunweaver-walker-proxy/sheet.png",
+              "storagePath": ".content-publication/revisions/5/assets/units/sunweaver-walker-proxy/sheet.png",
+              "sha256": "b28db8306360dad8e6af9db774296e83cd44e57c826228ff17fd38a0507ec7fb",
+              "byteLength": 357,
+              "width": 64,
+              "height": 64
+            }
+          ],
+          "createdAt": "2026-09-05T17:47:37.090Z",
+          "legacyManifestPath": ".content-publication/revisions/5/pack-v1.json",
+          "parentRevision": "4"
+        },
+        "asset": {
+          "path": "units/sunweaver-scout/sheet.png",
+          "responseStatus": 200,
+          "byteLength": 1844,
+          "servedSha256": "a45428e676c023c7a68859662e5cfe4eb5b1177e8e42134dc0b31652f0cffd29",
+          "metadataSha256": "a45428e676c023c7a68859662e5cfe4eb5b1177e8e42134dc0b31652f0cffd29",
+          "expectedInputSha256": "a45428e676c023c7a68859662e5cfe4eb5b1177e8e42134dc0b31652f0cffd29",
+          "servedMatchesMetadata": true,
+          "servedMatchesExpectedInput": true
+        },
+        "acknowledgement": {
+          "runtimeId": "game-web-interaction-lab",
+          "scenarioId": "interaction-lab-alien-fantasy",
+          "revision": "5",
+          "simulationRulesHash": "c39e7796863a923af79d1acb847a7d614e3bec219723091732ec388a729e4018",
+          "restartRequired": false,
+          "updatedAt": "2026-09-05T17:47:37.952Z"
+        },
+        "runtimeRevision": "5",
+        "runtimeTick": 2092,
+        "runtimeEntityCount": 25,
+        "error": null
+      },
+      {
+        "cycle": 3,
+        "target": "alternate-gravemark-stalker",
+        "ok": true,
+        "revision": "6",
+        "draftBeforeRevision": "5",
+        "draftAfterRevision": "6",
+        "metadata": {
+          "schemaVersion": 1,
+          "revision": "6",
+          "packId": "dev-pack-v2",
+          "manifestPath": ".content-publication/revisions/6/pack.json",
+          "manifestHash": "490422ed49356e94c0a38d495aa1a829a2d94bc0629c82a65f47fc057d0e5b18",
+          "visualContentHash": "8fe7c4e8e2f98609e3f87906bb5932468e8cd3a22877c7681ae91151e0b4de64",
+          "simulationRulesHash": "c39e7796863a923af79d1acb847a7d614e3bec219723091732ec388a729e4018",
+          "restartRequired": false,
+          "assets": [
+            {
+              "kind": "data",
+              "assetPath": "maps/interaction-lab-alien-fantasy.json",
+              "storagePath": ".content-publication/revisions/6/assets/maps/interaction-lab-alien-fantasy.json",
+              "sha256": "8a09566d0c8379912395e2f187e9de2c7df5e559594368bf5a0947cd45d567dc",
+              "byteLength": 169
+            },
+            {
+              "kind": "data",
+              "assetPath": "maps/lab-grid.json",
+              "storagePath": ".content-publication/revisions/6/assets/maps/lab-grid.json",
+              "sha256": "0ed06af57e7db77b66c9f737e5c08924650cc3ff80290e39f5f06cadae26a715",
+              "byteLength": 127
+            },
+            {
+              "kind": "data",
+              "assetPath": "maps/m11-fixture-gallery.json",
+              "storagePath": ".content-publication/revisions/6/assets/maps/m11-fixture-gallery.json",
+              "sha256": "20a71971555721dc99a1ffc8b0987fa59cb261f6ab59c65593b3496ecb265f1a",
+              "byteLength": 152
+            },
+            {
+              "kind": "data",
+              "assetPath": "scenarios/interaction-lab-alien-fantasy.json",
+              "storagePath": ".content-publication/revisions/6/assets/scenarios/interaction-lab-alien-fantasy.json",
+              "sha256": "538f1787c424a2e5d9b421185713ffe3002681ebdc3488c9d98fbe4f669df112",
+              "byteLength": 2966
+            },
+            {
+              "kind": "data",
+              "assetPath": "scenarios/lab-skirmish.json",
+              "storagePath": ".content-publication/revisions/6/assets/scenarios/lab-skirmish.json",
+              "sha256": "bacab5818f3d0375ea6bc3592698fa266274657ed05b224e12d4af67a1021e63",
+              "byteLength": 533
+            },
+            {
+              "kind": "data",
+              "assetPath": "scenarios/m11-fixture-gallery.json",
+              "storagePath": ".content-publication/revisions/6/assets/scenarios/m11-fixture-gallery.json",
+              "sha256": "91aad835d4bd6a446240a589ee413b2f6bfab93300dee916d051a79599a39824",
+              "byteLength": 1018
+            },
+            {
+              "kind": "runtime",
+              "assetPath": "buildings/gravemark-bastion/sprite.png",
+              "storagePath": ".content-publication/revisions/6/assets/buildings/gravemark-bastion/sprite.png",
+              "sha256": "9fd2fb079c825a9bd32a7f69a87899b5a19cae94142ab555dd0bbf2d021ba0cd",
+              "byteLength": 452,
+              "width": 96,
+              "height": 96
+            },
+            {
+              "kind": "runtime",
+              "assetPath": "buildings/neutral-cyan-beacon/sprite.png",
+              "storagePath": ".content-publication/revisions/6/assets/buildings/neutral-cyan-beacon/sprite.png",
+              "sha256": "79f51fcaee66fe865230e1bee210a3f8100e2118ae3c863bcbcc7d3a4121a151",
+              "byteLength": 348,
+              "width": 64,
+              "height": 64
+            },
+            {
+              "kind": "runtime",
+              "assetPath": "buildings/sunweaver-sanctum/sprite.png",
+              "storagePath": ".content-publication/revisions/6/assets/buildings/sunweaver-sanctum/sprite.png",
+              "sha256": "3b2c1b253c1ec159e21d59073d986e23b2050869ac4c48146850b441e9def28e",
+              "byteLength": 742,
+              "width": 128,
+              "height": 128
+            },
+            {
+              "kind": "runtime",
+              "assetPath": "units/gravemark-stalker/sheet.png",
+              "storagePath": ".content-publication/revisions/6/assets/units/gravemark-stalker/sheet.png",
+              "sha256": "9ad9d1c80ecba6e287ed4801bc9c8937a2a1930f00f849d311581aac6c156683",
+              "byteLength": 1728,
+              "width": 128,
+              "height": 256
+            },
+            {
+              "kind": "runtime",
+              "assetPath": "units/gravemark-walker-proxy/sheet.png",
+              "storagePath": ".content-publication/revisions/6/assets/units/gravemark-walker-proxy/sheet.png",
+              "sha256": "2ffbf2d536c9c8aeb1cf9175c38b6c1f60e3a0804e358367fddc7f3471705944",
+              "byteLength": 359,
+              "width": 64,
+              "height": 64
+            },
+            {
+              "kind": "runtime",
+              "assetPath": "units/sunweaver-scout/sheet.png",
+              "storagePath": ".content-publication/revisions/6/assets/units/sunweaver-scout/sheet.png",
+              "sha256": "9ad9d1c80ecba6e287ed4801bc9c8937a2a1930f00f849d311581aac6c156683",
+              "byteLength": 1728,
+              "width": 128,
+              "height": 256
+            },
+            {
+              "kind": "runtime",
+              "assetPath": "units/sunweaver-walker-proxy/sheet.png",
+              "storagePath": ".content-publication/revisions/6/assets/units/sunweaver-walker-proxy/sheet.png",
+              "sha256": "b28db8306360dad8e6af9db774296e83cd44e57c826228ff17fd38a0507ec7fb",
+              "byteLength": 357,
+              "width": 64,
+              "height": 64
+            }
+          ],
+          "createdAt": "2026-09-05T17:48:09.755Z",
+          "legacyManifestPath": ".content-publication/revisions/6/pack-v1.json",
+          "parentRevision": "5"
+        },
+        "asset": {
+          "path": "units/sunweaver-scout/sheet.png",
+          "responseStatus": 200,
+          "byteLength": 1728,
+          "servedSha256": "9ad9d1c80ecba6e287ed4801bc9c8937a2a1930f00f849d311581aac6c156683",
+          "metadataSha256": "9ad9d1c80ecba6e287ed4801bc9c8937a2a1930f00f849d311581aac6c156683",
+          "expectedInputSha256": "9ad9d1c80ecba6e287ed4801bc9c8937a2a1930f00f849d311581aac6c156683",
+          "servedMatchesMetadata": true,
+          "servedMatchesExpectedInput": true
+        },
+        "acknowledgement": {
+          "runtimeId": "game-web-interaction-lab",
+          "scenarioId": "interaction-lab-alien-fantasy",
+          "revision": "6",
+          "simulationRulesHash": "c39e7796863a923af79d1acb847a7d614e3bec219723091732ec388a729e4018",
+          "restartRequired": false,
+          "updatedAt": "2026-09-05T17:48:10.541Z"
+        },
+        "runtimeRevision": "6",
+        "runtimeTick": 2748,
+        "runtimeEntityCount": 25,
+        "error": null
+      },
+      {
+        "cycle": 4,
+        "target": "original-sunweaver-scout",
+        "ok": true,
+        "revision": "7",
+        "draftBeforeRevision": "6",
+        "draftAfterRevision": "7",
+        "metadata": {
+          "schemaVersion": 1,
+          "revision": "7",
+          "packId": "dev-pack-v2",
+          "manifestPath": ".content-publication/revisions/7/pack.json",
+          "manifestHash": "a80f16bb602d0392b0b9102f6dbc831e6860a3747f9168702f8df79628fcb5a6",
+          "visualContentHash": "db75df63faccdd29fc5939fc46ae147ee627b0a61cc65f7ea7fa57a973eb7fa1",
+          "simulationRulesHash": "c39e7796863a923af79d1acb847a7d614e3bec219723091732ec388a729e4018",
+          "restartRequired": false,
+          "assets": [
+            {
+              "kind": "data",
+              "assetPath": "maps/interaction-lab-alien-fantasy.json",
+              "storagePath": ".content-publication/revisions/7/assets/maps/interaction-lab-alien-fantasy.json",
+              "sha256": "8a09566d0c8379912395e2f187e9de2c7df5e559594368bf5a0947cd45d567dc",
+              "byteLength": 169
+            },
+            {
+              "kind": "data",
+              "assetPath": "maps/lab-grid.json",
+              "storagePath": ".content-publication/revisions/7/assets/maps/lab-grid.json",
+              "sha256": "0ed06af57e7db77b66c9f737e5c08924650cc3ff80290e39f5f06cadae26a715",
+              "byteLength": 127
+            },
+            {
+              "kind": "data",
+              "assetPath": "maps/m11-fixture-gallery.json",
+              "storagePath": ".content-publication/revisions/7/assets/maps/m11-fixture-gallery.json",
+              "sha256": "20a71971555721dc99a1ffc8b0987fa59cb261f6ab59c65593b3496ecb265f1a",
+              "byteLength": 152
+            },
+            {
+              "kind": "data",
+              "assetPath": "scenarios/interaction-lab-alien-fantasy.json",
+              "storagePath": ".content-publication/revisions/7/assets/scenarios/interaction-lab-alien-fantasy.json",
+              "sha256": "538f1787c424a2e5d9b421185713ffe3002681ebdc3488c9d98fbe4f669df112",
+              "byteLength": 2966
+            },
+            {
+              "kind": "data",
+              "assetPath": "scenarios/lab-skirmish.json",
+              "storagePath": ".content-publication/revisions/7/assets/scenarios/lab-skirmish.json",
+              "sha256": "bacab5818f3d0375ea6bc3592698fa266274657ed05b224e12d4af67a1021e63",
+              "byteLength": 533
+            },
+            {
+              "kind": "data",
+              "assetPath": "scenarios/m11-fixture-gallery.json",
+              "storagePath": ".content-publication/revisions/7/assets/scenarios/m11-fixture-gallery.json",
+              "sha256": "91aad835d4bd6a446240a589ee413b2f6bfab93300dee916d051a79599a39824",
+              "byteLength": 1018
+            },
+            {
+              "kind": "runtime",
+              "assetPath": "buildings/gravemark-bastion/sprite.png",
+              "storagePath": ".content-publication/revisions/7/assets/buildings/gravemark-bastion/sprite.png",
+              "sha256": "9fd2fb079c825a9bd32a7f69a87899b5a19cae94142ab555dd0bbf2d021ba0cd",
+              "byteLength": 452,
+              "width": 96,
+              "height": 96
+            },
+            {
+              "kind": "runtime",
+              "assetPath": "buildings/neutral-cyan-beacon/sprite.png",
+              "storagePath": ".content-publication/revisions/7/assets/buildings/neutral-cyan-beacon/sprite.png",
+              "sha256": "79f51fcaee66fe865230e1bee210a3f8100e2118ae3c863bcbcc7d3a4121a151",
+              "byteLength": 348,
+              "width": 64,
+              "height": 64
+            },
+            {
+              "kind": "runtime",
+              "assetPath": "buildings/sunweaver-sanctum/sprite.png",
+              "storagePath": ".content-publication/revisions/7/assets/buildings/sunweaver-sanctum/sprite.png",
+              "sha256": "3b2c1b253c1ec159e21d59073d986e23b2050869ac4c48146850b441e9def28e",
+              "byteLength": 742,
+              "width": 128,
+              "height": 128
+            },
+            {
+              "kind": "runtime",
+              "assetPath": "units/gravemark-stalker/sheet.png",
+              "storagePath": ".content-publication/revisions/7/assets/units/gravemark-stalker/sheet.png",
+              "sha256": "9ad9d1c80ecba6e287ed4801bc9c8937a2a1930f00f849d311581aac6c156683",
+              "byteLength": 1728,
+              "width": 128,
+              "height": 256
+            },
+            {
+              "kind": "runtime",
+              "assetPath": "units/gravemark-walker-proxy/sheet.png",
+              "storagePath": ".content-publication/revisions/7/assets/units/gravemark-walker-proxy/sheet.png",
+              "sha256": "2ffbf2d536c9c8aeb1cf9175c38b6c1f60e3a0804e358367fddc7f3471705944",
+              "byteLength": 359,
+              "width": 64,
+              "height": 64
+            },
+            {
+              "kind": "runtime",
+              "assetPath": "units/sunweaver-scout/sheet.png",
+              "storagePath": ".content-publication/revisions/7/assets/units/sunweaver-scout/sheet.png",
+              "sha256": "a45428e676c023c7a68859662e5cfe4eb5b1177e8e42134dc0b31652f0cffd29",
+              "byteLength": 1844,
+              "width": 128,
+              "height": 256
+            },
+            {
+              "kind": "runtime",
+              "assetPath": "units/sunweaver-walker-proxy/sheet.png",
+              "storagePath": ".content-publication/revisions/7/assets/units/sunweaver-walker-proxy/sheet.png",
+              "sha256": "b28db8306360dad8e6af9db774296e83cd44e57c826228ff17fd38a0507ec7fb",
+              "byteLength": 357,
+              "width": 64,
+              "height": 64
+            }
+          ],
+          "createdAt": "2026-09-05T17:48:42.511Z",
+          "legacyManifestPath": ".content-publication/revisions/7/pack-v1.json",
+          "parentRevision": "6"
+        },
+        "asset": {
+          "path": "units/sunweaver-scout/sheet.png",
+          "responseStatus": 200,
+          "byteLength": 1844,
+          "servedSha256": "a45428e676c023c7a68859662e5cfe4eb5b1177e8e42134dc0b31652f0cffd29",
+          "metadataSha256": "a45428e676c023c7a68859662e5cfe4eb5b1177e8e42134dc0b31652f0cffd29",
+          "expectedInputSha256": "a45428e676c023c7a68859662e5cfe4eb5b1177e8e42134dc0b31652f0cffd29",
+          "servedMatchesMetadata": true,
+          "servedMatchesExpectedInput": true
+        },
+        "acknowledgement": {
+          "runtimeId": "game-web-interaction-lab",
+          "scenarioId": "interaction-lab-alien-fantasy",
+          "revision": "7",
+          "simulationRulesHash": "c39e7796863a923af79d1acb847a7d614e3bec219723091732ec388a729e4018",
+          "restartRequired": false,
+          "updatedAt": "2026-09-05T17:48:43.232Z"
+        },
+        "runtimeRevision": "7",
+        "runtimeTick": 3398,
+        "runtimeEntityCount": 25,
+        "error": null
+      },
+      {
+        "cycle": 5,
+        "target": "alternate-gravemark-stalker",
+        "ok": true,
+        "revision": "8",
+        "draftBeforeRevision": "7",
+        "draftAfterRevision": "8",
+        "metadata": {
+          "schemaVersion": 1,
+          "revision": "8",
+          "packId": "dev-pack-v2",
+          "manifestPath": ".content-publication/revisions/8/pack.json",
+          "manifestHash": "2321c92a5c3c14014310559cdf084acd53c55a44d1616858a07a3be3f60f9f70",
+          "visualContentHash": "e3100446ae6e9f9a735c71ced80d9b3b7a981f4f35f2279ca6040042f1f84faf",
+          "simulationRulesHash": "c39e7796863a923af79d1acb847a7d614e3bec219723091732ec388a729e4018",
+          "restartRequired": false,
+          "assets": [
+            {
+              "kind": "data",
+              "assetPath": "maps/interaction-lab-alien-fantasy.json",
+              "storagePath": ".content-publication/revisions/8/assets/maps/interaction-lab-alien-fantasy.json",
+              "sha256": "8a09566d0c8379912395e2f187e9de2c7df5e559594368bf5a0947cd45d567dc",
+              "byteLength": 169
+            },
+            {
+              "kind": "data",
+              "assetPath": "maps/lab-grid.json",
+              "storagePath": ".content-publication/revisions/8/assets/maps/lab-grid.json",
+              "sha256": "0ed06af57e7db77b66c9f737e5c08924650cc3ff80290e39f5f06cadae26a715",
+              "byteLength": 127
+            },
+            {
+              "kind": "data",
+              "assetPath": "maps/m11-fixture-gallery.json",
+              "storagePath": ".content-publication/revisions/8/assets/maps/m11-fixture-gallery.json",
+              "sha256": "20a71971555721dc99a1ffc8b0987fa59cb261f6ab59c65593b3496ecb265f1a",
+              "byteLength": 152
+            },
+            {
+              "kind": "data",
+              "assetPath": "scenarios/interaction-lab-alien-fantasy.json",
+              "storagePath": ".content-publication/revisions/8/assets/scenarios/interaction-lab-alien-fantasy.json",
+              "sha256": "538f1787c424a2e5d9b421185713ffe3002681ebdc3488c9d98fbe4f669df112",
+              "byteLength": 2966
+            },
+            {
+              "kind": "data",
+              "assetPath": "scenarios/lab-skirmish.json",
+              "storagePath": ".content-publication/revisions/8/assets/scenarios/lab-skirmish.json",
+              "sha256": "bacab5818f3d0375ea6bc3592698fa266274657ed05b224e12d4af67a1021e63",
+              "byteLength": 533
+            },
+            {
+              "kind": "data",
+              "assetPath": "scenarios/m11-fixture-gallery.json",
+              "storagePath": ".content-publication/revisions/8/assets/scenarios/m11-fixture-gallery.json",
+              "sha256": "91aad835d4bd6a446240a589ee413b2f6bfab93300dee916d051a79599a39824",
+              "byteLength": 1018
+            },
+            {
+              "kind": "runtime",
+              "assetPath": "buildings/gravemark-bastion/sprite.png",
+              "storagePath": ".content-publication/revisions/8/assets/buildings/gravemark-bastion/sprite.png",
+              "sha256": "9fd2fb079c825a9bd32a7f69a87899b5a19cae94142ab555dd0bbf2d021ba0cd",
+              "byteLength": 452,
+              "width": 96,
+              "height": 96
+            },
+            {
+              "kind": "runtime",
+              "assetPath": "buildings/neutral-cyan-beacon/sprite.png",
+              "storagePath": ".content-publication/revisions/8/assets/buildings/neutral-cyan-beacon/sprite.png",
+              "sha256": "79f51fcaee66fe865230e1bee210a3f8100e2118ae3c863bcbcc7d3a4121a151",
+              "byteLength": 348,
+              "width": 64,
+              "height": 64
+            },
+            {
+              "kind": "runtime",
+              "assetPath": "buildings/sunweaver-sanctum/sprite.png",
+              "storagePath": ".content-publication/revisions/8/assets/buildings/sunweaver-sanctum/sprite.png",
+              "sha256": "3b2c1b253c1ec159e21d59073d986e23b2050869ac4c48146850b441e9def28e",
+              "byteLength": 742,
+              "width": 128,
+              "height": 128
+            },
+            {
+              "kind": "runtime",
+              "assetPath": "units/gravemark-stalker/sheet.png",
+              "storagePath": ".content-publication/revisions/8/assets/units/gravemark-stalker/sheet.png",
+              "sha256": "9ad9d1c80ecba6e287ed4801bc9c8937a2a1930f00f849d311581aac6c156683",
+              "byteLength": 1728,
+              "width": 128,
+              "height": 256
+            },
+            {
+              "kind": "runtime",
+              "assetPath": "units/gravemark-walker-proxy/sheet.png",
+              "storagePath": ".content-publication/revisions/8/assets/units/gravemark-walker-proxy/sheet.png",
+              "sha256": "2ffbf2d536c9c8aeb1cf9175c38b6c1f60e3a0804e358367fddc7f3471705944",
+              "byteLength": 359,
+              "width": 64,
+              "height": 64
+            },
+            {
+              "kind": "runtime",
+              "assetPath": "units/sunweaver-scout/sheet.png",
+              "storagePath": ".content-publication/revisions/8/assets/units/sunweaver-scout/sheet.png",
+              "sha256": "9ad9d1c80ecba6e287ed4801bc9c8937a2a1930f00f849d311581aac6c156683",
+              "byteLength": 1728,
+              "width": 128,
+              "height": 256
+            },
+            {
+              "kind": "runtime",
+              "assetPath": "units/sunweaver-walker-proxy/sheet.png",
+              "storagePath": ".content-publication/revisions/8/assets/units/sunweaver-walker-proxy/sheet.png",
+              "sha256": "b28db8306360dad8e6af9db774296e83cd44e57c826228ff17fd38a0507ec7fb",
+              "byteLength": 357,
+              "width": 64,
+              "height": 64
+            }
+          ],
+          "createdAt": "2026-09-05T17:49:15.262Z",
+          "legacyManifestPath": ".content-publication/revisions/8/pack-v1.json",
+          "parentRevision": "7"
+        },
+        "asset": {
+          "path": "units/sunweaver-scout/sheet.png",
+          "responseStatus": 200,
+          "byteLength": 1728,
+          "servedSha256": "9ad9d1c80ecba6e287ed4801bc9c8937a2a1930f00f849d311581aac6c156683",
+          "metadataSha256": "9ad9d1c80ecba6e287ed4801bc9c8937a2a1930f00f849d311581aac6c156683",
+          "expectedInputSha256": "9ad9d1c80ecba6e287ed4801bc9c8937a2a1930f00f849d311581aac6c156683",
+          "servedMatchesMetadata": true,
+          "servedMatchesExpectedInput": true
+        },
+        "acknowledgement": {
+          "runtimeId": "game-web-interaction-lab",
+          "scenarioId": "interaction-lab-alien-fantasy",
+          "revision": "8",
+          "simulationRulesHash": "c39e7796863a923af79d1acb847a7d614e3bec219723091732ec388a729e4018",
+          "restartRequired": false,
+          "updatedAt": "2026-09-05T17:49:16.179Z"
+        },
+        "runtimeRevision": "8",
+        "runtimeTick": 4058,
+        "runtimeEntityCount": 25,
+        "error": null
+      },
+      {
+        "cycle": 6,
+        "target": "original-sunweaver-scout",
+        "ok": true,
+        "revision": "9",
+        "draftBeforeRevision": "8",
+        "draftAfterRevision": "9",
+        "metadata": {
+          "schemaVersion": 1,
+          "revision": "9",
+          "packId": "dev-pack-v2",
+          "manifestPath": ".content-publication/revisions/9/pack.json",
+          "manifestHash": "304ddd6031fe6f299493396ff15d7773f323755fcc31e85df8eb6dd3cf03774b",
+          "visualContentHash": "574e8b72ede637f4e7e57769cb6e346ebfc2e426fd1d0f92f0ab7f8251d587d3",
+          "simulationRulesHash": "c39e7796863a923af79d1acb847a7d614e3bec219723091732ec388a729e4018",
+          "restartRequired": false,
+          "assets": [
+            {
+              "kind": "data",
+              "assetPath": "maps/interaction-lab-alien-fantasy.json",
+              "storagePath": ".content-publication/revisions/9/assets/maps/interaction-lab-alien-fantasy.json",
+              "sha256": "8a09566d0c8379912395e2f187e9de2c7df5e559594368bf5a0947cd45d567dc",
+              "byteLength": 169
+            },
+            {
+              "kind": "data",
+              "assetPath": "maps/lab-grid.json",
+              "storagePath": ".content-publication/revisions/9/assets/maps/lab-grid.json",
+              "sha256": "0ed06af57e7db77b66c9f737e5c08924650cc3ff80290e39f5f06cadae26a715",
+              "byteLength": 127
+            },
+            {
+              "kind": "data",
+              "assetPath": "maps/m11-fixture-gallery.json",
+              "storagePath": ".content-publication/revisions/9/assets/maps/m11-fixture-gallery.json",
+              "sha256": "20a71971555721dc99a1ffc8b0987fa59cb261f6ab59c65593b3496ecb265f1a",
+              "byteLength": 152
+            },
+            {
+              "kind": "data",
+              "assetPath": "scenarios/interaction-lab-alien-fantasy.json",
+              "storagePath": ".content-publication/revisions/9/assets/scenarios/interaction-lab-alien-fantasy.json",
+              "sha256": "538f1787c424a2e5d9b421185713ffe3002681ebdc3488c9d98fbe4f669df112",
+              "byteLength": 2966
+            },
+            {
+              "kind": "data",
+              "assetPath": "scenarios/lab-skirmish.json",
+              "storagePath": ".content-publication/revisions/9/assets/scenarios/lab-skirmish.json",
+              "sha256": "bacab5818f3d0375ea6bc3592698fa266274657ed05b224e12d4af67a1021e63",
+              "byteLength": 533
+            },
+            {
+              "kind": "data",
+              "assetPath": "scenarios/m11-fixture-gallery.json",
+              "storagePath": ".content-publication/revisions/9/assets/scenarios/m11-fixture-gallery.json",
+              "sha256": "91aad835d4bd6a446240a589ee413b2f6bfab93300dee916d051a79599a39824",
+              "byteLength": 1018
+            },
+            {
+              "kind": "runtime",
+              "assetPath": "buildings/gravemark-bastion/sprite.png",
+              "storagePath": ".content-publication/revisions/9/assets/buildings/gravemark-bastion/sprite.png",
+              "sha256": "9fd2fb079c825a9bd32a7f69a87899b5a19cae94142ab555dd0bbf2d021ba0cd",
+              "byteLength": 452,
+              "width": 96,
+              "height": 96
+            },
+            {
+              "kind": "runtime",
+              "assetPath": "buildings/neutral-cyan-beacon/sprite.png",
+              "storagePath": ".content-publication/revisions/9/assets/buildings/neutral-cyan-beacon/sprite.png",
+              "sha256": "79f51fcaee66fe865230e1bee210a3f8100e2118ae3c863bcbcc7d3a4121a151",
+              "byteLength": 348,
+              "width": 64,
+              "height": 64
+            },
+            {
+              "kind": "runtime",
+              "assetPath": "buildings/sunweaver-sanctum/sprite.png",
+              "storagePath": ".content-publication/revisions/9/assets/buildings/sunweaver-sanctum/sprite.png",
+              "sha256": "3b2c1b253c1ec159e21d59073d986e23b2050869ac4c48146850b441e9def28e",
+              "byteLength": 742,
+              "width": 128,
+              "height": 128
+            },
+            {
+              "kind": "runtime",
+              "assetPath": "units/gravemark-stalker/sheet.png",
+              "storagePath": ".content-publication/revisions/9/assets/units/gravemark-stalker/sheet.png",
+              "sha256": "9ad9d1c80ecba6e287ed4801bc9c8937a2a1930f00f849d311581aac6c156683",
+              "byteLength": 1728,
+              "width": 128,
+              "height": 256
+            },
+            {
+              "kind": "runtime",
+              "assetPath": "units/gravemark-walker-proxy/sheet.png",
+              "storagePath": ".content-publication/revisions/9/assets/units/gravemark-walker-proxy/sheet.png",
+              "sha256": "2ffbf2d536c9c8aeb1cf9175c38b6c1f60e3a0804e358367fddc7f3471705944",
+              "byteLength": 359,
+              "width": 64,
+              "height": 64
+            },
+            {
+              "kind": "runtime",
+              "assetPath": "units/sunweaver-scout/sheet.png",
+              "storagePath": ".content-publication/revisions/9/assets/units/sunweaver-scout/sheet.png",
+              "sha256": "a45428e676c023c7a68859662e5cfe4eb5b1177e8e42134dc0b31652f0cffd29",
+              "byteLength": 1844,
+              "width": 128,
+              "height": 256
+            },
+            {
+              "kind": "runtime",
+              "assetPath": "units/sunweaver-walker-proxy/sheet.png",
+              "storagePath": ".content-publication/revisions/9/assets/units/sunweaver-walker-proxy/sheet.png",
+              "sha256": "b28db8306360dad8e6af9db774296e83cd44e57c826228ff17fd38a0507ec7fb",
+              "byteLength": 357,
+              "width": 64,
+              "height": 64
+            }
+          ],
+          "createdAt": "2026-09-05T17:49:49.323Z",
+          "legacyManifestPath": ".content-publication/revisions/9/pack-v1.json",
+          "parentRevision": "8"
+        },
+        "asset": {
+          "path": "units/sunweaver-scout/sheet.png",
+          "responseStatus": 200,
+          "byteLength": 1844,
+          "servedSha256": "a45428e676c023c7a68859662e5cfe4eb5b1177e8e42134dc0b31652f0cffd29",
+          "metadataSha256": "a45428e676c023c7a68859662e5cfe4eb5b1177e8e42134dc0b31652f0cffd29",
+          "expectedInputSha256": "a45428e676c023c7a68859662e5cfe4eb5b1177e8e42134dc0b31652f0cffd29",
+          "servedMatchesMetadata": true,
+          "servedMatchesExpectedInput": true
+        },
+        "acknowledgement": {
+          "runtimeId": "game-web-interaction-lab",
+          "scenarioId": "interaction-lab-alien-fantasy",
+          "revision": "9",
+          "simulationRulesHash": "c39e7796863a923af79d1acb847a7d614e3bec219723091732ec388a729e4018",
+          "restartRequired": false,
+          "updatedAt": "2026-09-05T17:49:50.591Z"
+        },
+        "runtimeRevision": "9",
+        "runtimeTick": 4751,
+        "runtimeEntityCount": 25,
+        "error": null
+      },
+      {
+        "cycle": 7,
+        "target": "alternate-gravemark-stalker",
+        "ok": true,
+        "revision": "10",
+        "draftBeforeRevision": "9",
+        "draftAfterRevision": "10",
+        "metadata": {
+          "schemaVersion": 1,
+          "revision": "10",
+          "packId": "dev-pack-v2",
+          "manifestPath": ".content-publication/revisions/10/pack.json",
+          "manifestHash": "1ffbdb9fe39e4a109d7187c74b70cc711e554ce367132d892089458eaa3ab409",
+          "visualContentHash": "2baecd2de2103365486ca0ee9015ed3a54e2581f399623da0a7437835f77b05d",
+          "simulationRulesHash": "c39e7796863a923af79d1acb847a7d614e3bec219723091732ec388a729e4018",
+          "restartRequired": false,
+          "assets": [
+            {
+              "kind": "data",
+              "assetPath": "maps/interaction-lab-alien-fantasy.json",
+              "storagePath": ".content-publication/revisions/10/assets/maps/interaction-lab-alien-fantasy.json",
+              "sha256": "8a09566d0c8379912395e2f187e9de2c7df5e559594368bf5a0947cd45d567dc",
+              "byteLength": 169
+            },
+            {
+              "kind": "data",
+              "assetPath": "maps/lab-grid.json",
+              "storagePath": ".content-publication/revisions/10/assets/maps/lab-grid.json",
+              "sha256": "0ed06af57e7db77b66c9f737e5c08924650cc3ff80290e39f5f06cadae26a715",
+              "byteLength": 127
+            },
+            {
+              "kind": "data",
+              "assetPath": "maps/m11-fixture-gallery.json",
+              "storagePath": ".content-publication/revisions/10/assets/maps/m11-fixture-gallery.json",
+              "sha256": "20a71971555721dc99a1ffc8b0987fa59cb261f6ab59c65593b3496ecb265f1a",
+              "byteLength": 152
+            },
+            {
+              "kind": "data",
+              "assetPath": "scenarios/interaction-lab-alien-fantasy.json",
+              "storagePath": ".content-publication/revisions/10/assets/scenarios/interaction-lab-alien-fantasy.json",
+              "sha256": "538f1787c424a2e5d9b421185713ffe3002681ebdc3488c9d98fbe4f669df112",
+              "byteLength": 2966
+            },
+            {
+              "kind": "data",
+              "assetPath": "scenarios/lab-skirmish.json",
+              "storagePath": ".content-publication/revisions/10/assets/scenarios/lab-skirmish.json",
+              "sha256": "bacab5818f3d0375ea6bc3592698fa266274657ed05b224e12d4af67a1021e63",
+              "byteLength": 533
+            },
+            {
+              "kind": "data",
+              "assetPath": "scenarios/m11-fixture-gallery.json",
+              "storagePath": ".content-publication/revisions/10/assets/scenarios/m11-fixture-gallery.json",
+              "sha256": "91aad835d4bd6a446240a589ee413b2f6bfab93300dee916d051a79599a39824",
+              "byteLength": 1018
+            },
+            {
+              "kind": "runtime",
+              "assetPath": "buildings/gravemark-bastion/sprite.png",
+              "storagePath": ".content-publication/revisions/10/assets/buildings/gravemark-bastion/sprite.png",
+              "sha256": "9fd2fb079c825a9bd32a7f69a87899b5a19cae94142ab555dd0bbf2d021ba0cd",
+              "byteLength": 452,
+              "width": 96,
+              "height": 96
+            },
+            {
+              "kind": "runtime",
+              "assetPath": "buildings/neutral-cyan-beacon/sprite.png",
+              "storagePath": ".content-publication/revisions/10/assets/buildings/neutral-cyan-beacon/sprite.png",
+              "sha256": "79f51fcaee66fe865230e1bee210a3f8100e2118ae3c863bcbcc7d3a4121a151",
+              "byteLength": 348,
+              "width": 64,
+              "height": 64
+            },
+            {
+              "kind": "runtime",
+              "assetPath": "buildings/sunweaver-sanctum/sprite.png",
+              "storagePath": ".content-publication/revisions/10/assets/buildings/sunweaver-sanctum/sprite.png",
+              "sha256": "3b2c1b253c1ec159e21d59073d986e23b2050869ac4c48146850b441e9def28e",
+              "byteLength": 742,
+              "width": 128,
+              "height": 128
+            },
+            {
+              "kind": "runtime",
+              "assetPath": "units/gravemark-stalker/sheet.png",
+              "storagePath": ".content-publication/revisions/10/assets/units/gravemark-stalker/sheet.png",
+              "sha256": "9ad9d1c80ecba6e287ed4801bc9c8937a2a1930f00f849d311581aac6c156683",
+              "byteLength": 1728,
+              "width": 128,
+              "height": 256
+            },
+            {
+              "kind": "runtime",
+              "assetPath": "units/gravemark-walker-proxy/sheet.png",
+              "storagePath": ".content-publication/revisions/10/assets/units/gravemark-walker-proxy/sheet.png",
+              "sha256": "2ffbf2d536c9c8aeb1cf9175c38b6c1f60e3a0804e358367fddc7f3471705944",
+              "byteLength": 359,
+              "width": 64,
+              "height": 64
+            },
+            {
+              "kind": "runtime",
+              "assetPath": "units/sunweaver-scout/sheet.png",
+              "storagePath": ".content-publication/revisions/10/assets/units/sunweaver-scout/sheet.png",
+              "sha256": "9ad9d1c80ecba6e287ed4801bc9c8937a2a1930f00f849d311581aac6c156683",
+              "byteLength": 1728,
+              "width": 128,
+              "height": 256
+            },
+            {
+              "kind": "runtime",
+              "assetPath": "units/sunweaver-walker-proxy/sheet.png",
+              "storagePath": ".content-publication/revisions/10/assets/units/sunweaver-walker-proxy/sheet.png",
+              "sha256": "b28db8306360dad8e6af9db774296e83cd44e57c826228ff17fd38a0507ec7fb",
+              "byteLength": 357,
+              "width": 64,
+              "height": 64
+            }
+          ],
+          "createdAt": "2026-09-05T17:50:23.407Z",
+          "legacyManifestPath": ".content-publication/revisions/10/pack-v1.json",
+          "parentRevision": "9"
+        },
+        "asset": {
+          "path": "units/sunweaver-scout/sheet.png",
+          "responseStatus": 200,
+          "byteLength": 1728,
+          "servedSha256": "9ad9d1c80ecba6e287ed4801bc9c8937a2a1930f00f849d311581aac6c156683",
+          "metadataSha256": "9ad9d1c80ecba6e287ed4801bc9c8937a2a1930f00f849d311581aac6c156683",
+          "expectedInputSha256": "9ad9d1c80ecba6e287ed4801bc9c8937a2a1930f00f849d311581aac6c156683",
+          "servedMatchesMetadata": true,
+          "servedMatchesExpectedInput": true
+        },
+        "acknowledgement": {
+          "runtimeId": "game-web-interaction-lab",
+          "scenarioId": "interaction-lab-alien-fantasy",
+          "revision": "10",
+          "simulationRulesHash": "c39e7796863a923af79d1acb847a7d614e3bec219723091732ec388a729e4018",
+          "restartRequired": false,
+          "updatedAt": "2026-09-05T17:50:24.736Z"
+        },
+        "runtimeRevision": "10",
+        "runtimeTick": 5432,
+        "runtimeEntityCount": 25,
+        "error": null
+      },
+      {
+        "cycle": 8,
+        "target": "original-sunweaver-scout",
+        "ok": true,
+        "revision": "11",
+        "draftBeforeRevision": "10",
+        "draftAfterRevision": "11",
+        "metadata": {
+          "schemaVersion": 1,
+          "revision": "11",
+          "packId": "dev-pack-v2",
+          "manifestPath": ".content-publication/revisions/11/pack.json",
+          "manifestHash": "6ae36fe98ad54b5909132db17911c4b892f9550fcae3bdbae1f45d0a3b769fe8",
+          "visualContentHash": "984f89bcc35512b2b4c535172175b97621340c480ac3c57dbb9eaccc36a78c03",
+          "simulationRulesHash": "c39e7796863a923af79d1acb847a7d614e3bec219723091732ec388a729e4018",
+          "restartRequired": false,
+          "assets": [
+            {
+              "kind": "data",
+              "assetPath": "maps/interaction-lab-alien-fantasy.json",
+              "storagePath": ".content-publication/revisions/11/assets/maps/interaction-lab-alien-fantasy.json",
+              "sha256": "8a09566d0c8379912395e2f187e9de2c7df5e559594368bf5a0947cd45d567dc",
+              "byteLength": 169
+            },
+            {
+              "kind": "data",
+              "assetPath": "maps/lab-grid.json",
+              "storagePath": ".content-publication/revisions/11/assets/maps/lab-grid.json",
+              "sha256": "0ed06af57e7db77b66c9f737e5c08924650cc3ff80290e39f5f06cadae26a715",
+              "byteLength": 127
+            },
+            {
+              "kind": "data",
+              "assetPath": "maps/m11-fixture-gallery.json",
+              "storagePath": ".content-publication/revisions/11/assets/maps/m11-fixture-gallery.json",
+              "sha256": "20a71971555721dc99a1ffc8b0987fa59cb261f6ab59c65593b3496ecb265f1a",
+              "byteLength": 152
+            },
+            {
+              "kind": "data",
+              "assetPath": "scenarios/interaction-lab-alien-fantasy.json",
+              "storagePath": ".content-publication/revisions/11/assets/scenarios/interaction-lab-alien-fantasy.json",
+              "sha256": "538f1787c424a2e5d9b421185713ffe3002681ebdc3488c9d98fbe4f669df112",
+              "byteLength": 2966
+            },
+            {
+              "kind": "data",
+              "assetPath": "scenarios/lab-skirmish.json",
+              "storagePath": ".content-publication/revisions/11/assets/scenarios/lab-skirmish.json",
+              "sha256": "bacab5818f3d0375ea6bc3592698fa266274657ed05b224e12d4af67a1021e63",
+              "byteLength": 533
+            },
+            {
+              "kind": "data",
+              "assetPath": "scenarios/m11-fixture-gallery.json",
+              "storagePath": ".content-publication/revisions/11/assets/scenarios/m11-fixture-gallery.json",
+              "sha256": "91aad835d4bd6a446240a589ee413b2f6bfab93300dee916d051a79599a39824",
+              "byteLength": 1018
+            },
+            {
+              "kind": "runtime",
+              "assetPath": "buildings/gravemark-bastion/sprite.png",
+              "storagePath": ".content-publication/revisions/11/assets/buildings/gravemark-bastion/sprite.png",
+              "sha256": "9fd2fb079c825a9bd32a7f69a87899b5a19cae94142ab555dd0bbf2d021ba0cd",
+              "byteLength": 452,
+              "width": 96,
+              "height": 96
+            },
+            {
+              "kind": "runtime",
+              "assetPath": "buildings/neutral-cyan-beacon/sprite.png",
+              "storagePath": ".content-publication/revisions/11/assets/buildings/neutral-cyan-beacon/sprite.png",
+              "sha256": "79f51fcaee66fe865230e1bee210a3f8100e2118ae3c863bcbcc7d3a4121a151",
+              "byteLength": 348,
+              "width": 64,
+              "height": 64
+            },
+            {
+              "kind": "runtime",
+              "assetPath": "buildings/sunweaver-sanctum/sprite.png",
+              "storagePath": ".content-publication/revisions/11/assets/buildings/sunweaver-sanctum/sprite.png",
+              "sha256": "3b2c1b253c1ec159e21d59073d986e23b2050869ac4c48146850b441e9def28e",
+              "byteLength": 742,
+              "width": 128,
+              "height": 128
+            },
+            {
+              "kind": "runtime",
+              "assetPath": "units/gravemark-stalker/sheet.png",
+              "storagePath": ".content-publication/revisions/11/assets/units/gravemark-stalker/sheet.png",
+              "sha256": "9ad9d1c80ecba6e287ed4801bc9c8937a2a1930f00f849d311581aac6c156683",
+              "byteLength": 1728,
+              "width": 128,
+              "height": 256
+            },
+            {
+              "kind": "runtime",
+              "assetPath": "units/gravemark-walker-proxy/sheet.png",
+              "storagePath": ".content-publication/revisions/11/assets/units/gravemark-walker-proxy/sheet.png",
+              "sha256": "2ffbf2d536c9c8aeb1cf9175c38b6c1f60e3a0804e358367fddc7f3471705944",
+              "byteLength": 359,
+              "width": 64,
+              "height": 64
+            },
+            {
+              "kind": "runtime",
+              "assetPath": "units/sunweaver-scout/sheet.png",
+              "storagePath": ".content-publication/revisions/11/assets/units/sunweaver-scout/sheet.png",
+              "sha256": "a45428e676c023c7a68859662e5cfe4eb5b1177e8e42134dc0b31652f0cffd29",
+              "byteLength": 1844,
+              "width": 128,
+              "height": 256
+            },
+            {
+              "kind": "runtime",
+              "assetPath": "units/sunweaver-walker-proxy/sheet.png",
+              "storagePath": ".content-publication/revisions/11/assets/units/sunweaver-walker-proxy/sheet.png",
+              "sha256": "b28db8306360dad8e6af9db774296e83cd44e57c826228ff17fd38a0507ec7fb",
+              "byteLength": 357,
+              "width": 64,
+              "height": 64
+            }
+          ],
+          "createdAt": "2026-09-05T17:50:59.854Z",
+          "legacyManifestPath": ".content-publication/revisions/11/pack-v1.json",
+          "parentRevision": "10"
+        },
+        "asset": {
+          "path": "units/sunweaver-scout/sheet.png",
+          "responseStatus": 200,
+          "byteLength": 1844,
+          "servedSha256": "a45428e676c023c7a68859662e5cfe4eb5b1177e8e42134dc0b31652f0cffd29",
+          "metadataSha256": "a45428e676c023c7a68859662e5cfe4eb5b1177e8e42134dc0b31652f0cffd29",
+          "expectedInputSha256": "a45428e676c023c7a68859662e5cfe4eb5b1177e8e42134dc0b31652f0cffd29",
+          "servedMatchesMetadata": true,
+          "servedMatchesExpectedInput": true
+        },
+        "acknowledgement": {
+          "runtimeId": "game-web-interaction-lab",
+          "scenarioId": "interaction-lab-alien-fantasy",
+          "revision": "11",
+          "simulationRulesHash": "c39e7796863a923af79d1acb847a7d614e3bec219723091732ec388a729e4018",
+          "restartRequired": false,
+          "updatedAt": "2026-09-05T17:51:04.349Z"
+        },
+        "runtimeRevision": "11",
+        "runtimeTick": 6220,
+        "runtimeEntityCount": 25,
+        "error": null
+      }
+    ]
+  },
+  "frameTime": {
+    "warmup": {
+      "sampleCount": 84,
+      "minFrameMs": 50,
+      "avgFrameMs": 71.22738095238094,
+      "p50FrameMs": 66.69999999999709,
+      "p95FrameMs": 83.40000000000146,
+      "p99FrameMs": 100,
+      "maxFrameMs": 100,
+      "avgFps": 14.039544717621302,
+      "onePercentLowFps": 10,
+      "longFrameCountAtOrAbove50ms": 84,
+      "source": "requestAnimationFrame interval on composited browser page; not GPU time"
+    },
+    "measuredSoak": {
+      "sampleCount": 2804,
+      "minFrameMs": 49.89999999999418,
+      "avgFrameMs": 98.63491440798859,
+      "p50FrameMs": 83.29999999998836,
+      "p95FrameMs": 200,
+      "p99FrameMs": 316.70000000001164,
+      "maxFrameMs": 849.9000000000233,
+      "avgFps": 10.13839780773418,
+      "onePercentLowFps": 3.1575623618565305,
+      "longFrameCountAtOrAbove50ms": 2773,
+      "source": "requestAnimationFrame interval on composited browser page; not GPU time"
+    },
+    "droppedFrames": 0,
+    "browserSamplerStartedAtMs": 33079.299999952316,
+    "browserSamplerStoppedAtMs": 315754.39999985695,
+    "soakFrameStartMsRelativeToSampler": 5979.599999904633
+  },
+  "timing": {
+    "warmup": {
+      "simulationTickDurationMs": {
+        "sampleCount": 283,
+        "min": 0.5999999046325684,
+        "avg": 1.1565370947227882,
+        "p50": 0.8999998569488525,
+        "p95": 2.3999998569488525,
+        "p99": 6.299999952316284,
+        "max": 16.09999990463257
+      },
+      "navigationDurationMs": {
+        "sampleCount": 283,
+        "min": 0,
+        "avg": 0,
+        "p50": 0,
+        "p95": 0,
+        "p99": 0,
+        "max": 0
+      },
+      "snapshotLatencyMs": {
+        "sampleCount": 283,
+        "min": 2485.5999999046326,
+        "avg": 2535.8639575440975,
+        "p50": 2518.9000000953674,
+        "p95": 2608.5999999046326,
+        "p99": 2915.0999999046326,
+        "max": 3256.2999999523163
+      },
+      "drawCalls": {
+        "sampleCount": 283,
+        "min": 24,
+        "avg": 24,
+        "p50": 24,
+        "p95": 24,
+        "p99": 24,
+        "max": 24
+      },
+      "triangles": {
+        "sampleCount": 283,
+        "min": 4852,
+        "avg": 4852,
+        "p50": 4852,
+        "p95": 4852,
+        "p99": 4852,
+        "max": 4852
+      }
+    },
+    "measuredSoak": {
+      "simulationTickDurationMs": {
+        "sampleCount": 277,
+        "min": 0.5999999046325684,
+        "avg": 1.1606498117481328,
+        "p50": 0.8999998569488525,
+        "p95": 2.3999998569488525,
+        "p99": 6.299999952316284,
+        "max": 16.09999990463257
+      },
+      "navigationDurationMs": {
+        "sampleCount": 277,
+        "min": 0,
+        "avg": 0,
+        "p50": 0,
+        "p95": 0,
+        "p99": 0,
+        "max": 0
+      },
+      "snapshotLatencyMs": {
+        "sampleCount": 277,
+        "min": 2485.5999999046326,
+        "avg": 2536.4620938094513,
+        "p50": 2519.2000000476837,
+        "p95": 2621.4999997615814,
+        "p99": 2915.0999999046326,
+        "max": 3256.2999999523163
+      },
+      "drawCalls": {
+        "sampleCount": 277,
+        "min": 24,
+        "avg": 24,
+        "p50": 24,
+        "p95": 24,
+        "p99": 24,
+        "max": 24
+      },
+      "triangles": {
+        "sampleCount": 277,
+        "min": 4852,
+        "avg": 4852,
+        "p50": 4852,
+        "p95": 4852,
+        "p99": 4852,
+        "max": 4852
+      }
+    },
+    "source": "MatchRuntime.getDiagnostics() sampled from the live page; tick and navigation work are worker-side diagnostics."
+  },
+  "resources": {
+    "warmupBaseline": {
+      "textures": 7,
+      "geometries": 17
+    },
+    "final": {
+      "textures": 7,
+      "geometries": 17
+    },
+    "delta": {
+      "textures": 0,
+      "geometries": 0
+    },
+    "sampledSoakRange": {
+      "sampleCount": 277,
+      "textures": {
+        "min": 0,
+        "max": 7,
+        "unique": [
+          7
+        ]
+      },
+      "geometries": {
+        "min": 0,
+        "max": 17,
+        "unique": [
+          17
+        ]
+      },
+      "drawCalls": {
+        "min": 0,
+        "max": 24,
+        "unique": [
+          24
+        ]
+      }
+    },
+    "note": "Renderer.info memory counts are live renderer bookkeeping. Stable counts are evidence for this run, not proof against every leak."
+  },
+  "heap": {
+    "warmupBaseline": {
+      "available": true,
+      "source": "CDP Runtime.getHeapUsage",
+      "usedSize": 15054828,
+      "totalSize": 39587840,
+      "embedderHeapUsedSize": 6831664,
+      "backingStorageSize": 5335869
+    },
+    "final": {
+      "available": true,
+      "source": "CDP Runtime.getHeapUsage",
+      "usedSize": 25894704,
+      "totalSize": 110366720,
+      "embedderHeapUsedSize": 2900968,
+      "backingStorageSize": 5271511
+    },
+    "deltaUsedSize": 10839876,
+    "note": "CDP V8 heap readings include browser/runtime and probe overhead. Missing metrics are reported without forcing a pass."
+  },
+  "browser": {
+    "webglRenderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+    "errors": {
+      "totalEvents": 7,
+      "consoleMessages": 7,
+      "consoleErrors": 1,
+      "pageErrors": 0,
+      "requestFailed": 0,
+      "httpErrors": 0,
+      "runtimeErrorCount": 1,
+      "incidentalCount": 0,
+      "runtimeErrors": [
+        {
+          "kind": "console",
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "location": {
+            "url": "http://127.0.0.1:30373/favicon.ico",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          },
+          "at": "2026-09-05T17:46:22.868Z"
+        }
+      ]
+    },
+    "allEventsPath": "/home/bobbyranka/Projects/pastel-rts-m11-texture-lifetime/docs/roadmap/M1.1-S-focus-artifacts/browser-events.json"
+  },
+  "checkpoints": [
+    {
+      "label": "baseline-warmup",
+      "phase": "warmup-baseline",
+      "path": "/home/bobbyranka/Projects/pastel-rts-m11-texture-lifetime/docs/roadmap/M1.1-S-focus-artifacts/baseline-warmup.json",
+      "screenshotPath": "/home/bobbyranka/Projects/pastel-rts-m11-texture-lifetime/docs/roadmap/M1.1-S-focus-artifacts/baseline-warmup.png",
+      "capturedAt": "2026-09-05T17:47:00.278Z"
+    },
+    {
+      "label": "replacement-01",
+      "phase": "replacement",
+      "path": "/home/bobbyranka/Projects/pastel-rts-m11-texture-lifetime/docs/roadmap/M1.1-S-focus-artifacts/replacement-01.json",
+      "screenshotPath": "/home/bobbyranka/Projects/pastel-rts-m11-texture-lifetime/docs/roadmap/M1.1-S-focus-artifacts/replacement-01.png",
+      "capturedAt": "2026-09-05T17:47:36.910Z"
+    },
+    {
+      "label": "replacement-02",
+      "phase": "replacement",
+      "path": "/home/bobbyranka/Projects/pastel-rts-m11-texture-lifetime/docs/roadmap/M1.1-S-focus-artifacts/replacement-02.json",
+      "screenshotPath": "/home/bobbyranka/Projects/pastel-rts-m11-texture-lifetime/docs/roadmap/M1.1-S-focus-artifacts/replacement-02.png",
+      "capturedAt": "2026-09-05T17:48:09.414Z"
+    },
+    {
+      "label": "replacement-03",
+      "phase": "replacement",
+      "path": "/home/bobbyranka/Projects/pastel-rts-m11-texture-lifetime/docs/roadmap/M1.1-S-focus-artifacts/replacement-03.json",
+      "screenshotPath": "/home/bobbyranka/Projects/pastel-rts-m11-texture-lifetime/docs/roadmap/M1.1-S-focus-artifacts/replacement-03.png",
+      "capturedAt": "2026-09-05T17:48:42.335Z"
+    },
+    {
+      "label": "replacement-04",
+      "phase": "replacement",
+      "path": "/home/bobbyranka/Projects/pastel-rts-m11-texture-lifetime/docs/roadmap/M1.1-S-focus-artifacts/replacement-04.json",
+      "screenshotPath": "/home/bobbyranka/Projects/pastel-rts-m11-texture-lifetime/docs/roadmap/M1.1-S-focus-artifacts/replacement-04.png",
+      "capturedAt": "2026-09-05T17:49:15.023Z"
+    },
+    {
+      "label": "replacement-05",
+      "phase": "replacement",
+      "path": "/home/bobbyranka/Projects/pastel-rts-m11-texture-lifetime/docs/roadmap/M1.1-S-focus-artifacts/replacement-05.json",
+      "screenshotPath": "/home/bobbyranka/Projects/pastel-rts-m11-texture-lifetime/docs/roadmap/M1.1-S-focus-artifacts/replacement-05.png",
+      "capturedAt": "2026-09-05T17:49:48.795Z"
+    },
+    {
+      "label": "replacement-06",
+      "phase": "replacement",
+      "path": "/home/bobbyranka/Projects/pastel-rts-m11-texture-lifetime/docs/roadmap/M1.1-S-focus-artifacts/replacement-06.json",
+      "screenshotPath": "/home/bobbyranka/Projects/pastel-rts-m11-texture-lifetime/docs/roadmap/M1.1-S-focus-artifacts/replacement-06.png",
+      "capturedAt": "2026-09-05T17:50:23.132Z"
+    },
+    {
+      "label": "replacement-07",
+      "phase": "replacement",
+      "path": "/home/bobbyranka/Projects/pastel-rts-m11-texture-lifetime/docs/roadmap/M1.1-S-focus-artifacts/replacement-07.json",
+      "screenshotPath": "/home/bobbyranka/Projects/pastel-rts-m11-texture-lifetime/docs/roadmap/M1.1-S-focus-artifacts/replacement-07.png",
+      "capturedAt": "2026-09-05T17:50:59.230Z"
+    },
+    {
+      "label": "replacement-08",
+      "phase": "replacement",
+      "path": "/home/bobbyranka/Projects/pastel-rts-m11-texture-lifetime/docs/roadmap/M1.1-S-focus-artifacts/replacement-08.json",
+      "screenshotPath": "/home/bobbyranka/Projects/pastel-rts-m11-texture-lifetime/docs/roadmap/M1.1-S-focus-artifacts/replacement-08.png",
+      "capturedAt": "2026-09-05T17:51:36.960Z"
+    },
+    {
+      "label": "final",
+      "phase": "soak-final",
+      "path": "/home/bobbyranka/Projects/pastel-rts-m11-texture-lifetime/docs/roadmap/M1.1-S-focus-artifacts/final.json",
+      "screenshotPath": "/home/bobbyranka/Projects/pastel-rts-m11-texture-lifetime/docs/roadmap/M1.1-S-focus-artifacts/final.png",
+      "capturedAt": "2026-09-05T17:51:39.764Z"
+    }
+  ],
+  "artifactPaths": {
+    "baselineJson": "/home/bobbyranka/Projects/pastel-rts-m11-texture-lifetime/docs/roadmap/M1.1-S-focus-artifacts/baseline-warmup.json",
+    "baselinePng": "/home/bobbyranka/Projects/pastel-rts-m11-texture-lifetime/docs/roadmap/M1.1-S-focus-artifacts/baseline-warmup.png",
+    "finalJson": "/home/bobbyranka/Projects/pastel-rts-m11-texture-lifetime/docs/roadmap/M1.1-S-focus-artifacts/final.json",
+    "finalPng": "/home/bobbyranka/Projects/pastel-rts-m11-texture-lifetime/docs/roadmap/M1.1-S-focus-artifacts/final.png",
+    "samplerJson": "/home/bobbyranka/Projects/pastel-rts-m11-texture-lifetime/docs/roadmap/M1.1-S-focus-artifacts/sampler.json",
+    "fixtureInventoryJson": "/home/bobbyranka/Projects/pastel-rts-m11-texture-lifetime/docs/roadmap/M1.1-S-focus-artifacts/fixture-inventory.json",
+    "serviceLog": "/home/bobbyranka/Projects/pastel-rts-m11-texture-lifetime/docs/roadmap/M1.1-S-focus-artifacts/studio-services.log"
+  },
+  "limits": [
+    "This run is Linux Chromium using the observed WebGL renderer. It is desktop evidence only and cannot certify iPad 60 FPS or p99.",
+    "requestAnimationFrame intervals are browser frame timing. No CPU submission time is labelled as GPU time.",
+    "Renderer texture/geometry counts are live renderer observations. Stable counts do not prove absence of every leak.",
+    "CDP heap readings are available for this browser and include probe/browser overhead; no heap pass was forced.",
+    "The temporary content pack is disposable and is removed during cleanup after its source/copy inventory is recorded."
+  ],
+  "blockers": [
+    {
+      "at": "2026-09-05T17:51:39.772Z",
+      "message": "Fewer than 10 replacement cycles completed successfully",
+      "successfulReplacements": 8,
+      "requested": 8
+    },
+    {
+      "at": "2026-09-05T17:51:39.773Z",
+      "message": "Runtime browser errors were captured during the soak",
+      "totalEvents": 7,
+      "consoleMessages": 7,
+      "consoleErrors": 1,
+      "pageErrors": 0,
+      "requestFailed": 0,
+      "httpErrors": 0,
+      "runtimeErrorCount": 1,
+      "incidentalCount": 0,
+      "runtimeErrors": [
+        {
+          "kind": "console",
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "location": {
+            "url": "http://127.0.0.1:30373/favicon.ico",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          },
+          "at": "2026-09-05T17:46:22.868Z"
+        }
+      ]
+    }
+  ]
+}

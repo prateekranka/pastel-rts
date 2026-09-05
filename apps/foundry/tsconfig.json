@@ -3,7 +3,7 @@
   "compilerOptions": {
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "types": ["vite/client"],
-    "rootDir": "."
+    "rootDir": "../.."
   },
   "include": ["src", "vite.config.ts"],
   "exclude": ["src/schema/browser.ts"]

@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 1,
+  "label": "production-offline",
+  "stage": "bundled-pack-offline",
+  "project": "chromium",
+  "testTitle": "M1.1-C production preview boots with content server stopped",
+  "screenshotPath": "/home/bobbyranka/Projects/pastel-rts/docs/roadmap/M1.1-final-offline-artifacts/chromium-production-offline-bundled-pack-offline.png",
+  "capturedAt": "2026-09-05T15:11:49.610Z",
+  "runtime": {
+    "url": "http://127.0.0.1:14373/?mode=interaction-lab&scenario=interaction-lab-alien-fantasy&seed=42&renderer=webgl&dpr=1&zoom=70-percent",
+    "title": "Pastel RTS — Milestone 0",
+    "canvasCount": 2,
+    "canvases": [
+      {
+        "width": 1280,
+        "height": 800,
+        "cssWidth": 1280,
+        "cssHeight": 800
+      },
+      {
+        "width": 160,
+        "height": 160,
+        "cssWidth": 130,
+        "cssHeight": 130
+      }
+    ],
+    "webglRenderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+    "bodyText": "0\nFormation: none\nFormation: line\nFormation: box\nSelect\nStop\ncontent bundle  revision 3\nhash c1eea326…0995  rules 7675a3e1…b1fd\nscenario interaction-lab-alien-fantasy  seed 42\nlab-skirmish\ninteraction-lab-alien-fantasy\nm11-fixture-gallery\nLoad scenario\nApply seed\nSunweaver Scout\nSunweaver Infantry\nSunweaver Walker (Proxy)\nSpawn\nSunweaver Sanctum\nPlace\nNav debug\nReset match\nExport save\nImport save\nReplay check\nExport bug bundle\nReproduce bug bundle\nExport a JSON-only bug bundle. On a fresh lab page, choose the file with Reproduce bug bundle. The check uses the same scenario, seed, commands, and checksum sequence.\nSelect revision\nRestart pending\nAcknowledge\nDiagnostics\nCollapse\nFPS 12.0  avg 8.3  1% low 2.9\nframe 83.40ms  avg 120.83ms  p95 251.68ms  p99 330.92ms\nsim 5.20ms  nav-debug 0.00ms  snapshot latency 1037.30ms\ndraw calls 24  tris 4852  textures 7  geometries 17\nchunks 9  units 25  entities 25\nrenderer webgl (webgl) requested webgl\ninit error: none\nDPR cap 1  effective 1.00\nviewport 1280×800  buffer 1280×800\nelapsed 2.9s  soak idle\ncontent revision 3  phase ready\ncontent manifest none\ncontent visual 5c35bc7369b4d2c99ce84c7f2e1e4515389dd7da59005eb6c18bd3d98f153d58\ncontent rules 7675a3e17dd711d341c27c240326efd33aa0405110ade623885e219f5305b1fd\ncontent assets ./content/dev-pack-v2/\ncontent error: none\nRenderer\nWebGL\nWebGPU\nBenchmark\nidle-base\nnormal-midgame\ndense-battle\ncamera-pan-stress\nmaximum-population\n2x-stress\n20-minute-soak\nvisual-capture\nDPR\n1\n1.25\n1.5\nnative\nTouch debug\nHaptic\nDownload report\nStart 20-min soak"
+  },
+  "metadata": {
+    "entityCount": 25,
+    "buildingCount": 3,
+    "contentServerExpected": "stopped",
+    "browserRequests": [
+      "http://127.0.0.1:14373/?mode=interaction-lab&scenario=interaction-lab-alien-fantasy&seed=42&renderer=webgl&dpr=1&zoom=70-percent",
+      "http://127.0.0.1:14373/assets/index-DbmU1Dr7.js",
+      "http://127.0.0.1:14373/assets/index-VnpXLJE0.css",
+      "http://127.0.0.1:14373/content/dev-pack-v2/pack.json",
+      "http://127.0.0.1:14373/content/dev-pack-v2/scenarios/interaction-lab-alien-fantasy.json",
+      "http://127.0.0.1:14373/content/dev-pack-v2/units/sunweaver-scout/sheet.png",
+      "http://127.0.0.1:14373/content/dev-pack-v2/units/sunweaver-walker-proxy/sheet.png",
+      "http://127.0.0.1:14373/content/dev-pack-v2/units/gravemark-stalker/sheet.png",
+      "http://127.0.0.1:14373/content/dev-pack-v2/units/gravemark-walker-proxy/sheet.png",
+      "http://127.0.0.1:14373/content/dev-pack-v2/buildings/sunweaver-sanctum/sprite.png",
+      "http://127.0.0.1:14373/content/dev-pack-v2/buildings/gravemark-bastion/sprite.png",
+      "http://127.0.0.1:14373/content/dev-pack-v2/buildings/neutral-cyan-beacon/sprite.png",
+      "http://127.0.0.1:14373/content/dev-pack-v2/maps/interaction-lab-alien-fantasy.json",
+      "http://127.0.0.1:14373/assets/matchWorker-BYXzMXIP.js"
+    ],
+    "resourceEntries": [
+      "http://127.0.0.1:14373/assets/index-DbmU1Dr7.js",
+      "http://127.0.0.1:14373/assets/index-VnpXLJE0.css",
+      "http://127.0.0.1:14373/content/dev-pack-v2/pack.json",
+      "http://127.0.0.1:14373/favicon.ico",
+      "http://127.0.0.1:14373/content/dev-pack-v2/scenarios/interaction-lab-alien-fantasy.json",
+      "http://127.0.0.1:14373/content/dev-pack-v2/units/sunweaver-scout/sheet.png",
+      "http://127.0.0.1:14373/content/dev-pack-v2/units/sunweaver-walker-proxy/sheet.png",
+      "http://127.0.0.1:14373/content/dev-pack-v2/units/gravemark-stalker/sheet.png",
+      "http://127.0.0.1:14373/content/dev-pack-v2/units/gravemark-walker-proxy/sheet.png",
+      "http://127.0.0.1:14373/content/dev-pack-v2/buildings/sunweaver-sanctum/sprite.png",
+      "http://127.0.0.1:14373/content/dev-pack-v2/buildings/gravemark-bastion/sprite.png",
+      "http://127.0.0.1:14373/content/dev-pack-v2/buildings/neutral-cyan-beacon/sprite.png",
+      "http://127.0.0.1:14373/content/dev-pack-v2/maps/interaction-lab-alien-fantasy.json",
+      "http://127.0.0.1:14373/assets/matchWorker-BYXzMXIP.js"
+    ],
+    "physicalValidationStatus": "awaiting-physical-validation"
+  },
+  "browserDiagnostics": [
+    {
+      "kind": "console",
+      "type": "warning",
+      "text": "[.WebGL-0x1f9c0017b200]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+      "location": {
+        "url": "http://127.0.0.1:14373/?mode=interaction-lab&scenario=interaction-lab-alien-fantasy&seed=42&renderer=webgl&dpr=1&zoom=70-percent",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "kind": "console",
+      "type": "warning",
+      "text": "[.WebGL-0x1f9c0017b200]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+      "location": {
+        "url": "http://127.0.0.1:14373/?mode=interaction-lab&scenario=interaction-lab-alien-fantasy&seed=42&renderer=webgl&dpr=1&zoom=70-percent",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "kind": "console",
+      "type": "warning",
+      "text": "[.WebGL-0x1f9c0017b200]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+      "location": {
+        "url": "http://127.0.0.1:14373/?mode=interaction-lab&scenario=interaction-lab-alien-fantasy&seed=42&renderer=webgl&dpr=1&zoom=70-percent",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "kind": "console",
+      "type": "warning",
+      "text": "[.WebGL-0x1f9c0017b200]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)",
+      "location": {
+        "url": "http://127.0.0.1:14373/?mode=interaction-lab&scenario=interaction-lab-alien-fantasy&seed=42&renderer=webgl&dpr=1&zoom=70-percent",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    }
+  ]
+}

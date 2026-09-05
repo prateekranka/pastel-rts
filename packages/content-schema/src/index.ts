@@ -1,6 +1,8 @@
 export {
   UNIT_FACTIONS,
   UNIT_MANIFEST_SCHEMA_VERSION,
+  MAX_IMAGE_DIMENSION,
+  MAX_IMAGE_PIXELS,
   createUnitManifest,
   isValidAnchor,
   isValidUnitId,
@@ -11,6 +13,7 @@ export {
   type UnitManifest,
 } from './unitManifest';
 export { detectOpaqueBounds } from './pngBounds';
+export { isSafeAssetPath, isValidContentId, requireSafeAssetPath } from './validation';
 
 export {
   SUBUNITS_PER_CELL,
@@ -124,4 +127,21 @@ export {
   type ScenarioUnitSpawn,
 } from './scenario';
 
-export { canonicalize } from './contentHash';
+export {
+  canonicalize,
+  computeSimulationRulesHash,
+  computeVisualContentHash,
+} from './contentHash';
+
+export {
+  PUBLICATION_SCHEMA_VERSION,
+  isValidRevision,
+  validatePublicationState,
+  validateReferenceAttachmentMetadata,
+  validateRevisionMetadata,
+  type ImmutableAssetReference,
+  type PublicationState,
+  type ReferenceAttachmentMetadata,
+  type RevisionAssetKind,
+  type RevisionMetadata,
+} from './publication';

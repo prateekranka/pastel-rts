@@ -8,6 +8,7 @@ let nav: NavigationService | null = null;
 let intervalId: ReturnType<typeof setInterval> | null = null;
 let navDebugEnabled = false;
 let lastTickStartedAt = 0;
+let lastNavDebugDurationMs = 0;
 let lastCommandLogLength = 0;
 
 function post(message: LabWorkerOutbound, transfer?: Transferable[]): void {
@@ -58,6 +59,7 @@ function initLab(body: {
     ...(cellsZ !== undefined ? { cellsZ } : {}),
   });
   lastCommandLogLength = 0;
+  lastNavDebugDurationMs = 0;
   if (body.map !== undefined) {
     nav.applyMapDef(body.map);
   }
@@ -88,6 +90,7 @@ function emitSnapshot(): void {
     simTimeMs: snapshot.simTimeMs,
     producedAtMs,
     tickDurationMs,
+    navDurationMs: lastNavDebugDurationMs,
     entityCount: snapshot.entityCount,
     payload: snapshot.payload,
   };
@@ -96,11 +99,15 @@ function emitSnapshot(): void {
 
 function emitNavDebug(): void {
   if (!nav || !navDebugEnabled) {
+    lastNavDebugDurationMs = 0;
     return;
   }
+  const startedAt = performance.now();
+  const snapshot = nav.debugSnapshot();
+  lastNavDebugDurationMs = performance.now() - startedAt;
   const message: LabNavDebugMessage = {
     type: 'navDebug',
-    snapshot: nav.debugSnapshot(),
+    snapshot,
   };
   post(message);
 }
@@ -166,6 +173,7 @@ self.onmessage = (event: MessageEvent<LabControlMessage>): void => {
       simulation = null;
       nav = null;
       lastCommandLogLength = 0;
+      lastNavDebugDurationMs = 0;
       break;
     case 'command':
       simulation?.enqueueCommand(message.envelope);

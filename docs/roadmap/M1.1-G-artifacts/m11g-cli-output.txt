@@ -1,0 +1,17 @@
+Command: npm run qa:scenario -- --pack /home/bobbyranka/Projects/pastel-rts-m11-bundle/content/dev-pack-v2/pack.json --scenario /home/bobbyranka/Projects/pastel-rts-m11-bundle/content/dev-pack-v2/scenarios/interaction-lab-alien-fantasy.json --map /home/bobbyranka/Projects/pastel-rts-m11-bundle/content/dev-pack-v2/maps/interaction-lab-alien-fantasy.json --commands /home/bobbyranka/Projects/pastel-rts-m11-bundle/docs/roadmap/M1.1-G-artifacts/m11g-empty-commands.json --seed 42 --ticks 52 --output /home/bobbyranka/Projects/pastel-rts-m11-bundle/docs/roadmap/M1.1-G-artifacts/m11g-qa-scenario.json
+Result: exit_code=0
+Output:
+> pastel-rts@0.0.0 qa:scenario
+> tsx scripts/qa-scenario.ts --pack /home/bobbyranka/Projects/pastel-rts-m11-bundle/content/dev-pack-v2/pack.json --scenario /home/bobbyranka/Projects/pastel-rts-m11-bundle/content/dev-pack-v2/scenarios/interaction-lab-alien-fantasy.json --map /home/bobbyranka/Projects/pastel-rts-m11-bundle/content/dev-pack-v2/maps/interaction-lab-alien-fantasy.json --commands /home/bobbyranka/Projects/pastel-rts-m11-bundle/docs/roadmap/M1.1-G-artifacts/m11g-empty-commands.json --seed 42 --ticks 52 --output /home/bobbyranka/Projects/pastel-rts-m11-bundle/docs/roadmap/M1.1-G-artifacts/m11g-qa-scenario.json
+
+Command: npm run qa:bundle -- --scenario /home/bobbyranka/Projects/pastel-rts-m11-bundle/docs/roadmap/M1.1-G-artifacts/m11g-qa-scenario.json --diagnostics /home/bobbyranka/Projects/pastel-rts-m11-bundle/docs/roadmap/M1.1-G-artifacts/m11g-diagnostics.json --output /home/bobbyranka/Projects/pastel-rts-m11-bundle/docs/roadmap/M1.1-G-artifacts/m11g-qa-bundle.json
+Result: exit_code=0
+Output:
+> pastel-rts@0.0.0 qa:bundle
+> tsx scripts/qa-bundle.ts --scenario /home/bobbyranka/Projects/pastel-rts-m11-bundle/docs/roadmap/M1.1-G-artifacts/m11g-qa-scenario.json --diagnostics /home/bobbyranka/Projects/pastel-rts-m11-bundle/docs/roadmap/M1.1-G-artifacts/m11g-diagnostics.json --output /home/bobbyranka/Projects/pastel-rts-m11-bundle/docs/roadmap/M1.1-G-artifacts/m11g-qa-bundle.json
+
+Command: npm run qa:bundle -- --scenario /home/bobbyranka/Projects/pastel-rts-m11-bundle/docs/roadmap/M1.1-G-artifacts/m11g-qa-scenario.json --diagnostics /home/bobbyranka/Projects/pastel-rts-m11-bundle/docs/roadmap/M1.1-G-artifacts/m11g-diagnostics.json --steps /home/bobbyranka/Projects/pastel-rts-m11-bundle/docs/roadmap/M1.1-G-artifacts/m11g-steps.json --output /home/bobbyranka/Projects/pastel-rts-m11-bundle/docs/roadmap/M1.1-G-artifacts/m11g-qa-bundle-with-steps.json
+Result: exit_code=0
+Output:
+> pastel-rts@0.0.0 qa:bundle
+> tsx scripts/qa-bundle.ts --scenario /home/bobbyranka/Projects/pastel-rts-m11-bundle/docs/roadmap/M1.1-G-artifacts/m11g-qa-scenario.json --diagnostics /home/bobbyranka/Projects/pastel-rts-m11-bundle/docs/roadmap/M1.1-G-artifacts/m11g-diagnostics.json --steps /home/bobbyranka/Projects/pastel-rts-m11-bundle/docs/roadmap/M1.1-G-artifacts/m11g-steps.json --output /home/bobbyranka/Projects/pastel-rts-m11-bundle/docs/roadmap/M1.1-G-artifacts/m11g-qa-bundle-with-steps.json

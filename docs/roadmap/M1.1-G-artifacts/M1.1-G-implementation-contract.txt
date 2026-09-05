@@ -1,0 +1,35 @@
+M1.1-G implementation contract
+
+Scope
+- apps/game-web/src/qa/bugBundle.ts
+- apps/game-web/src/qa/bugBundle.test.ts
+- apps/game-web/src/sandbox/createInteractionLab.ts
+- apps/game-web/e2e/m11g-bundle.spec.ts
+- root package.json only if qa:scenario or qa:bundle is absent
+
+Protected scope
+- ScenarioController, PublishedContentClient, GameApp, HUD, schemas, backend, Foundry, other e2e files, lockfiles, PROGRESS.md, native code, simulation, navigation, camera and source content remain unchanged.
+
+Runtime bundle
+- Versioned kind qa-bug-bundle.
+- Embedded validated PackV2, ScenarioDef, and MapDef snapshots.
+- Exact revision, pack/content, manifest, visual, simulation-rules, scenario and map hashes.
+- JSON-only asset coverage with an empty asset hash list. No asset bytes are claimed.
+- Signed-by-data replay inputs: seed, start/end tick range, ordered commands, command results and ordered checksums.
+- Allowlisted scalar diagnostics only. Maximum 32 fields and 256 characters per string.
+- Maximums: 1024 commands, 1024 command results, 4096 checksums, 16 steps, 100000 replay ticks, 2 MiB serialized artifact, bounded JSON depth.
+- Excess reproducibility data is rejected. It is never silently truncated.
+- No executable values, arbitrary path reads, credentials, URLs, private paths or unknown diagnostic fields.
+
+Import/reproduce
+- Parse and validate the complete bundle first.
+- Require active validated content identity, Pack snapshot, scenario snapshot and map snapshot to match exactly.
+- A missing, historical, unknown or tampered revision is rejected with a visible message. The active scene is not changed.
+- Run the existing runSimulationReplay path and compare each actual checksum tick/hash and sequence length.
+- Only after an exact match, import through ScenarioController.importSaveDocument. Restore the prior save if an unexpected apply error occurs.
+- UI exposes accessible Export bug bundle and Reproduce bug bundle controls with short non-coder steps.
+
+Evidence
+- Unit tests cover bounds, default steps, identity tampering, unsafe diagnostics/steps and failed-import preservation.
+- Playwright covers download, fresh-context file import, exact replay sequence, composited screenshot and a bad bundle that preserves active state.
+- Browser runs use ports 21373, 21374 and 21387, an isolated temporary pack, ordinary configured Chromium launch and no security-disabling flags.

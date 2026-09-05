@@ -50,8 +50,8 @@ export function inferSheetConfig(width: number, height: number): SheetConfig[] {
       rows: 1,
     });
   }
-  for (const cols of [2, 4, 8]) {
-    for (const rows of [2, 4]) {
+  for (const cols of [2, 4, 8, 16]) {
+    for (const rows of [2, 4, 8, 16]) {
       if (width % cols === 0 && height % rows === 0) {
         options.push({
           layout: 'grid',
@@ -68,6 +68,37 @@ export function inferSheetConfig(width: number, height: number): SheetConfig[] {
     }
   }
   return options;
+}
+
+/**
+ * Selects a conservative grid for a newly uploaded sheet. A non-square sheet
+ * with an authored horizontal strip keeps that strip. Other sheets prefer a
+ * square frame grid with enough cells for clips and directions, rather than
+ * selecting the first large divisor of the source dimensions.
+ */
+export function chooseBestSheetConfig(width: number, height: number): SheetConfig {
+  if (width === height) {
+    return defaultSheetConfig(width, height);
+  }
+  const candidates = inferSheetConfig(width, height).filter((candidate) => candidate.layout !== 'single');
+  if (candidates.length === 0) {
+    return defaultSheetConfig(width, height);
+  }
+  const horizontal = candidates.find(
+    (candidate) => candidate.layout === 'horizontal' && candidate.rows === 1 && candidate.columns <= 8 && width >= height * 4,
+  );
+  if (horizontal) {
+    return horizontal;
+  }
+  return [...candidates].sort((left, right) => sheetConfigScore(left) - sheetConfigScore(right))[0] ?? defaultSheetConfig(width, height);
+}
+
+function sheetConfigScore(config: SheetConfig): number {
+  const frameCount = config.columns * config.rows;
+  const frameCountPenalty = frameCount < 16 ? (16 - frameCount) * 8 : frameCount > 64 ? (frameCount - 64) * 2 : 0;
+  const squarePenalty = Math.abs(config.frameWidth - config.frameHeight) * 4;
+  const clipDivisibilityPenalty = frameCount >= 16 && frameCount % 4 === 0 ? 0 : 8;
+  return frameCountPenalty + squarePenalty + clipDivisibilityPenalty;
 }
 
 export function totalFrames(config: SheetConfig, sourceWidth: number, sourceHeight: number): number {

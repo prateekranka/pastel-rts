@@ -1,0 +1,137 @@
+{
+  "schemaVersion": 1,
+  "label": "building-sandbox",
+  "stage": "boot",
+  "project": "foundry",
+  "testTitle": "M1.1-C Foundry authors a building footprint and launches sandbox",
+  "screenshotPath": "/home/bobbyranka/Projects/pastel-rts/docs/roadmap/M1.1-final-isolated-artifacts/foundry-building-sandbox-boot.png",
+  "capturedAt": "2026-09-05T15:44:36.990Z",
+  "runtime": {
+    "url": "http://127.0.0.1:14373/?mode=interaction-lab&content=studio&seed=1&scenario=interaction-lab-alien-fantasy&revision=12&touchDebug=1&spawnBuilding=m11c-building-1788623072337",
+    "title": "Pastel RTS — Milestone 0",
+    "canvasCount": 2,
+    "canvases": [
+      {
+        "width": 1280,
+        "height": 800,
+        "cssWidth": 1280,
+        "cssHeight": 800
+      },
+      {
+        "width": 160,
+        "height": 160,
+        "cssWidth": 130,
+        "cssHeight": 130
+      }
+    ],
+    "webglRenderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+    "bodyText": "0\nFormation: none\nFormation: line\nFormation: box\nSelect\nStop\ncontent studio  revision 12\nhash 78d1f731…a84c  rules e7385745…9dca\nscenario interaction-lab-alien-fantasy  seed 1\nlab-skirmish\ninteraction-lab-alien-fantasy\nm11-fixture-gallery\nLoad scenario\nApply seed\nE2E Scout\nFoundry Proxy\nM1.1-C Sheet Unit\nSunweaver Infantry\nSunweaver Scout H Pinned Event 1788623055604\nSunweaver Walker (Proxy)\nSpawn\nM1.1-C Footprint Building\nSunweaver Sanctum\nPlace\nNav debug\nReset match\nExport save\nImport save\nReplay check\nExport bug bundle\nReproduce bug bundle\nExport a JSON-only bug bundle. On a fresh lab page, choose the file with Reproduce bug bundle. The check uses the same scenario, seed, commands, and checksum sequence.\nSelect revision\nRestart pending\nAcknowledge\ngesture: idle\nlookAt: 22.00, 22.00\nzoom: 44.0 cells (70-percent)\npan Δ: 0.000, 0.000\npinch scale: 1.000\npointers (0):\n  none\nDiagnostics\nCollapse\nFPS 12.0  avg 11.6  1% low 5.0\nframe 83.30ms  avg 86.50ms  p95 183.40ms  p99 196.60ms\nsim 1.00ms  nav-debug 0.00ms  snapshot latency 1003.00ms\ndraw calls 24  tris 4852  textures 9  geometries 19\nchunks 9  units 25  entities 25\nrenderer webgl (webgl) requested webgl\ninit error: none\nDPR cap 1.5  effective 1.00\nviewport 1280×800  buffer 1280×800\nelapsed 1.8s  soak idle\ncontent revision 12  phase ready\ncontent manifest 064e063872faa18716237f8fa8336052c57c622e3f8925e01ff8ade7d15ea71a\ncontent visual be7f07ab2bb41f7cb4f59dab995a7621e37304c132e843e632e12016b04350c5\ncontent rules e7385745839f1bedf076fee1032fdc9678798cc0c963aec5a742d2afb5209dca\ncontent assets /dev-content/v2/revisions/12/assets/\ncontent error: none\nRenderer\nWebGL\nWebGPU\nBenchmark\nidle-base\nnormal-midgame\ndense-battle\ncamera-pan-stress\nmaximum-population\n2x-stress\n20-minute-soak\nvisual-capture\nDPR\n1\n1.25\n1.5\nnative\nTouch debug\nHaptic\nDownload report\nStart 20-min soak"
+  },
+  "metadata": {
+    "url": "http://127.0.0.1:14373/?mode=interaction-lab&content=studio&seed=1&scenario=interaction-lab-alien-fantasy&revision=12&touchDebug=1&spawnBuilding=m11c-building-1788623072337",
+    "spawnResults": [
+      {
+        "status": "accepted"
+      },
+      {
+        "status": "accepted"
+      },
+      {
+        "status": "accepted"
+      },
+      {
+        "status": "accepted"
+      },
+      {
+        "status": "accepted"
+      },
+      {
+        "status": "accepted"
+      },
+      {
+        "status": "accepted"
+      },
+      {
+        "status": "accepted"
+      },
+      {
+        "status": "accepted"
+      },
+      {
+        "status": "accepted"
+      },
+      {
+        "status": "accepted"
+      },
+      {
+        "status": "accepted"
+      },
+      {
+        "status": "accepted"
+      },
+      {
+        "status": "accepted"
+      },
+      {
+        "status": "accepted"
+      },
+      {
+        "status": "accepted"
+      },
+      {
+        "status": "accepted"
+      },
+      {
+        "status": "accepted"
+      },
+      {
+        "status": "accepted"
+      },
+      {
+        "status": "accepted"
+      },
+      {
+        "status": "accepted"
+      },
+      {
+        "status": "accepted"
+      },
+      {
+        "status": "accepted"
+      },
+      {
+        "status": "accepted"
+      },
+      {
+        "status": "accepted"
+      }
+    ],
+    "note": "The sandbox boot is verified separately from whether the runtime pack acknowledges the newly saved Foundry ID."
+  },
+  "browserDiagnostics": [
+    {
+      "kind": "console",
+      "type": "debug",
+      "text": "[vite] connecting...",
+      "location": {
+        "url": "http://127.0.0.1:14373/@vite/client",
+        "line": 788,
+        "column": 8,
+        "lineNumber": 788,
+        "columnNumber": 8
+      }
+    },
+    {
+      "kind": "console",
+      "type": "debug",
+      "text": "[vite] connected.",
+      "location": {
+        "url": "http://127.0.0.1:14373/@vite/client",
+        "line": 911,
+        "column": 14,
+        "lineNumber": 911,
+        "columnNumber": 14
+      }
+    }
+  ]
+}

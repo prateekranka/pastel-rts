@@ -1,0 +1,132 @@
+{
+  "schemaVersion": 1,
+  "label": "foundry-unit",
+  "stage": "sheet-preview",
+  "project": "foundry",
+  "testTitle": "M1.1-C Foundry imports unit sheets, saves content, and launches sandbox",
+  "screenshotPath": "/home/bobbyranka/Projects/pastel-rts/docs/roadmap/M1.1-C-artifacts/foundry-foundry-unit-sheet-preview.png",
+  "capturedAt": "2026-09-05T11:18:17.798Z",
+  "runtime": {
+    "url": "http://127.0.0.1:14374/#/unit/new?id=m11c-unit-1788607096697",
+    "title": "Pastel RTS Content Foundry",
+    "canvasCount": 13,
+    "canvases": [
+      {
+        "width": 128,
+        "height": 64,
+        "cssWidth": 128,
+        "cssHeight": 64
+      },
+      {
+        "width": 48,
+        "height": 48,
+        "cssWidth": 48,
+        "cssHeight": 48
+      },
+      {
+        "width": 48,
+        "height": 48,
+        "cssWidth": 48,
+        "cssHeight": 48
+      },
+      {
+        "width": 48,
+        "height": 48,
+        "cssWidth": 48,
+        "cssHeight": 48
+      },
+      {
+        "width": 48,
+        "height": 48,
+        "cssWidth": 48,
+        "cssHeight": 48
+      },
+      {
+        "width": 48,
+        "height": 48,
+        "cssWidth": 48,
+        "cssHeight": 48
+      },
+      {
+        "width": 48,
+        "height": 48,
+        "cssWidth": 48,
+        "cssHeight": 48
+      },
+      {
+        "width": 48,
+        "height": 48,
+        "cssWidth": 48,
+        "cssHeight": 48
+      },
+      {
+        "width": 48,
+        "height": 48,
+        "cssWidth": 48,
+        "cssHeight": 48
+      },
+      {
+        "width": 96,
+        "height": 96,
+        "cssWidth": 96,
+        "cssHeight": 96
+      },
+      {
+        "width": 96,
+        "height": 96,
+        "cssWidth": 96,
+        "cssHeight": 96
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "cssWidth": 64,
+        "cssHeight": 64
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "cssWidth": 64,
+        "cssHeight": 64
+      }
+    ],
+    "webglRenderer": null,
+    "bodyText": "V1 proxy\nLibrary\nUnit editor\nBuilding editor\nUnit Editor\n\nImport sprite sheets (single PNG, horizontal strip, or grid). Configure animation clips, facings, and anchor tooling.\n\nIdentity\nID\nDisplay name\nFaction\nsunweaver\ngravemark\nneutral\nSprite sheet PNG\nSheet layout\nLayout\nOne frame\nHorizontal strip\nRegular grid\nFrame width\nFrame height\nMargin X\nMargin Y\nSpacing X\nSpacing Y\nGrid columns\nGrid rows\nAnimation\nDirections\n1 (billboard)\n4 (N/E/S/W)\n8 (octants)\nMirror west facings\nIdle FPS\nMove FPS\nIdle frames (comma indexes)\nMove frames (comma indexes)\nIdle loop\nMove loop\nAnchor & collision\nAnchor X\nAnchor Y\nWorld height\nSelection radius\nCollision radius\nSpeed (subunits/tick)\nSave unit\nTest in sandbox\n\nManifest valid.\n\nPreviews\nSource + grid\nSelected frame\nIdle\nMove\nDirections\nN\nE\nS\nW\nGameplay\n70-percent\nManifest\n{\n  \"schemaVersion\": 2,\n  \"id\": \"m11c-unit-1788607096697\",\n  \"displayName\": \"M1.1-C Sheet Unit\",\n  \"enabled\": true,\n  \"factionId\": \"sunweaver\",\n  \"assetPath\": \"units/m11c-unit-1788607096697/sheet.png\",\n  \"sourceWidth\": 128,\n  \"sourceHeight\": 64,\n  \"frameWidth\": 32,\n  \"frameHeight\": 32,\n  \"margin\": {\n    \"x\": 0,\n    \"y\": 0\n  },\n  \"spacing\": {\n    \"x\": 0,\n    \"y\": 0\n  },\n  \"bounds\": {\n    \"minX\": 4,\n    \"minY\": 4,\n    \"maxX\": 124,\n    \"maxY\": 60\n  },\n  \"anchor\": {\n    \"x\": 0.5,\n    \"y\": 1\n  },\n  \"worldHeight\": 1.5,\n  \"selectionRadius\": 0.6,\n  \"collisionRadius\": 0.45,\n  \"animation\": {\n    \"directions\": 4,\n    \"mirrored\": true,\n    \"clips\": {\n      \"idle\": {\n        \"frames\": {\n          \"kind\": \"indexes\",\n          \"indexes\": [\n            0,\n            1,\n            2,\n            3\n          ]\n        },\n        \"fps\": 8,\n        \"looping\": true,\n        \"assetPath\": \"units/m11c-unit-1788607096697/sheet.png\"\n      },\n      \"move\": {\n        \"frames\": {\n          \"kind\": \"indexes\",\n          \"indexes\": [\n            4,\n            5,\n            6,\n            7\n          ]\n        },\n        \"fps\": 12,\n        \"looping\": true,\n        \"assetPath\": \"units/m11c-unit-1788607096697/sheet.png\"\n      }\n    }\n  },\n  \"movement\": {\n    \"speedSubunitsPerTick\": 64,\n    \"accelerationRate\": 1,\n    \"turnRateMilli\": 3000,\n    \"footprintCategory\": \"unit-1x1\"\n  }\n}"
+  },
+  "metadata": {
+    "id": "m11c-unit-1788607096697",
+    "sourceDimensions": [
+      128,
+      64
+    ],
+    "frameWidth": 32,
+    "directions": 4,
+    "mirrored": true
+  },
+  "browserDiagnostics": [
+    {
+      "kind": "console",
+      "type": "debug",
+      "text": "[vite] connecting...",
+      "location": {
+        "url": "http://127.0.0.1:14374/@vite/client",
+        "line": 788,
+        "column": 8,
+        "lineNumber": 788,
+        "columnNumber": 8
+      }
+    },
+    {
+      "kind": "console",
+      "type": "debug",
+      "text": "[vite] connected.",
+      "location": {
+        "url": "http://127.0.0.1:14374/@vite/client",
+        "line": 911,
+        "column": 14,
+        "lineNumber": 911,
+        "columnNumber": 14
+      }
+    }
+  ]
+}

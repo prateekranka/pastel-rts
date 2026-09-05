@@ -8,6 +8,7 @@ import {
 } from '../config/constants';
 import type { DeveloperConfigurationPayload } from '../bridge/messages';
 import { type SimCounts } from '../sim/types';
+import { isValidContentId } from '@pastel-rts/content-schema';
 
 export const BENCHMARK_NAMES = [
   'idle-base',
@@ -33,6 +34,7 @@ export type BenchmarkDefinition = {
 };
 
 export type RuntimeMode = 'benchmark' | 'interaction-lab';
+export type ContentMode = 'bundle' | 'studio';
 
 export type RuntimeConfig = {
   renderer: RendererPreference;
@@ -44,6 +46,8 @@ export type RuntimeConfig = {
   soakMs: number | null;
   haptics: boolean;
   mode: RuntimeMode;
+  content: ContentMode;
+  contentRevision: string | null;
   scenarioId: string | null;
   spawnUnitId: string | null;
   spawnBuildingId: string | null;
@@ -143,7 +147,7 @@ export function parseRuntimeConfig(search = window.location.search): RuntimeConf
     renderer,
     dprPreset,
     benchmark,
-    seed: Number.isFinite(seedParam) ? seedParam : DEFAULT_SEED,
+    seed: Number.isSafeInteger(seedParam) ? seedParam : DEFAULT_SEED,
     zoomStop: zoomParam === '50-percent' || zoomParam === '100-percent' || zoomParam === '140-percent'
       ? zoomParam
       : DEFAULT_ZOOM_STOP,
@@ -151,9 +155,11 @@ export function parseRuntimeConfig(search = window.location.search): RuntimeConf
     soakMs: soakMsParam ? Number(soakMsParam) : null,
     haptics: params.get('haptics') !== '0',
     mode: modeParam === 'interaction-lab' ? 'interaction-lab' : 'benchmark',
-    scenarioId: params.get('scenario'),
-    spawnUnitId: params.get('spawnUnit'),
-    spawnBuildingId: params.get('spawnBuilding'),
+    content: params.get('content') === 'studio' ? 'studio' : 'bundle',
+    contentRevision: params.get('revision'),
+    scenarioId: parseOptionalContentId(params.get('scenario')),
+    spawnUnitId: parseOptionalContentId(params.get('spawnUnit')),
+    spawnBuildingId: parseOptionalContentId(params.get('spawnBuilding')),
   };
 }
 
@@ -198,4 +204,11 @@ export function packV2PublicBaseUrl(): string {
   const base = import.meta.env.BASE_URL;
   const normalized = base.endsWith('/') ? base : `${base}/`;
   return `${normalized}content/dev-pack-v2/`;
+}
+
+function parseOptionalContentId(value: string | null): string | null {
+  if (value === null || value.length === 0) {
+    return null;
+  }
+  return isValidContentId(value) ? value : null;
 }

@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 2,
+  "id": "gravemark-bastion",
+  "displayName": "Gravemark Bastion",
+  "enabled": true,
+  "factionId": "gravemark",
+  "assetPath": "buildings/gravemark-bastion/sprite.png",
+  "sourceWidth": 96,
+  "sourceHeight": 96,
+  "bounds": {
+    "minX": 6,
+    "minY": 10,
+    "maxX": 90,
+    "maxY": 94
+  },
+  "anchor": {
+    "x": 0.5,
+    "y": 1
+  },
+  "worldHeight": 2.4,
+  "footprint": {
+    "kind": "rect",
+    "cellsW": 2,
+    "cellsH": 2
+  },
+  "selectionFootprint": {
+    "kind": "rect",
+    "cellsW": 2,
+    "cellsH": 2
+  },
+  "tags": [
+    "original-fixture",
+    "building"
+  ]
+}

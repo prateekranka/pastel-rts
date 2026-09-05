@@ -1,0 +1,27 @@
+M1.1-Q2 probe start 2026-09-05T18:43:34.348Z
+Repository: /home/bobbyranka/Projects/pastel-rts-m11-soak-final
+Required source: 6e4d580
+Ports: game=33373 foundry=33374 content=33387
+Target URL: http://127.0.0.1:33373/?mode=interaction-lab&content=studio&scenario=interaction-lab-alien-fantasy&seed=42&renderer=webgl&dpr=1&zoom=70-percent
+Owned studio wrapper PID 4134617
+foundry ready: http://127.0.0.1:33374/
+game ready: http://127.0.0.1:33373/
+content ready: http://127.0.0.1:33387/health
+Initial publication revision 3; draft 3; entity fixture 25
+Lab ready at 2026-09-05T18:43:41.788Z; warmup 30000 ms
+Baseline captured at tick 624; resources={"textures":7,"geometries":17}
+Measured replacement soak start 2026-09-05T18:44:12.756Z; target 1200000 ms
+Replacement 1/12 alternate-gravemark-stalker 4 at soak 92323 ms
+Replacement 2/12 original-sunweaver-scout 5 at soak 182371 ms
+Replacement 3/12 alternate-gravemark-stalker 6 at soak 272315 ms
+Replacement 4/12 original-sunweaver-scout 7 at soak 362174 ms
+Replacement 5/12 alternate-gravemark-stalker 8 at soak 452372 ms
+Replacement 6/12 original-sunweaver-scout 9 at soak 542492 ms
+Replacement 7/12 alternate-gravemark-stalker 10 at soak 632850 ms
+Replacement 8/12 original-sunweaver-scout 11 at soak 722462 ms
+Replacement 9/12 alternate-gravemark-stalker 12 at soak 812478 ms
+Replacement 10/12 original-sunweaver-scout 13 at soak 902984 ms
+Replacement 11/12 alternate-gravemark-stalker 14 at soak 993175 ms
+Replacement 12/12 original-sunweaver-scout 15 at soak 1084528 ms
+Final captured at measured soak 1205967 ms; runtime errors=0
+M1.1-Q2 probe end 2026-09-05T19:04:20.589Z blockers=0 fatal=no

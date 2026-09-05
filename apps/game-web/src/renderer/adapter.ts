@@ -13,6 +13,11 @@ export type RendererStats = {
   triangles: number;
 };
 
+export type RendererResourceCounts = {
+  textures: number;
+  geometries: number;
+};
+
 export type RendererAdapter = {
   canvas: HTMLCanvasElement;
   kind: RendererKind;
@@ -26,6 +31,7 @@ export type RendererAdapter = {
   render: (scene: Scene, camera: Camera) => void;
   dispose: () => void;
   getStats: () => RendererStats;
+  getResourceCounts: () => RendererResourceCounts;
 };
 
 type GpuRenderer = {
@@ -40,6 +46,10 @@ type GpuRenderer = {
       calls: number;
       triangles: number;
       drawCalls?: number;
+    };
+    memory?: {
+      textures?: number;
+      geometries?: number;
     };
   };
 };
@@ -172,6 +182,13 @@ function wrap(
       return {
         drawCalls: render.drawCalls ?? render.calls,
         triangles: render.triangles,
+      };
+    },
+    getResourceCounts() {
+      const memory = renderer.info.memory;
+      return {
+        textures: memory?.textures ?? 0,
+        geometries: memory?.geometries ?? 0,
       };
     },
   };

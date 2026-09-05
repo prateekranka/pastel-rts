@@ -1,0 +1,8 @@
+M1.1-Q probe start 2026-09-05T16:57:04.391Z
+Repository: /home/bobbyranka/Projects/pastel-rts-m11-soak
+Required source: 8a84af0
+Ports: game=30373 foundry=30374 content=30387
+Target URL: http://127.0.0.1:30373/?mode=interaction-lab&content=studio&scenario=interaction-lab-alien-fantasy&seed=42&renderer=webgl&dpr=1&zoom=70-percent
+FATAL: mkdirSync is not defined
+BLOCKER: Probe terminated before its planned completion path
+M1.1-Q probe end 2026-09-05T16:57:04.393Z blockers=1 fatal=yes

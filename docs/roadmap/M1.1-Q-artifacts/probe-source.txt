@@ -1,0 +1,1273 @@
+import { cpSync, existsSync, mkdtempSync, mkdirSync, openSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync, closeSync } from 'node:fs';
+import { spawn } from 'node:child_process';
+import { createHash } from 'node:crypto';
+import { tmpdir } from 'node:os';
+import { dirname, join, relative, resolve } from 'node:path';
+import { pathToFileURL } from 'node:url';
+
+const REPO_ROOT = '/home/bobbyranka/Projects/pastel-rts-m11-soak';
+const ARTIFACT_DIR = join(REPO_ROOT, 'docs/roadmap/M1.1-Q-artifacts');
+const SOURCE_PACK_DIR = join(REPO_ROOT, 'content/dev-pack-v2');
+const GAME_PORT = 30373;
+const FOUNDRY_PORT = 30374;
+const CONTENT_PORT = 30387;
+const GAME_ORIGIN = `http://127.0.0.1:${String(GAME_PORT)}`;
+const CONTENT_ORIGIN = `http://127.0.0.1:${String(CONTENT_PORT)}`;
+const GAME_URL = `${GAME_ORIGIN}/?mode=interaction-lab&content=studio&scenario=interaction-lab-alien-fantasy&seed=42&renderer=webgl&dpr=1&zoom=70-percent`;
+const SCENARIO_ID = 'interaction-lab-alien-fantasy';
+const SEED = 42;
+const EXPECTED_ENTITY_COUNT = 25;
+const SCOUT_ID = 'sunweaver-scout';
+const SCOUT_ASSET_PATH = 'units/sunweaver-scout/sheet.png';
+const ALTERNATE_SOURCE_PATH = join(SOURCE_PACK_DIR, 'units/gravemark-stalker/sheet.png');
+const WARMUP_MS = 30_000;
+const SOAK_DURATION_MS = 20 * 60 * 1000;
+const REPLACEMENT_COUNT = 12;
+const REPLACEMENT_INTERVAL_MS = 90_000;
+const RUNTIME_ID = 'game-web-interaction-lab';
+const CHROMIUM_PATH = '/usr/bin/chromium';
+const IGNORE_DEFAULT_ARGS = ['--disable-dev-shm-usage'];
+const startedAtWall = Date.now();
+
+const browserEvents = {
+  console: [],
+  pageErrors: [],
+  requestFailed: [],
+  httpErrors: [],
+};
+const blockers = [];
+const replacements = [];
+const checkpoints = [];
+let service = null;
+let serviceLogFd = null;
+let serviceExit = null;
+let browser = null;
+let context = null;
+let page = null;
+let cdp = null;
+let tempRoot = null;
+let tempPackDir = null;
+let samplerData = null;
+let baseline = null;
+let finalCheckpoint = null;
+let soakStartedAtWall = null;
+let soakStartedAtBrowser = null;
+let stopping = false;
+
+function writeJson(path, value) {
+  writeFileSync(path, `${JSON.stringify(value, null, 2)}\n`, 'utf8');
+}
+
+function sha256(value) {
+  return createHash('sha256').update(value).digest('hex');
+}
+
+function cloneJson(value) {
+  return JSON.parse(JSON.stringify(value));
+}
+
+function delay(ms) {
+  return new Promise((resolvePromise) => setTimeout(resolvePromise, ms));
+}
+
+function nowIso() {
+  return new Date().toISOString();
+}
+
+function errorText(error) {
+  return error instanceof Error ? error.message : String(error);
+}
+
+function recordBlocker(message, details = {}) {
+  const entry = { at: nowIso(), message, ...details };
+  blockers.push(entry);
+  console.error(`BLOCKER: ${message}`);
+  return entry;
+}
+
+function checkObserved(condition, message, details = {}) {
+  if (condition) {
+    return true;
+  }
+  recordBlocker(message, details);
+  return false;
+}
+
+function listFiles(root) {
+  const output = [];
+  const visit = (directory) => {
+    for (const entry of readdirSync(directory, { withFileTypes: true })) {
+      const absolute = join(directory, entry.name);
+      if (entry.isDirectory()) {
+        visit(absolute);
+      } else if (entry.isFile()) {
+        const bytes = readFileSync(absolute);
+        output.push({ path: relative(root, absolute).split('\\').join('/'), byteLength: bytes.length, sha256: sha256(bytes) });
+      }
+    }
+  };
+  visit(root);
+  output.sort((left, right) => left.path.localeCompare(right.path));
+  return output;
+}
+
+function inventoryDigest(entries) {
+  return sha256(JSON.stringify(entries));
+}
+
+function encodeAssetPath(path) {
+  return path.split('/').map((segment) => encodeURIComponent(segment)).join('/');
+}
+
+async function requestJson(path, init = {}) {
+  const response = await fetch(`${CONTENT_ORIGIN}${path}`, {
+    ...init,
+    headers: {
+      ...(init.body === undefined ? {} : { 'content-type': 'application/json' }),
+      ...(init.headers ?? {}),
+    },
+  });
+  const text = await response.text();
+  let body = null;
+  try {
+    body = text.length > 0 ? JSON.parse(text) : null;
+  } catch {
+    body = { raw: text.slice(0, 2000) };
+  }
+  if (!response.ok) {
+    const detail = body && typeof body === 'object' && 'error' in body ? String(body.error) : text.slice(0, 300);
+    throw new Error(`${init.method ?? 'GET'} ${path} returned HTTP ${String(response.status)}: ${detail}`);
+  }
+  return { status: response.status, body };
+}
+
+async function readPublication() {
+  return (await requestJson('/v2/publication')).body;
+}
+
+async function readDraftPack() {
+  return (await requestJson('/v2/draft/pack')).body;
+}
+
+async function readRevisionPack(revision) {
+  return (await requestJson(`/v2/revisions/${encodeURIComponent(revision)}/pack`)).body;
+}
+
+function findScout(pack) {
+  const scout = pack?.units?.find((unit) => unit.id === SCOUT_ID);
+  if (!scout) {
+    throw new Error(`Pack is missing ${SCOUT_ID}`);
+  }
+  return scout;
+}
+
+function findAsset(metadata, assetPath) {
+  const asset = metadata?.assets?.find((entry) => entry.assetPath === assetPath);
+  if (!asset) {
+    throw new Error(`Revision ${metadata?.revision ?? 'unknown'} is missing asset ${assetPath}`);
+  }
+  return asset;
+}
+
+async function readAcknowledgement() {
+  const body = (await requestJson('/v2/acknowledgements')).body;
+  return body?.acknowledgements?.find(
+    (entry) => entry.runtimeId === RUNTIME_ID && entry.scenarioId === SCENARIO_ID,
+  ) ?? null;
+}
+
+async function waitForAcknowledgement(revision, simulationRulesHash, timeoutMs = 30_000) {
+  const deadline = Date.now() + timeoutMs;
+  let latest = null;
+  while (Date.now() < deadline) {
+    latest = await readAcknowledgement();
+    if (
+      latest &&
+      latest.revision === revision &&
+      latest.simulationRulesHash === simulationRulesHash &&
+      latest.restartRequired === false
+    ) {
+      return latest;
+    }
+    await delay(100);
+  }
+  throw new Error(`Timed out waiting for acknowledgement of ${revision}; latest=${JSON.stringify(latest)}`);
+}
+
+async function waitForHttp(url, label, timeoutMs = 60_000) {
+  const deadline = Date.now() + timeoutMs;
+  let last = 'no response';
+  while (Date.now() < deadline) {
+    try {
+      const response = await fetch(url, { signal: AbortSignal.timeout(1500) });
+      if (response.ok) {
+        console.log(`${label} ready: ${url}`);
+        return;
+      }
+      last = `HTTP ${String(response.status)}`;
+    } catch (error) {
+      last = errorText(error);
+    }
+    await delay(100);
+  }
+  throw new Error(`${label} did not become ready at ${url}: ${last}`);
+}
+
+function processGroupAlive(pid) {
+  if (!pid) {
+    return false;
+  }
+  try {
+    process.kill(-pid, 0);
+    return true;
+  } catch (error) {
+    return error?.code !== 'ESRCH';
+  }
+}
+
+async function stopOwnedStudio() {
+  if (!service?.pid) {
+    return;
+  }
+  stopping = true;
+  const pid = service.pid;
+  try {
+    process.kill(-pid, 'SIGTERM');
+  } catch (error) {
+    if (error?.code !== 'ESRCH') {
+      console.error(`SIGTERM failed for studio process group ${String(pid)}: ${errorText(error)}`);
+    }
+  }
+  const deadline = Date.now() + 5_000;
+  while (Date.now() < deadline && processGroupAlive(pid)) {
+    await delay(50);
+  }
+  if (processGroupAlive(pid)) {
+    console.error(`Studio process group ${String(pid)} remained after SIGTERM; sending SIGKILL.`);
+    try {
+      process.kill(-pid, 'SIGKILL');
+    } catch (error) {
+      if (error?.code !== 'ESRCH') {
+        console.error(`SIGKILL failed for studio process group ${String(pid)}: ${errorText(error)}`);
+      }
+    }
+    const killDeadline = Date.now() + 3_000;
+    while (Date.now() < killDeadline && processGroupAlive(pid)) {
+      await delay(50);
+    }
+  }
+  if (serviceExit === null) {
+    serviceExit = { code: service.exitCode, signal: service.signalCode, observedAfterStop: true };
+  }
+}
+
+function attachBrowserEvents(currentPage) {
+  currentPage.on('console', (message) => {
+    browserEvents.console.push({
+      type: message.type(),
+      text: message.text(),
+      location: message.location(),
+      at: nowIso(),
+    });
+  });
+  currentPage.on('pageerror', (error) => {
+    browserEvents.pageErrors.push({ message: error.message, stack: error.stack ?? null, at: nowIso() });
+  });
+  currentPage.on('requestfailed', (request) => {
+    browserEvents.requestFailed.push({
+      method: request.method(),
+      url: request.url(),
+      failure: request.failure()?.errorText ?? null,
+      at: nowIso(),
+    });
+  });
+  currentPage.on('response', (response) => {
+    if (response.status() >= 400) {
+      browserEvents.httpErrors.push({ method: response.request().method(), url: response.url(), status: response.status(), at: nowIso() });
+    }
+  });
+}
+
+function isIncidentalBrowserError(entry) {
+  return entry.kind === 'http' && entry.url.endsWith('/favicon.ico');
+}
+
+function currentBrowserErrorSummary() {
+  const all = [
+    ...browserEvents.console.map((entry) => ({ kind: 'console', ...entry })),
+    ...browserEvents.pageErrors.map((entry) => ({ kind: 'pageerror', ...entry })),
+    ...browserEvents.requestFailed.map((entry) => ({ kind: 'requestfailed', ...entry })),
+    ...browserEvents.httpErrors.map((entry) => ({ kind: 'http', ...entry })),
+  ];
+  const runtimeErrors = all.filter((entry) => {
+    if (entry.kind === 'console') {
+      return entry.type === 'error';
+    }
+    if (entry.kind === 'http') {
+      return !isIncidentalBrowserError(entry);
+    }
+    return true;
+  });
+  const incidental = all.filter(isIncidentalBrowserError);
+  return {
+    totalEvents: all.length,
+    consoleMessages: browserEvents.console.length,
+    consoleErrors: browserEvents.console.filter((entry) => entry.type === 'error').length,
+    pageErrors: browserEvents.pageErrors.length,
+    requestFailed: browserEvents.requestFailed.length,
+    httpErrors: browserEvents.httpErrors.length,
+    runtimeErrorCount: runtimeErrors.length,
+    incidentalCount: incidental.length,
+    runtimeErrors: runtimeErrors.slice(-100),
+  };
+}
+
+async function readHeapUsage() {
+  if (!cdp) {
+    return { available: false, source: 'CDP Runtime.getHeapUsage', reason: 'CDP session unavailable' };
+  }
+  try {
+    const usage = await cdp.send('Runtime.getHeapUsage');
+    return {
+      available: true,
+      source: 'CDP Runtime.getHeapUsage',
+      usedSize: usage.usedSize,
+      totalSize: usage.totalSize,
+      embedderHeapUsedSize: usage.embedderHeapUsedSize,
+      backingStorageSize: usage.backingStorageSize,
+    };
+  } catch (error) {
+    return { available: false, source: 'CDP Runtime.getHeapUsage', reason: errorText(error) };
+  }
+}
+
+async function readPageSnapshot() {
+  return page.evaluate(() => {
+    const app = window.__pastelApp;
+    const lab = app?.getInteractionLab?.();
+    const content = lab?.getContent?.();
+    const status = app?.getContentStatus?.() ?? null;
+    const diagnostics = lab?.getDiagnostics?.() ?? null;
+    const runtime = lab?.runtime?.getDiagnostics?.() ?? null;
+    const renderer = app?.getRenderer?.() ?? null;
+    let rendererSnapshot = null;
+    if (renderer) {
+      try {
+        const stats = renderer.getStats();
+        const resources = renderer.getResourceCounts();
+        rendererSnapshot = {
+          kind: renderer.kind,
+          requested: renderer.requested,
+          backend: renderer.backend,
+          initError: renderer.initError,
+          pixelRatio: renderer.getPixelRatio(),
+          drawingBuffer: renderer.getDrawingBufferSize(),
+          stats: { drawCalls: stats.drawCalls, triangles: stats.triangles },
+          resources: { textures: resources.textures, geometries: resources.geometries },
+        };
+      } catch (error) {
+        rendererSnapshot = { error: String(error) };
+      }
+    }
+    const primary = document.querySelector('canvas');
+    let webglRenderer = null;
+    if (primary instanceof HTMLCanvasElement) {
+      try {
+        const gl = primary.getContext('webgl2') ?? primary.getContext('webgl');
+        const debugInfo = gl?.getExtension('WEBGL_debug_renderer_info');
+        if (gl && debugInfo) {
+          webglRenderer = String(gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL));
+        }
+      } catch {
+        webglRenderer = null;
+      }
+    }
+    const resources = performance.getEntriesByType('resource').map((entry) => ({
+      name: entry.name,
+      initiatorType: entry.initiatorType,
+      startTime: entry.startTime,
+      duration: entry.duration,
+      transferSize: entry.transferSize,
+      encodedBodySize: entry.encodedBodySize,
+      decodedBodySize: entry.decodedBodySize,
+    }));
+    const contentResources = resources.filter((entry) => entry.name.includes('/dev-content/') || entry.name.includes('/content/dev-pack-v2/'));
+    const unitArt = lab?.units?.getArtDiagnostics?.() ?? null;
+    const buildingArt = lab?.buildings?.getArtDiagnostics?.() ?? null;
+    const memory = performance.memory
+      ? {
+          available: true,
+          source: 'performance.memory',
+          usedJSHeapSize: performance.memory.usedJSHeapSize,
+          totalJSHeapSize: performance.memory.totalJSHeapSize,
+          jsHeapSizeLimit: performance.memory.jsHeapSizeLimit,
+        }
+      : { available: false, source: 'performance.memory', reason: 'not exposed' };
+    return {
+      capturedAtBrowserMs: performance.now(),
+      url: window.location.href,
+      title: document.title,
+      viewport: { width: window.innerWidth, height: window.innerHeight },
+      devicePixelRatio: window.devicePixelRatio,
+      canvas: primary instanceof HTMLCanvasElement
+        ? { width: primary.width, height: primary.height, cssWidth: primary.clientWidth, cssHeight: primary.clientHeight }
+        : null,
+      webglRenderer,
+      content: content ? { identity: content.identity, assetBaseUrl: content.assetBaseUrl } : null,
+      status,
+      diagnostics,
+      runtime,
+      renderer: rendererSnapshot,
+      art: { unit: unitArt, building: buildingArt },
+      heap: memory,
+      samplerLatest: window.__m11qSampler?.latest?.() ?? null,
+      resourceSummary: {
+        totalEntries: resources.length,
+        contentEntries: contentResources.length,
+        contentResources: contentResources.slice(-300),
+      },
+    };
+  });
+}
+
+async function waitForLabReady() {
+  await page.waitForSelector('#game-canvas', { timeout: 30_000 });
+  await page.waitForFunction(
+    ({ scenarioId, seed, entityCount }) => {
+      const app = window.__pastelApp;
+      const lab = app?.getInteractionLab?.();
+      const diagnostics = lab?.getDiagnostics?.();
+      return Boolean(
+        lab?.isReady?.() &&
+        diagnostics?.scenarioId === scenarioId &&
+        diagnostics.seed === seed &&
+        diagnostics.entityCount === entityCount,
+      );
+    },
+    { scenarioId: SCENARIO_ID, seed: SEED, entityCount: EXPECTED_ENTITY_COUNT },
+    { timeout: 60_000 },
+  );
+}
+
+async function waitForRevision(revision) {
+  await page.waitForFunction(
+    (expectedRevision) => {
+      const app = window.__pastelApp;
+      const lab = app?.getInteractionLab?.();
+      const status = app?.getContentStatus?.();
+      return (
+        lab?.getContent?.()?.identity.revision === expectedRevision &&
+        status?.activeRevision === expectedRevision &&
+        status.phase === 'ready'
+      );
+    },
+    revision,
+    { timeout: 30_000 },
+  );
+}
+
+async function waitForArtReady(timeoutMs = 30_000) {
+  const deadline = Date.now() + timeoutMs;
+  let latest = null;
+  while (Date.now() < deadline) {
+    latest = await page.evaluate(() => {
+      const lab = window.__pastelApp?.getInteractionLab?.();
+      const unit = lab?.units?.getArtDiagnostics?.() ?? [];
+      const building = lab?.buildings?.getArtDiagnostics?.() ?? [];
+      return {
+        ready: unit.length > 0 && building.length > 0 && unit.every((entry) => entry.state === 'ready') && building.every((entry) => entry.state === 'ready'),
+        unit,
+        building,
+      };
+    });
+    if (latest.ready) {
+      return latest;
+    }
+    await delay(250);
+  }
+  console.error(`Art status did not settle within ${String(timeoutMs)} ms; recording the live status and continuing.`);
+  return { ready: false, timedOut: true, unit: latest?.unit ?? [], building: latest?.building ?? [] };
+}
+
+async function startSampler() {
+  await page.evaluate(() => {
+    const previous = window.__m11qSampler;
+    previous?.stop?.();
+    const state = {
+      startedAt: performance.now(),
+      lastFrameAt: null,
+      frames: [],
+      metrics: [],
+      nextMetricAt: 0,
+      stopped: false,
+      raf: 0,
+      droppedFrames: 0,
+    };
+    const maxFrames = 200_000;
+    const readMetric = (now) => {
+      const app = window.__pastelApp;
+      const lab = app?.getInteractionLab?.();
+      const adapter = app?.getRenderer?.();
+      let renderer = null;
+      try {
+        if (adapter) {
+          const stats = adapter.getStats();
+          const resources = adapter.getResourceCounts();
+          renderer = {
+            kind: adapter.kind,
+            requested: adapter.requested,
+            backend: adapter.backend,
+            initError: adapter.initError,
+            drawingBuffer: adapter.getDrawingBufferSize(),
+            pixelRatio: adapter.getPixelRatio(),
+            stats: { drawCalls: stats.drawCalls, triangles: stats.triangles },
+            resources: { textures: resources.textures, geometries: resources.geometries },
+          };
+        }
+      } catch (error) {
+        renderer = { error: String(error) };
+      }
+      const memory = performance.memory
+        ? {
+            available: true,
+            usedJSHeapSize: performance.memory.usedJSHeapSize,
+            totalJSHeapSize: performance.memory.totalJSHeapSize,
+            jsHeapSizeLimit: performance.memory.jsHeapSizeLimit,
+          }
+        : { available: false, reason: 'not exposed' };
+      return {
+        atMs: now - state.startedAt,
+        runtime: lab?.runtime?.getDiagnostics?.() ?? null,
+        diagnostics: lab?.getDiagnostics?.() ?? null,
+        status: app?.getContentStatus?.() ?? null,
+        renderer,
+        heap: memory,
+      };
+    };
+    const loop = (now) => {
+      const atMs = now - state.startedAt;
+      if (state.lastFrameAt !== null) {
+        if (state.frames.length < maxFrames) {
+          state.frames.push([atMs, now - state.lastFrameAt]);
+        } else {
+          state.droppedFrames += 1;
+        }
+      }
+      state.lastFrameAt = now;
+      if (atMs >= state.nextMetricAt) {
+        state.metrics.push(readMetric(now));
+        state.nextMetricAt += 1000;
+      }
+      if (!state.stopped) {
+        state.raf = requestAnimationFrame(loop);
+      }
+    };
+    state.raf = requestAnimationFrame(loop);
+    window.__m11qSampler = {
+      latest: () => state.metrics[state.metrics.length - 1] ?? null,
+      stop: () => {
+        if (!state.stopped) {
+          state.stopped = true;
+          cancelAnimationFrame(state.raf);
+        }
+        return {
+          startedAtBrowserMs: state.startedAt,
+          stoppedAtBrowserMs: performance.now(),
+          frames: state.frames,
+          metrics: state.metrics,
+          droppedFrames: state.droppedFrames,
+        };
+      },
+    };
+  });
+}
+
+function percentile(sorted, p) {
+  if (sorted.length === 0) {
+    return 0;
+  }
+  const index = Math.min(sorted.length - 1, Math.max(0, Math.ceil(p * sorted.length) - 1));
+  return sorted[index] ?? 0;
+}
+
+function average(values) {
+  if (values.length === 0) {
+    return 0;
+  }
+  return values.reduce((total, value) => total + value, 0) / values.length;
+}
+
+function summarizeFrames(framePairs, fromAtMs = 0, toAtMs = Number.POSITIVE_INFINITY) {
+  const values = framePairs
+    .filter((pair) => pair[0] >= fromAtMs && pair[0] < toAtMs)
+    .map((pair) => pair[1])
+    .filter((value) => Number.isFinite(value) && value > 0);
+  const sorted = [...values].sort((left, right) => left - right);
+  const avgMs = average(values);
+  const p99Ms = percentile(sorted, 0.99);
+  return {
+    sampleCount: values.length,
+    minFrameMs: sorted[0] ?? 0,
+    avgFrameMs: avgMs,
+    p50FrameMs: percentile(sorted, 0.5),
+    p95FrameMs: percentile(sorted, 0.95),
+    p99FrameMs: p99Ms,
+    maxFrameMs: sorted[sorted.length - 1] ?? 0,
+    avgFps: avgMs > 0 ? 1000 / avgMs : 0,
+    onePercentLowFps: p99Ms > 0 ? 1000 / p99Ms : 0,
+    longFrameCountAtOrAbove50ms: values.filter((value) => value >= 50).length,
+    source: 'requestAnimationFrame interval on composited browser page; not GPU time',
+  };
+}
+
+function seriesValues(metrics, selector, fromAtMs = 0) {
+  return metrics
+    .filter((metric) => metric.atMs >= fromAtMs)
+    .map(selector)
+    .filter((value) => Number.isFinite(value));
+}
+
+function summarizeNumberSeries(values) {
+  const sorted = [...values].sort((left, right) => left - right);
+  return {
+    sampleCount: values.length,
+    min: sorted[0] ?? 0,
+    avg: average(values),
+    p50: percentile(sorted, 0.5),
+    p95: percentile(sorted, 0.95),
+    p99: percentile(sorted, 0.99),
+    max: sorted[sorted.length - 1] ?? 0,
+  };
+}
+
+function summarizeMetricSeries(metrics, fromAtMs) {
+  const sim = summarizeNumberSeries(seriesValues(metrics, (metric) => metric.runtime?.tickDurationMs, fromAtMs));
+  const nav = summarizeNumberSeries(seriesValues(metrics, (metric) => metric.runtime?.navDurationMs, fromAtMs));
+  const latency = summarizeNumberSeries(seriesValues(metrics, (metric) => metric.runtime?.snapshotLatencyMs, fromAtMs));
+  const drawCalls = summarizeNumberSeries(seriesValues(metrics, (metric) => metric.renderer?.stats?.drawCalls, fromAtMs));
+  const triangles = summarizeNumberSeries(seriesValues(metrics, (metric) => metric.renderer?.stats?.triangles, fromAtMs));
+  return {
+    simulationTickDurationMs: sim,
+    navigationDurationMs: nav,
+    snapshotLatencyMs: latency,
+    drawCalls,
+    triangles,
+  };
+}
+
+function summarizeResourceSeries(metrics, fromAtMs = 0) {
+  const relevant = metrics.filter((metric) => metric.atMs >= fromAtMs && metric.renderer?.resources);
+  const textures = relevant.map((metric) => metric.renderer.resources.textures).filter(Number.isFinite);
+  const geometries = relevant.map((metric) => metric.renderer.resources.geometries).filter(Number.isFinite);
+  const drawCalls = relevant.map((metric) => metric.renderer?.stats?.drawCalls).filter(Number.isFinite);
+  const unique = (values) => [...new Set(values)].sort((left, right) => left - right);
+  return {
+    sampleCount: relevant.length,
+    textures: { min: Math.min(...textures, 0), max: Math.max(...textures, 0), unique: unique(textures) },
+    geometries: { min: Math.min(...geometries, 0), max: Math.max(...geometries, 0), unique: unique(geometries) },
+    drawCalls: { min: Math.min(...drawCalls, 0), max: Math.max(...drawCalls, 0), unique: unique(drawCalls) },
+  };
+}
+
+function resourceObservation(checkpoint) {
+  return {
+    renderer: checkpoint?.runtime?.renderer?.resources ?? null,
+    art: {
+      unit: checkpoint?.runtime?.art?.unit ?? null,
+      building: checkpoint?.runtime?.art?.building ?? null,
+    },
+    heap: checkpoint?.heap ?? null,
+  };
+}
+
+async function captureCheckpoint(label, phase, contextData = {}) {
+  if (!page) {
+    throw new Error(`Cannot capture ${label}: browser page is unavailable`);
+  }
+  const screenshotPath = join(ARTIFACT_DIR, `${label}.png`);
+  const screenshot = await page.screenshot({ path: screenshotPath });
+  const screenshotValid = screenshot.length >= 1000 && screenshot[0] === 0x89 && screenshot[1] === 0x50 && screenshot.readUInt32BE(16) === 1280 && screenshot.readUInt32BE(20) === 800;
+  const runtime = await readPageSnapshot();
+  const heap = await readHeapUsage();
+  const record = {
+    schemaVersion: 1,
+    evidence: 'M1.1-Q',
+    label,
+    phase,
+    capturedAt: nowIso(),
+    wallElapsedMs: Date.now() - startedAtWall,
+    soakElapsedMs: soakStartedAtWall === null ? null : Date.now() - soakStartedAtWall,
+    screenshotPath,
+    screenshotBytes: screenshot.length,
+    screenshotDimensions: { width: screenshot.readUInt32BE(16), height: screenshot.readUInt32BE(20) },
+    screenshotValid,
+    runtime,
+    heap,
+    browserErrors: currentBrowserErrorSummary(),
+    ...contextData,
+  };
+  writeJson(join(ARTIFACT_DIR, `${label}.json`), record);
+  checkpoints.push({ label, phase, path: join(ARTIFACT_DIR, `${label}.json`), screenshotPath, capturedAt: record.capturedAt });
+  checkObserved(screenshotValid, `Screenshot ${label} is not a valid composited 1280x800 PNG`, { path: screenshotPath });
+  return record;
+}
+
+async function publishCosmeticReplacement(
+  cycle,
+  originalPngBase64,
+  alternatePngBase64,
+  originalSha,
+  alternateSha,
+  baselineSimulationRulesHash,
+  previousTick,
+  previousVisualContentHash,
+) {
+  const blockerCountBefore = blockers.length;
+  const target = cycle % 2 === 1 ? 'alternate-gravemark-stalker' : 'original-sunweaver-scout';
+  const expectedInputSha256 = target === 'alternate-gravemark-stalker' ? alternateSha : originalSha;
+  const pngBase64 = target === 'alternate-gravemark-stalker' ? alternatePngBase64 : originalPngBase64;
+  const record = {
+    cycle,
+    target,
+    expectedInputSha256,
+    baselineSimulationRulesHash,
+    previousTick,
+    previousVisualContentHash,
+    startedAt: nowIso(),
+    scheduledSoakElapsedMs: cycle * REPLACEMENT_INTERVAL_MS,
+  };
+  try {
+    const draftBefore = await readDraftPack();
+    const beforeScout = cloneJson(findScout(draftBefore));
+    const archetype = cloneJson(beforeScout);
+    archetype.displayName = `Sunweaver Scout Q Cycle ${String(cycle)}`;
+    const mutationResponse = await requestJson(`/v2/units/${encodeURIComponent(SCOUT_ID)}`, {
+      method: 'PUT',
+      body: JSON.stringify({
+        archetype,
+        expectedDraftRevision: draftBefore.revision,
+        pngBase64,
+      }),
+    });
+    const mutation = mutationResponse.body;
+    const validationResponse = await requestJson('/v2/validate', {
+      method: 'POST',
+      body: JSON.stringify({ expectedDraftRevision: mutation.draft.revision }),
+    });
+    const publicationBefore = await readPublication();
+    const publishResponse = await requestJson('/v2/publish', {
+      method: 'POST',
+      body: JSON.stringify({ expectedRevision: publicationBefore.currentRevision }),
+    });
+    const published = publishResponse.body;
+    const metadata = published.metadata;
+    record.draftBeforeRevision = draftBefore.revision;
+    record.draftAfterRevision = mutation.draft.revision;
+    record.validation = { status: validationResponse.status, ok: validationResponse.body.ok, draftRevision: validationResponse.body.draftRevision };
+    record.expectedPublishRevision = publicationBefore.currentRevision;
+    record.revision = published.revision;
+    record.metadata = metadata;
+    record.publishStatus = publishResponse.status;
+    record.revisionPack = await readRevisionPack(published.revision);
+    const servedAssetResponse = await fetch(`${CONTENT_ORIGIN}/v2/revisions/${encodeURIComponent(published.revision)}/assets/${encodeAssetPath(SCOUT_ASSET_PATH)}`);
+    const servedBytes = Buffer.from(await servedAssetResponse.arrayBuffer());
+    const servedSha256 = sha256(servedBytes);
+    record.asset = {
+      path: SCOUT_ASSET_PATH,
+      responseStatus: servedAssetResponse.status,
+      byteLength: servedBytes.length,
+      servedSha256,
+      metadataSha256: findAsset(metadata, SCOUT_ASSET_PATH).sha256,
+      expectedInputSha256,
+      servedMatchesMetadata: servedSha256 === findAsset(metadata, SCOUT_ASSET_PATH).sha256,
+      servedMatchesExpectedInput: servedSha256 === expectedInputSha256,
+    };
+    checkObserved(servedAssetResponse.ok, `Replacement ${String(cycle)} asset request failed`, { cycle, revision: published.revision });
+    checkObserved(record.asset.servedMatchesMetadata, `Replacement ${String(cycle)} served asset does not match metadata`, { cycle, revision: published.revision, asset: record.asset });
+    checkObserved(record.asset.servedMatchesExpectedInput, `Replacement ${String(cycle)} served asset does not match the requested source PNG`, { cycle, revision: published.revision, asset: record.asset });
+
+    await waitForRevision(published.revision);
+    const ack = await waitForAcknowledgement(published.revision, metadata.simulationRulesHash);
+    await waitForArtReady();
+    await delay(500);
+    const runtime = await readPageSnapshot();
+    record.acknowledgement = ack;
+    record.runtime = runtime;
+    record.finishedAt = nowIso();
+    record.actualSoakElapsedMs = soakStartedAtWall === null ? null : Date.now() - soakStartedAtWall;
+    checkObserved(runtime.content?.identity?.revision === published.revision, `Runtime did not adopt exact revision ${published.revision}`, { cycle, runtime: runtime.content, status: runtime.status });
+    checkObserved(runtime.status?.activeRevision === published.revision && runtime.status?.phase === 'ready', `Runtime status is not ready on exact revision ${published.revision}`, { cycle, status: runtime.status });
+    checkObserved(runtime.status?.pendingRevision === null, `Runtime retained a pending revision after cosmetic replacement ${published.revision}`, { cycle, status: runtime.status });
+    checkObserved(runtime.diagnostics?.scenarioId === SCENARIO_ID && runtime.diagnostics?.seed === SEED, `Runtime scenario identity changed during replacement ${published.revision}`, { cycle, diagnostics: runtime.diagnostics });
+    checkObserved(runtime.diagnostics?.entityCount === EXPECTED_ENTITY_COUNT, `Entity count changed during replacement ${published.revision}`, { cycle, diagnostics: runtime.diagnostics });
+    checkObserved(metadata.restartRequired === false, `Cosmetic replacement ${published.revision} unexpectedly requires restart`, { cycle, metadata });
+    checkObserved(metadata.simulationRulesHash === record.baselineSimulationRulesHash, `Simulation-rules hash changed during cosmetic replacement ${published.revision}`, { cycle, expected: record.baselineSimulationRulesHash, actual: metadata.simulationRulesHash });
+    checkObserved(runtime.content?.identity?.simulationRulesHash === record.baselineSimulationRulesHash, `Runtime simulation-rules hash changed during cosmetic replacement ${published.revision}`, { cycle, runtime: runtime.content?.identity });
+    checkObserved(runtime.diagnostics?.tick > record.previousTick, `Simulation tick did not advance across replacement ${published.revision}`, { cycle, previousTick: record.previousTick, runtimeTick: runtime.diagnostics?.tick });
+    checkObserved(runtime.content?.assetBaseUrl === `${'/dev-content/v2/revisions/'}${published.revision}/assets/`, `Runtime asset base does not identify exact revision ${published.revision}`, { cycle, assetBaseUrl: runtime.content?.assetBaseUrl });
+    record.ok = blockers.length === blockerCountBefore;
+    if (!record.ok) {
+      record.error = 'One or more replacement acceptance observations failed';
+    }
+  } catch (error) {
+    record.ok = false;
+    record.error = errorText(error);
+    record.finishedAt = nowIso();
+    record.actualSoakElapsedMs = soakStartedAtWall === null ? null : Date.now() - soakStartedAtWall;
+    recordBlocker(`Replacement cycle ${String(cycle)} failed`, { cycle, error: record.error });
+  }
+  replacements.push(record);
+  writeJson(join(ARTIFACT_DIR, `replacement-${String(cycle).padStart(2, '0')}.json`), record);
+  return record;
+}
+
+function latestByAtMs(values, fromAtMs = 0) {
+  const eligible = values.filter((value) => value.atMs >= fromAtMs);
+  return eligible[eligible.length - 1] ?? null;
+}
+
+function countBy(values, selector) {
+  const counts = new Map();
+  for (const value of values) {
+    const key = selector(value);
+    counts.set(key, (counts.get(key) ?? 0) + 1);
+  }
+  return [...counts.entries()].sort((left, right) => right[1] - left[1]).map(([value, count]) => ({ value, count }));
+}
+
+async function main() {
+  console.log(`M1.1-Q probe start ${nowIso()}`);
+  console.log(`Repository: ${REPO_ROOT}`);
+  console.log(`Required source: ${'8a84af0'}`);
+  console.log(`Ports: game=${GAME_PORT} foundry=${FOUNDRY_PORT} content=${CONTENT_PORT}`);
+  console.log(`Target URL: ${GAME_URL}`);
+  mkdirSync(ARTIFACT_DIR, { recursive: true });
+  tempRoot = mkdtempSync(join(tmpdir(), 'pastel-rts-m11-q-'));
+  tempPackDir = join(tempRoot, 'content-pack');
+  cpSync(SOURCE_PACK_DIR, tempPackDir, { recursive: true });
+  const sourceInventory = listFiles(SOURCE_PACK_DIR);
+  const copyInventory = listFiles(tempPackDir);
+  const sourceInventoryDigest = inventoryDigest(sourceInventory);
+  const copyInventoryDigest = inventoryDigest(copyInventory);
+  writeJson(join(ARTIFACT_DIR, 'fixture-inventory.json'), {
+    schemaVersion: 1,
+    sourcePackDir: SOURCE_PACK_DIR,
+    tempPackDir,
+    sourceInventoryDigest,
+    copyInventoryDigest,
+    exactCopyBeforeRun: sourceInventoryDigest === copyInventoryDigest && JSON.stringify(sourceInventory) === JSON.stringify(copyInventory),
+    sourceFiles: sourceInventory,
+    copyFiles: copyInventory,
+  });
+  checkObserved(sourceInventoryDigest === copyInventoryDigest, 'Disposable content pack copy differs from original before run', { sourceInventoryDigest, copyInventoryDigest });
+  const originalPng = readFileSync(join(tempPackDir, 'units', 'sunweaver-scout', 'sheet.png'));
+  const alternatePng = readFileSync(join(tempPackDir, 'units', 'gravemark-stalker', 'sheet.png'));
+  const originalSha = sha256(originalPng);
+  const alternateSha = sha256(alternatePng);
+  const originalPngBase64 = originalPng.toString('base64');
+  const alternatePngBase64 = alternatePng.toString('base64');
+  checkObserved(originalSha !== alternateSha, 'Original and alternate PNG inputs are not visually distinct by SHA-256', { originalSha, alternateSha });
+
+  const serviceLogPath = join(ARTIFACT_DIR, 'studio-services.log');
+  serviceLogFd = openSync(serviceLogPath, 'w');
+  const serviceEnv = {
+    ...process.env,
+    CONTENT_PACK_DIR: tempPackDir,
+    CONTENT_PORT: String(CONTENT_PORT),
+    STUDIO_CONTENT_PORT: String(CONTENT_PORT),
+    STUDIO_FOUNDRY_PORT: String(FOUNDRY_PORT),
+    STUDIO_GAME_PORT: String(GAME_PORT),
+    VITE_GAME_WEB_ORIGIN: GAME_ORIGIN,
+    VITE_SANDBOX_PORT: String(GAME_PORT),
+    VITE_CONTENT_SERVER_URL: CONTENT_ORIGIN,
+    VITE_CONTENT_SERVER_ORIGIN: CONTENT_ORIGIN,
+    VITE_CONTENT_STATUS_URL: `${CONTENT_ORIGIN}/health`,
+    VITE_CONTENT_HEALTH_URL: `${CONTENT_ORIGIN}/health`,
+  };
+  const serviceCommand = [
+    process.execPath,
+    join(REPO_ROOT, 'scripts/dev-studio.mjs'),
+    '--game-port', String(GAME_PORT),
+    '--foundry-port', String(FOUNDRY_PORT),
+    '--content-port', String(CONTENT_PORT),
+    '--pack-dir', tempPackDir,
+  ];
+  service = spawn(serviceCommand[0], serviceCommand.slice(1), {
+    cwd: REPO_ROOT,
+    env: serviceEnv,
+    detached: true,
+    stdio: ['ignore', serviceLogFd, serviceLogFd],
+  });
+  service.once('exit', (code, signal) => {
+    serviceExit = { code, signal, observedAt: nowIso(), whileStopping: stopping };
+    if (!stopping) {
+      recordBlocker('Owned studio service wrapper exited before probe completion', { code, signal });
+    }
+  });
+  service.once('error', (error) => {
+    if (!stopping) {
+      recordBlocker('Owned studio service wrapper emitted an error', { error: errorText(error) });
+    }
+  });
+  console.log(`Owned studio wrapper PID ${String(service.pid)}`);
+
+  await Promise.all([
+    waitForHttp(`${GAME_ORIGIN}/`, 'game'),
+    waitForHttp(`${GAME_ORIGIN.replace(String(GAME_PORT), String(FOUNDRY_PORT))}/`, 'foundry'),
+    waitForHttp(`${CONTENT_ORIGIN}/health`, 'content'),
+  ]);
+  const initialPublication = await readPublication();
+  const initialPack = await readRevisionPack(initialPublication.currentRevision);
+  const initialScout = findScout(initialPack);
+  const initialScoutAsset = findAsset(initialPublication.current, SCOUT_ASSET_PATH);
+  checkObserved(initialPublication.current.simulationRulesHash.length === 64, 'Initial publication has no valid simulation-rules hash', { initialPublication });
+  checkObserved(initialScoutAsset.sha256 === originalSha, 'Initial published scout asset does not match original PNG', { initialScoutAsset, originalSha });
+  console.log(`Initial publication revision ${initialPublication.currentRevision}; draft ${initialPublication.draftRevision}; entity fixture ${EXPECTED_ENTITY_COUNT}`);
+
+  const playwright = await import(pathToFileURL(join(REPO_ROOT, 'node_modules/playwright/index.mjs')).href);
+  browser = await playwright.chromium.launch({
+    headless: true,
+    executablePath: CHROMIUM_PATH,
+    ignoreDefaultArgs: IGNORE_DEFAULT_ARGS,
+  });
+  context = await browser.newContext({
+    viewport: { width: 1280, height: 800 },
+    deviceScaleFactor: 1,
+    colorScheme: 'dark',
+  });
+  page = await context.newPage();
+  attachBrowserEvents(page);
+  cdp = await context.newCDPSession(page);
+  await page.goto(GAME_URL, { waitUntil: 'domcontentloaded', timeout: 60_000 });
+  await waitForLabReady();
+  await waitForArtReady();
+  await startSampler();
+  console.log(`Lab ready at ${nowIso()}; warmup ${String(WARMUP_MS)} ms`);
+  await delay(WARMUP_MS);
+  const warmupSnapshot = await readPageSnapshot();
+  checkObserved(warmupSnapshot.content?.identity?.revision === initialPublication.currentRevision, 'Warmup runtime revision differs from initial publication', { runtime: warmupSnapshot.content, initialRevision: initialPublication.currentRevision });
+  checkObserved(warmupSnapshot.diagnostics?.scenarioId === SCENARIO_ID && warmupSnapshot.diagnostics?.seed === SEED, 'Warmup runtime scenario or seed differs from contract', { diagnostics: warmupSnapshot.diagnostics });
+  checkObserved(warmupSnapshot.diagnostics?.entityCount === EXPECTED_ENTITY_COUNT, 'Warmup runtime entity count differs from original fixture', { diagnostics: warmupSnapshot.diagnostics });
+  baseline = await captureCheckpoint('baseline-warmup', 'warmup-baseline', {
+    initialPublication,
+    initialPackIdentity: { revision: initialPack.revision, contentHash: initialPack.contentHash },
+    originalScout: initialScout,
+    sourceAsset: { path: SCOUT_ASSET_PATH, sha256: originalSha, byteLength: originalPng.length },
+    alternateSourceAsset: { path: 'units/gravemark-stalker/sheet.png', sha256: alternateSha, byteLength: alternatePng.length },
+  });
+  const baselineSimulationRulesHash = initialPublication.current.simulationRulesHash;
+  const baselineTick = baseline.runtime?.diagnostics?.tick ?? 0;
+  console.log(`Baseline captured at tick ${String(baselineTick)}; resources=${JSON.stringify(baseline.runtime?.renderer?.resources ?? null)}`);
+
+  soakStartedAtWall = Date.now();
+  soakStartedAtBrowser = await page.evaluate(() => performance.now());
+  console.log(`Measured replacement soak start ${new Date(soakStartedAtWall).toISOString()}; target ${String(SOAK_DURATION_MS)} ms`);
+  for (let cycle = 1; cycle <= REPLACEMENT_COUNT; cycle += 1) {
+    const targetWall = soakStartedAtWall + cycle * REPLACEMENT_INTERVAL_MS;
+    while (Date.now() < targetWall) {
+      const remaining = targetWall - Date.now();
+      await delay(Math.min(remaining, 1000));
+    }
+    const previousTick = cycle === 1 ? baselineTick : (replacements[cycle - 2]?.runtime?.diagnostics?.tick ?? baselineTick);
+    const previousVisualContentHash = cycle === 1 ? baseline.runtime?.content?.identity?.visualContentHash : replacements[cycle - 2]?.runtime?.content?.identity?.visualContentHash;
+    const record = await publishCosmeticReplacement(
+      cycle,
+      originalPngBase64,
+      alternatePngBase64,
+      originalSha,
+      alternateSha,
+      baselineSimulationRulesHash,
+      previousTick,
+      previousVisualContentHash,
+    );
+    if (record.metadata) {
+      checkObserved(record.metadata.visualContentHash !== record.previousVisualContentHash, `Visual content hash did not change for replacement cycle ${String(cycle)}`, { cycle, previous: record.previousVisualContentHash, actual: record.metadata.visualContentHash });
+      if (cycle > 1) {
+        checkObserved(record.asset?.servedSha256 !== replacements[cycle - 2]?.asset?.servedSha256, `Served scout asset did not change for replacement cycle ${String(cycle)}`, { cycle, previous: replacements[cycle - 2]?.asset?.servedSha256, actual: record.asset?.servedSha256 });
+      }
+      checkObserved(record.metadata.simulationRulesHash === baselineSimulationRulesHash, `Replacement cycle ${String(cycle)} changed simulation rules`, { cycle, expected: baselineSimulationRulesHash, actual: record.metadata.simulationRulesHash });
+    }
+    const checkpoint = await captureCheckpoint(`replacement-${String(cycle).padStart(2, '0')}`, 'replacement', {
+      cycle,
+      replacement: record,
+      baselineResourceObservation: resourceObservation(baseline),
+    });
+    record.checkpoint = { json: checkpoint.screenshotPath.replace(/\.png$/, '.json'), screenshot: checkpoint.screenshotPath };
+    writeJson(join(ARTIFACT_DIR, `replacement-${String(cycle).padStart(2, '0')}.json`), record);
+    console.log(`Replacement ${String(cycle)}/${String(REPLACEMENT_COUNT)} ${record.target} ${record.revision ?? 'FAILED'} at soak ${String(record.actualSoakElapsedMs ?? 0)} ms`);
+  }
+
+  const soakEndTarget = soakStartedAtWall + SOAK_DURATION_MS;
+  while (Date.now() < soakEndTarget) {
+    const remaining = soakEndTarget - Date.now();
+    await delay(Math.min(remaining, 1000));
+  }
+  samplerData = await page.evaluate(() => window.__m11qSampler?.stop?.() ?? null);
+  if (!samplerData) {
+    recordBlocker('Sampler did not return final frame and metric data');
+    samplerData = { startedAtBrowserMs: null, stoppedAtBrowserMs: null, frames: [], metrics: [], droppedFrames: null };
+  }
+  writeJson(join(ARTIFACT_DIR, 'sampler.json'), samplerData);
+  finalCheckpoint = await captureCheckpoint('final', 'soak-final', {
+    measuredSoakTargetMs: SOAK_DURATION_MS,
+    measuredSoakElapsedMs: Date.now() - soakStartedAtWall,
+    baselineResourceObservation: resourceObservation(baseline),
+    lastReplacement: replacements[replacements.length - 1] ?? null,
+  });
+  const measuredSoakElapsedMs = Date.now() - soakStartedAtWall;
+  checkObserved(measuredSoakElapsedMs >= SOAK_DURATION_MS, 'Replacement soak ended before the required 20 minutes elapsed', { measuredSoakElapsedMs, requiredMs: SOAK_DURATION_MS });
+  checkObserved(replacements.filter((record) => record.ok).length >= 10, 'Fewer than 10 replacement cycles completed successfully', { successfulReplacements: replacements.filter((record) => record.ok).length, requested: REPLACEMENT_COUNT });
+  checkObserved(currentBrowserErrorSummary().runtimeErrorCount === 0, 'Runtime browser errors were captured during the soak', currentBrowserErrorSummary());
+  console.log(`Final captured at measured soak ${String(measuredSoakElapsedMs)} ms; runtime errors=${String(currentBrowserErrorSummary().runtimeErrorCount)}`);
+
+  const framePairs = samplerData.frames ?? [];
+  const soakFrameStart = soakStartedAtBrowser === null || samplerData.startedAtBrowserMs === null
+    ? 0
+    : soakStartedAtBrowser - samplerData.startedAtBrowserMs;
+  const metrics = samplerData.metrics ?? [];
+  const metricSoakStart = soakFrameStart;
+  const warmupFrameSummary = summarizeFrames(framePairs, 0, soakFrameStart);
+  const soakFrameSummary = summarizeFrames(framePairs, soakFrameStart);
+  const warmupMetricSummary = summarizeMetricSeries(metrics, 0);
+  const soakMetricSummary = summarizeMetricSeries(metrics, metricSoakStart);
+  const soakResourceSummary = summarizeResourceSeries(metrics, metricSoakStart);
+  const finalResource = finalCheckpoint.runtime?.renderer?.resources ?? null;
+  const baselineResource = baseline.runtime?.renderer?.resources ?? null;
+  const resourceComparison = {
+    warmupBaseline: baselineResource,
+    final: finalResource,
+    delta: baselineResource && finalResource
+      ? {
+          textures: finalResource.textures - baselineResource.textures,
+          geometries: finalResource.geometries - baselineResource.geometries,
+        }
+      : null,
+    sampledSoakRange: soakResourceSummary,
+    note: 'Renderer.info memory counts are live renderer bookkeeping. Stable counts are evidence for this run, not proof against every leak.',
+  };
+  const heapComparison = {
+    warmupBaseline: baseline.heap,
+    final: finalCheckpoint.heap,
+    deltaUsedSize: baseline.heap?.available && finalCheckpoint.heap?.available
+      ? finalCheckpoint.heap.usedSize - baseline.heap.usedSize
+      : null,
+    note: 'CDP V8 heap readings include browser/runtime and probe overhead. Missing metrics are reported without forcing a pass.',
+  };
+  const revisionSequence = replacements.map((record) => record.revision ?? null);
+  const activeRevisionSequence = [baseline.runtime?.status?.activeRevision ?? baseline.runtime?.content?.identity?.revision ?? null, ...replacements.map((record) => record.runtime?.status?.activeRevision ?? null), finalCheckpoint.runtime?.status?.activeRevision ?? null];
+  const entityCountSequence = [baseline.runtime?.diagnostics?.entityCount ?? null, ...replacements.map((record) => record.runtime?.diagnostics?.entityCount ?? null), finalCheckpoint.runtime?.diagnostics?.entityCount ?? null];
+  const visualHashSequence = [baseline.runtime?.content?.identity?.visualContentHash ?? null, ...replacements.map((record) => record.runtime?.content?.identity?.visualContentHash ?? null), finalCheckpoint.runtime?.content?.identity?.visualContentHash ?? null];
+  const rulesHashSequence = [baseline.runtime?.content?.identity?.simulationRulesHash ?? null, ...replacements.map((record) => record.runtime?.content?.identity?.simulationRulesHash ?? null), finalCheckpoint.runtime?.content?.identity?.simulationRulesHash ?? null];
+  const uniqueRevisions = new Set(revisionSequence.filter(Boolean));
+  const uniqueVisualHashes = new Set(visualHashSequence.filter(Boolean));
+  checkObserved(uniqueRevisions.size === replacements.filter((record) => record.revision).length, 'Published revision identities were not unique across replacement cycles', { revisionSequence });
+  checkObserved(activeRevisionSequence.filter(Boolean).length === activeRevisionSequence.filter((value) => value !== null).length, 'Active revision sequence contains an undefined identity', { activeRevisionSequence });
+  checkObserved(entityCountSequence.filter((value) => value !== EXPECTED_ENTITY_COUNT).length === 0, 'Entity count was not retained at 25 through all captured states', { entityCountSequence });
+  checkObserved(rulesHashSequence.filter((value) => value !== null && value !== baselineSimulationRulesHash).length === 0, 'A captured runtime state has a simulation-rules hash different from baseline', { baselineSimulationRulesHash, rulesHashSequence });
+  writeJson(join(ARTIFACT_DIR, 'browser-events.json'), browserEvents);
+  writeJson(join(ARTIFACT_DIR, 'summary.json'), {
+    schemaVersion: 1,
+    evidence: 'M1.1-Q',
+    status: blockers.length === 0 ? 'completed-no-observed-blocker' : 'completed-with-blockers',
+    startedAt: new Date(startedAtWall).toISOString(),
+    finishedAt: nowIso(),
+    wallClockDurationMs: Date.now() - startedAtWall,
+    measuredSoak: {
+      warmupMs: WARMUP_MS,
+      targetMs: SOAK_DURATION_MS,
+      actualMs: measuredSoakElapsedMs,
+      startedAt: soakStartedAtWall === null ? null : new Date(soakStartedAtWall).toISOString(),
+      endedAt: nowIso(),
+      completed: measuredSoakElapsedMs >= SOAK_DURATION_MS,
+    },
+    repository: {
+      path: REPO_ROOT,
+      sourceCommit: '8a84af0',
+      observedHead: '9e88c5a46431ab827a80de0ee5b2dcb1fa4a3e8a',
+      productEdits: false,
+    },
+    execution: {
+      probePath: '/tmp/m11-q-replacement-leak-soak.mjs',
+      model: 'gpt-5.6-luna',
+      provider: 'openai-codex',
+      sessionId: '20260905_221134_e76588',
+      requestedEffort: 'max',
+      fastMode: false,
+      delegation: false,
+      command: `node /tmp/m11-q-replacement-leak-soak.mjs`,
+      serviceCommand: serviceCommand.join(' '),
+      servicePid: service?.pid ?? null,
+      serviceExit,
+    },
+    fixture: {
+      gameUrl: GAME_URL,
+      viewport: { width: 1280, height: 800 },
+      rendererRequested: 'webgl',
+      deviceScaleFactor: 1,
+      devicePixelRatioObserved: finalCheckpoint.runtime?.devicePixelRatio ?? null,
+      chromiumPath: CHROMIUM_PATH,
+      chromiumIgnoreDefaultArgs: IGNORE_DEFAULT_ARGS,
+      ports: { game: GAME_PORT, foundry: FOUNDRY_PORT, content: CONTENT_PORT },
+      sourcePackDir: SOURCE_PACK_DIR,
+      disposablePackDir: tempPackDir,
+      scenarioId: SCENARIO_ID,
+      seed: SEED,
+      expectedEntityCount: EXPECTED_ENTITY_COUNT,
+      originalScoutAsset: { path: 'units/sunweaver-scout/sheet.png', sha256: originalSha, byteLength: originalPng.length },
+      alternateAsset: { path: 'units/gravemark-stalker/sheet.png', sha256: alternateSha, byteLength: alternatePng.length },
+      originalCopyInventoryDigest: sourceInventoryDigest,
+      disposableCopyInventoryDigest: copyInventoryDigest,
+    },
+    initialPublication: {
+      currentRevision: initialPublication.currentRevision,
+      draftRevision: initialPublication.draftRevision,
+      metadata: initialPublication.current,
+      pack: { revision: initialPack.revision, contentHash: initialPack.contentHash },
+    },
+    replacementContract: {
+      requestedCycles: REPLACEMENT_COUNT,
+      successfulCycles: replacements.filter((record) => record.ok).length,
+      exactPublishedRevisions: revisionSequence,
+      activeRevisionSequence,
+      uniquePublishedRevisionCount: uniqueRevisions.size,
+      uniqueVisualContentHashCount: uniqueVisualHashes.size,
+      visualHashSequence,
+      simulationRulesHash: baselineSimulationRulesHash,
+      rulesHashSequence,
+      entityCountSequence,
+      acknowledgements: replacements.map((record) => record.acknowledgement ?? null),
+      records: replacements.map((record) => ({
+        cycle: record.cycle,
+        target: record.target,
+        ok: record.ok,
+        revision: record.revision ?? null,
+        draftBeforeRevision: record.draftBeforeRevision ?? null,
+        draftAfterRevision: record.draftAfterRevision ?? null,
+        metadata: record.metadata ?? null,
+        asset: record.asset ?? null,
+        acknowledgement: record.acknowledgement ?? null,
+        runtimeRevision: record.runtime?.content?.identity?.revision ?? null,
+        runtimeTick: record.runtime?.diagnostics?.tick ?? null,
+        runtimeEntityCount: record.runtime?.diagnostics?.entityCount ?? null,
+        error: record.error ?? null,
+      })),
+    },
+    frameTime: {
+      warmup: warmupFrameSummary,
+      measuredSoak: soakFrameSummary,
+      droppedFrames: samplerData.droppedFrames,
+      browserSamplerStartedAtMs: samplerData.startedAtBrowserMs,
+      browserSamplerStoppedAtMs: samplerData.stoppedAtBrowserMs,
+      soakFrameStartMsRelativeToSampler: soakFrameStart,
+    },
+    timing: {
+      warmup: warmupMetricSummary,
+      measuredSoak: soakMetricSummary,
+      source: 'MatchRuntime.getDiagnostics() sampled from the live page; tick and navigation work are worker-side diagnostics.',
+    },
+    resources: resourceComparison,
+    heap: heapComparison,
+    browser: {
+      webglRenderer: finalCheckpoint.runtime?.webglRenderer ?? baseline.runtime?.webglRenderer ?? null,
+      errors: currentBrowserErrorSummary(),
+      allEventsPath: join(ARTIFACT_DIR, 'browser-events.json'),
+    },
+    checkpoints,
+    artifactPaths: {
+      baselineJson: join(ARTIFACT_DIR, 'baseline-warmup.json'),
+      baselinePng: join(ARTIFACT_DIR, 'baseline-warmup.png'),
+      finalJson: join(ARTIFACT_DIR, 'final.json'),
+      finalPng: join(ARTIFACT_DIR, 'final.png'),
+      samplerJson: join(ARTIFACT_DIR, 'sampler.json'),
+      fixtureInventoryJson: join(ARTIFACT_DIR, 'fixture-inventory.json'),
+      serviceLog: serviceLogPath,
+    },
+    limits: [
+      'This run is Linux Chromium using the observed WebGL renderer. It is desktop evidence only and cannot certify iPad 60 FPS or p99.',
+      'requestAnimationFrame intervals are browser frame timing. No CPU submission time is labelled as GPU time.',
+      'Renderer texture/geometry counts are live renderer observations. Stable counts do not prove absence of every leak.',
+      'CDP heap readings are available for this browser and include probe/browser overhead; no heap pass was forced.',
+      'The temporary content pack is disposable and is removed during cleanup after its source/copy inventory is recorded.',
+    ],
+    blockers,
+  });
+}
+
+let fatalError = null;
+try {
+  await main();
+} catch (error) {
+  fatalError = errorText(error);
+  console.error(`FATAL: ${fatalError}`);
+  recordBlocker('Probe terminated before its planned completion path', { error: fatalError });
+} finally {
+  try {
+    if (page && samplerData === null) {
+      samplerData = await page.evaluate(() => window.__m11qSampler?.stop?.() ?? null);
+      if (samplerData) {
+        writeJson(join(ARTIFACT_DIR, 'sampler-partial.json'), samplerData);
+      }
+    }
+  } catch (error) {
+    console.error(`Could not stop page sampler: ${errorText(error)}`);
+  }
+  try {
+    await page?.close({ runBeforeUnload: false });
+  } catch (error) {
+    console.error(`Page close failed: ${errorText(error)}`);
+  }
+  try {
+    await context?.close();
+  } catch (error) {
+    console.error(`Browser context close failed: ${errorText(error)}`);
+  }
+  try {
+    await browser?.close();
+  } catch (error) {
+    console.error(`Browser close failed: ${errorText(error)}`);
+  }
+  try {
+    await stopOwnedStudio();
+  } catch (error) {
+    console.error(`Studio cleanup failed: ${errorText(error)}`);
+  }
+  if (serviceLogFd !== null) {
+    try {
+      closeSync(serviceLogFd);
+    } catch {
+      // The evidence log is still retained if the descriptor was already closed.
+    }
+    serviceLogFd = null;
+  }
+  if (tempRoot && existsSync(tempRoot)) {
+    try {
+      rmSync(tempRoot, { recursive: true, force: true });
+    } catch (error) {
+      console.error(`Disposable pack cleanup failed: ${errorText(error)}`);
+    }
+  }
+  if (fatalError && !existsSync(join(ARTIFACT_DIR, 'summary.json'))) {
+    writeJson(join(ARTIFACT_DIR, 'summary.json'), {
+      schemaVersion: 1,
+      evidence: 'M1.1-Q',
+      status: 'failed-before-completion',
+      startedAt: new Date(startedAtWall).toISOString(),
+      finishedAt: nowIso(),
+      wallClockDurationMs: Date.now() - startedAtWall,
+      measuredSoak: { warmupMs: WARMUP_MS, targetMs: SOAK_DURATION_MS, actualMs: soakStartedAtWall === null ? null : Date.now() - soakStartedAtWall, completed: false },
+      fatalError,
+      blockers,
+      repository: { path: REPO_ROOT, sourceCommit: '8a84af0', observedHead: '9e88c5a46431ab827a80de0ee5b2dcb1fa4a3e8a', productEdits: false },
+      execution: { probePath: '/tmp/m11-q-replacement-leak-soak.mjs', model: 'gpt-5.6-luna', provider: 'openai-codex', sessionId: '20260905_221134_e76588', requestedEffort: 'max', fastMode: false, delegation: false },
+      ports: { game: GAME_PORT, foundry: FOUNDRY_PORT, content: CONTENT_PORT },
+      checkpoints,
+      replacements,
+      browserEvents,
+    });
+  }
+}
+
+if (fatalError || blockers.length > 0) {
+  process.exitCode = 1;
+}
+console.log(`M1.1-Q probe end ${nowIso()} blockers=${String(blockers.length)} fatal=${fatalError ? 'yes' : 'no'}`);

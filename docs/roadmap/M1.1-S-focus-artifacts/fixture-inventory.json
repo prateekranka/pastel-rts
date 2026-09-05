@@ -1,0 +1,242 @@
+{
+  "schemaVersion": 1,
+  "sourcePackDir": "/home/bobbyranka/Projects/pastel-rts-m11-texture-lifetime/content/dev-pack-v2",
+  "tempPackDir": "/tmp/pastel-rts-m11-q-COb5eJ/content-pack",
+  "sourceInventoryDigest": "c0c5224aef342da91e00208b4e96755224f6817e40d2dfd664da61ef26bcc461",
+  "copyInventoryDigest": "c0c5224aef342da91e00208b4e96755224f6817e40d2dfd664da61ef26bcc461",
+  "exactCopyBeforeRun": true,
+  "sourceFiles": [
+    {
+      "path": "buildings/gravemark-bastion/manifest.json",
+      "byteLength": 601,
+      "sha256": "69187359d01f2d4ca10c6d67601d7a83b5a3f757ecb30d71033e1887be3fa1e1"
+    },
+    {
+      "path": "buildings/gravemark-bastion/sprite.png",
+      "byteLength": 452,
+      "sha256": "9fd2fb079c825a9bd32a7f69a87899b5a19cae94142ab555dd0bbf2d021ba0cd"
+    },
+    {
+      "path": "buildings/neutral-cyan-beacon/manifest.json",
+      "byteLength": 596,
+      "sha256": "3bb16b7544e1458f2dd5ce955370b1459f9a3b92b525294c51e25a443e61d5e9"
+    },
+    {
+      "path": "buildings/neutral-cyan-beacon/sprite.png",
+      "byteLength": 348,
+      "sha256": "79f51fcaee66fe865230e1bee210a3f8100e2118ae3c863bcbcc7d3a4121a151"
+    },
+    {
+      "path": "buildings/sunweaver-sanctum/manifest.json",
+      "byteLength": 605,
+      "sha256": "18e384b38955c848043fe2861f036cbe1f368439dfe41ad406b35dbf77d2816e"
+    },
+    {
+      "path": "buildings/sunweaver-sanctum/sprite.png",
+      "byteLength": 742,
+      "sha256": "3b2c1b253c1ec159e21d59073d986e23b2050869ac4c48146850b441e9def28e"
+    },
+    {
+      "path": "maps/interaction-lab-alien-fantasy.json",
+      "byteLength": 169,
+      "sha256": "8a09566d0c8379912395e2f187e9de2c7df5e559594368bf5a0947cd45d567dc"
+    },
+    {
+      "path": "maps/lab-grid.json",
+      "byteLength": 127,
+      "sha256": "0ed06af57e7db77b66c9f737e5c08924650cc3ff80290e39f5f06cadae26a715"
+    },
+    {
+      "path": "maps/m11-fixture-gallery.json",
+      "byteLength": 152,
+      "sha256": "20a71971555721dc99a1ffc8b0987fa59cb261f6ab59c65593b3496ecb265f1a"
+    },
+    {
+      "path": "pack.json",
+      "byteLength": 13709,
+      "sha256": "fb17a1e17b09241469c6d94159e6c10c808d2d2245f94c91a7faef225c9c0136"
+    },
+    {
+      "path": "scenarios/interaction-lab-alien-fantasy.json",
+      "byteLength": 2966,
+      "sha256": "538f1787c424a2e5d9b421185713ffe3002681ebdc3488c9d98fbe4f669df112"
+    },
+    {
+      "path": "scenarios/lab-skirmish.json",
+      "byteLength": 533,
+      "sha256": "bacab5818f3d0375ea6bc3592698fa266274657ed05b224e12d4af67a1021e63"
+    },
+    {
+      "path": "scenarios/m11-fixture-gallery.json",
+      "byteLength": 1018,
+      "sha256": "91aad835d4bd6a446240a589ee413b2f6bfab93300dee916d051a79599a39824"
+    },
+    {
+      "path": "units/gravemark-infantry/manifest.json",
+      "byteLength": 1393,
+      "sha256": "b1be7fbd6ab29cd923d8e2e7ac0cacf37b8baa70116634f444f667b3872fa4ee"
+    },
+    {
+      "path": "units/gravemark-stalker/manifest.json",
+      "byteLength": 1406,
+      "sha256": "ce130bce175295c1bae78f3c27cd125478a8099ba5ed296ff67b991ae273182a"
+    },
+    {
+      "path": "units/gravemark-stalker/sheet.png",
+      "byteLength": 1728,
+      "sha256": "9ad9d1c80ecba6e287ed4801bc9c8937a2a1930f00f849d311581aac6c156683"
+    },
+    {
+      "path": "units/gravemark-walker-proxy/sheet.png",
+      "byteLength": 359,
+      "sha256": "2ffbf2d536c9c8aeb1cf9175c38b6c1f60e3a0804e358367fddc7f3471705944"
+    },
+    {
+      "path": "units/gravemark-walker/manifest.json",
+      "byteLength": 1460,
+      "sha256": "879e01b3f5f405117d2bb28cf77d4b0171643d2263b1451ba04b2a5dd5ccc959"
+    },
+    {
+      "path": "units/sunweaver-infantry/manifest.json",
+      "byteLength": 1384,
+      "sha256": "6888e72dabaf12dc2bca12c567c304978944530abc775c814e4b04974fc062b5"
+    },
+    {
+      "path": "units/sunweaver-scout/manifest.json",
+      "byteLength": 1391,
+      "sha256": "c314837abd8593e133dca11f41d6869106d525670d8ceef291fa092708d0ecbf"
+    },
+    {
+      "path": "units/sunweaver-scout/sheet.png",
+      "byteLength": 1844,
+      "sha256": "a45428e676c023c7a68859662e5cfe4eb5b1177e8e42134dc0b31652f0cffd29"
+    },
+    {
+      "path": "units/sunweaver-walker-proxy/sheet.png",
+      "byteLength": 357,
+      "sha256": "b28db8306360dad8e6af9db774296e83cd44e57c826228ff17fd38a0507ec7fb"
+    },
+    {
+      "path": "units/sunweaver-walker/manifest.json",
+      "byteLength": 1460,
+      "sha256": "ca8a60df104f725660cf2ac4af347fc43b09bee4df3e783eb256924acbe08f1f"
+    }
+  ],
+  "copyFiles": [
+    {
+      "path": "buildings/gravemark-bastion/manifest.json",
+      "byteLength": 601,
+      "sha256": "69187359d01f2d4ca10c6d67601d7a83b5a3f757ecb30d71033e1887be3fa1e1"
+    },
+    {
+      "path": "buildings/gravemark-bastion/sprite.png",
+      "byteLength": 452,
+      "sha256": "9fd2fb079c825a9bd32a7f69a87899b5a19cae94142ab555dd0bbf2d021ba0cd"
+    },
+    {
+      "path": "buildings/neutral-cyan-beacon/manifest.json",
+      "byteLength": 596,
+      "sha256": "3bb16b7544e1458f2dd5ce955370b1459f9a3b92b525294c51e25a443e61d5e9"
+    },
+    {
+      "path": "buildings/neutral-cyan-beacon/sprite.png",
+      "byteLength": 348,
+      "sha256": "79f51fcaee66fe865230e1bee210a3f8100e2118ae3c863bcbcc7d3a4121a151"
+    },
+    {
+      "path": "buildings/sunweaver-sanctum/manifest.json",
+      "byteLength": 605,
+      "sha256": "18e384b38955c848043fe2861f036cbe1f368439dfe41ad406b35dbf77d2816e"
+    },
+    {
+      "path": "buildings/sunweaver-sanctum/sprite.png",
+      "byteLength": 742,
+      "sha256": "3b2c1b253c1ec159e21d59073d986e23b2050869ac4c48146850b441e9def28e"
+    },
+    {
+      "path": "maps/interaction-lab-alien-fantasy.json",
+      "byteLength": 169,
+      "sha256": "8a09566d0c8379912395e2f187e9de2c7df5e559594368bf5a0947cd45d567dc"
+    },
+    {
+      "path": "maps/lab-grid.json",
+      "byteLength": 127,
+      "sha256": "0ed06af57e7db77b66c9f737e5c08924650cc3ff80290e39f5f06cadae26a715"
+    },
+    {
+      "path": "maps/m11-fixture-gallery.json",
+      "byteLength": 152,
+      "sha256": "20a71971555721dc99a1ffc8b0987fa59cb261f6ab59c65593b3496ecb265f1a"
+    },
+    {
+      "path": "pack.json",
+      "byteLength": 13709,
+      "sha256": "fb17a1e17b09241469c6d94159e6c10c808d2d2245f94c91a7faef225c9c0136"
+    },
+    {
+      "path": "scenarios/interaction-lab-alien-fantasy.json",
+      "byteLength": 2966,
+      "sha256": "538f1787c424a2e5d9b421185713ffe3002681ebdc3488c9d98fbe4f669df112"
+    },
+    {
+      "path": "scenarios/lab-skirmish.json",
+      "byteLength": 533,
+      "sha256": "bacab5818f3d0375ea6bc3592698fa266274657ed05b224e12d4af67a1021e63"
+    },
+    {
+      "path": "scenarios/m11-fixture-gallery.json",
+      "byteLength": 1018,
+      "sha256": "91aad835d4bd6a446240a589ee413b2f6bfab93300dee916d051a79599a39824"
+    },
+    {
+      "path": "units/gravemark-infantry/manifest.json",
+      "byteLength": 1393,
+      "sha256": "b1be7fbd6ab29cd923d8e2e7ac0cacf37b8baa70116634f444f667b3872fa4ee"
+    },
+    {
+      "path": "units/gravemark-stalker/manifest.json",
+      "byteLength": 1406,
+      "sha256": "ce130bce175295c1bae78f3c27cd125478a8099ba5ed296ff67b991ae273182a"
+    },
+    {
+      "path": "units/gravemark-stalker/sheet.png",
+      "byteLength": 1728,
+      "sha256": "9ad9d1c80ecba6e287ed4801bc9c8937a2a1930f00f849d311581aac6c156683"
+    },
+    {
+      "path": "units/gravemark-walker-proxy/sheet.png",
+      "byteLength": 359,
+      "sha256": "2ffbf2d536c9c8aeb1cf9175c38b6c1f60e3a0804e358367fddc7f3471705944"
+    },
+    {
+      "path": "units/gravemark-walker/manifest.json",
+      "byteLength": 1460,
+      "sha256": "879e01b3f5f405117d2bb28cf77d4b0171643d2263b1451ba04b2a5dd5ccc959"
+    },
+    {
+      "path": "units/sunweaver-infantry/manifest.json",
+      "byteLength": 1384,
+      "sha256": "6888e72dabaf12dc2bca12c567c304978944530abc775c814e4b04974fc062b5"
+    },
+    {
+      "path": "units/sunweaver-scout/manifest.json",
+      "byteLength": 1391,
+      "sha256": "c314837abd8593e133dca11f41d6869106d525670d8ceef291fa092708d0ecbf"
+    },
+    {
+      "path": "units/sunweaver-scout/sheet.png",
+      "byteLength": 1844,
+      "sha256": "a45428e676c023c7a68859662e5cfe4eb5b1177e8e42134dc0b31652f0cffd29"
+    },
+    {
+      "path": "units/sunweaver-walker-proxy/sheet.png",
+      "byteLength": 357,
+      "sha256": "b28db8306360dad8e6af9db774296e83cd44e57c826228ff17fd38a0507ec7fb"
+    },
+    {
+      "path": "units/sunweaver-walker/manifest.json",
+      "byteLength": 1460,
+      "sha256": "ca8a60df104f725660cf2ac4af347fc43b09bee4df3e783eb256924acbe08f1f"
+    }
+  ]
+}

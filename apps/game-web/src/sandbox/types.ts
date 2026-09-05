@@ -1,6 +1,7 @@
 import type { CommandEnvelopeV1, CommandResult, MapDef, PackV2, ScenarioDef } from '@pastel-rts/content-schema';
 import type { NavDebugSnapshot } from '@pastel-rts/navigation';
 import type { StateChecksum } from '@pastel-rts/simulation';
+import type { RuntimeContentIdentity } from '../content/PublishedContentClient';
 
 export type LabInitMessage = {
   type: 'initLab';
@@ -29,6 +30,8 @@ export type LabSnapshotMessage = {
   simTimeMs: number;
   producedAtMs: number;
   tickDurationMs: number;
+  /** Time spent serializing navigation debug state, not GPU time. */
+  navDurationMs?: number;
   entityCount: number;
   payload: Float32Array;
 };
@@ -54,6 +57,7 @@ export type LabSnapshotSlot = {
   simTimeMs: number;
   receivedAtMs: number;
   tickDurationMs: number;
+  navDurationMs: number;
   producedAtMs: number;
   entityCount: number;
   payload: Float32Array;
@@ -66,12 +70,26 @@ export type EntityArchetypeRecord = {
 
 export type ScenarioSaveDocument = {
   schemaVersion: 1;
+  scenarioId: string;
   scenario: ScenarioDef;
+  mapId: string;
+  map: MapDef;
   seed: number;
+  replayToTick: number;
   packId: string;
+  /** Legacy field retained as an alias for the exact PackV2 content hash. */
   packHash: string;
+  contentHash: string;
+  revision: string;
+  manifestHash: string | null;
+  visualContentHash: string;
+  simulationRulesHash: string;
+  mapHash: string;
+  scenarioHash: string;
   commandLog: CommandEnvelopeV1[];
+  commandResults: CommandResult[];
   checksums: StateChecksum[];
+  contentSource: RuntimeContentIdentity['source'];
 };
 
 export type DebugOverlayFlags = {

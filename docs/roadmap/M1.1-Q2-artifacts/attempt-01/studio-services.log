@@ -1,0 +1,16 @@
+[content] > pastel-rts@0.0.0 dev:content
+[content] > npm run start --workspace @pastel-rts/content-server
+[game] > @pastel-rts/game-web@0.0.0 dev
+[game] > vite --host --host 127.0.0.1 --port 33373 --strictPort
+[game] sh: line 1: vite: command not found
+[foundry] > @pastel-rts/foundry@0.0.0 dev
+[foundry] > vite --host --port 5174 --strictPort --config /home/bobbyranka/Projects/pastel-rts-m11-soak-final/scripts/studio-foundry.vite.mjs --host 127.0.0.1 --port 33374 --strictPort
+[game] npm error Lifecycle script `dev` failed with error:
+[game] npm error code 127
+[game] npm error path /home/bobbyranka/Projects/pastel-rts-m11-soak-final/apps/game-web
+[game] npm error workspace @pastel-rts/game-web@0.0.0
+[game] npm error location /home/bobbyranka/Projects/pastel-rts-m11-soak-final/apps/game-web
+[game] npm error command failed
+[game] npm error command sh -c vite --host --host 127.0.0.1 --port 33373 --strictPort
+[foundry] sh: line 1: vite: command not found
+Studio failed: game stopped before studio shutdown (exit 127)

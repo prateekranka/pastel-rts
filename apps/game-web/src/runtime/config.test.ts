@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { STRESS_COUNTS } from '../config/constants';
+import { DEFAULT_SEED, STRESS_COUNTS } from '../config/constants';
 import { BENCHMARKS, developerConfigQueryPatch, packV2PublicBaseUrl, parseRuntimeConfig } from './config';
 
 describe('runtime config', () => {
@@ -29,6 +29,24 @@ describe('runtime config', () => {
     expect(config.benchmark).toBe('2x-stress');
     expect(config.dprPreset).toBe(1);
     expect(BENCHMARKS['2x-stress'].counts.combat).toBe(240);
+  });
+
+  it('preserves valid Foundry scenario and spawn ids and rejects unsafe query ids', () => {
+    const launched = parseRuntimeConfig(
+      '?mode=interaction-lab&content=studio&seed=42&scenario=lab-skirmish&spawnUnit=m11c-unit-123&spawnBuilding=neutral-cyan-beacon',
+    );
+    expect(launched.scenarioId).toBe('lab-skirmish');
+    expect(launched.spawnUnitId).toBe('m11c-unit-123');
+    expect(launched.spawnBuildingId).toBe('neutral-cyan-beacon');
+    expect(launched.seed).toBe(42);
+
+    const rejected = parseRuntimeConfig(
+      '?mode=interaction-lab&scenario=../private&spawnUnit=Bad%20Unit&spawnBuilding=../../asset&seed=1.5',
+    );
+    expect(rejected.scenarioId).toBeNull();
+    expect(rejected.spawnUnitId).toBeNull();
+    expect(rejected.spawnBuildingId).toBeNull();
+    expect(rejected.seed).toBe(DEFAULT_SEED);
   });
 
   it('exposes every required benchmark preset', () => {

@@ -1,0 +1,1078 @@
+{
+  "schemaVersion": 1,
+  "kind": "qa-scenario",
+  "content": {
+    "pack": {
+      "schemaVersion": 2,
+      "id": "dev-pack-v2",
+      "revision": "3",
+      "factions": [
+        {
+          "id": "sunweaver",
+          "displayName": "Sunweaver"
+        },
+        {
+          "id": "gravemark",
+          "displayName": "Gravemark"
+        },
+        {
+          "id": "neutral",
+          "displayName": "Neutral"
+        }
+      ],
+      "units": [
+        {
+          "schemaVersion": 2,
+          "id": "sunweaver-scout",
+          "displayName": "Sunweaver Scout",
+          "enabled": true,
+          "factionId": "sunweaver",
+          "assetPath": "units/sunweaver-scout/sheet.png",
+          "sourceWidth": 128,
+          "sourceHeight": 256,
+          "frameWidth": 32,
+          "frameHeight": 32,
+          "margin": {
+            "x": 0,
+            "y": 0
+          },
+          "spacing": {
+            "x": 0,
+            "y": 0
+          },
+          "bounds": {
+            "minX": 4,
+            "minY": 3,
+            "maxX": 28,
+            "maxY": 31
+          },
+          "anchor": {
+            "x": 0.5,
+            "y": 1
+          },
+          "worldHeight": 1.5,
+          "selectionRadius": 0.6,
+          "collisionRadius": 0.42,
+          "animation": {
+            "clips": {
+              "idle": {
+                "frames": {
+                  "kind": "range",
+                  "start": 0,
+                  "end": 15
+                },
+                "fps": 8,
+                "looping": true,
+                "assetPath": "units/sunweaver-scout/sheet.png"
+              },
+              "move": {
+                "frames": {
+                  "kind": "range",
+                  "start": 16,
+                  "end": 31
+                },
+                "fps": 12,
+                "looping": true,
+                "assetPath": "units/sunweaver-scout/sheet.png"
+              }
+            },
+            "directions": 4,
+            "directionOrder": [
+              "n",
+              "e",
+              "s",
+              "w"
+            ],
+            "mirrored": false
+          },
+          "movement": {
+            "speedSubunitsPerTick": 64,
+            "accelerationRate": 1,
+            "turnRateMilli": 3000,
+            "footprintCategory": "unit-1x1"
+          },
+          "tags": [
+            "infantry",
+            "scout",
+            "original-fixture",
+            "animated"
+          ]
+        },
+        {
+          "schemaVersion": 2,
+          "id": "sunweaver-infantry",
+          "displayName": "Sunweaver Infantry",
+          "enabled": true,
+          "factionId": "sunweaver",
+          "assetPath": "units/sunweaver-scout/sheet.png",
+          "sourceWidth": 128,
+          "sourceHeight": 256,
+          "frameWidth": 32,
+          "frameHeight": 32,
+          "margin": {
+            "x": 0,
+            "y": 0
+          },
+          "spacing": {
+            "x": 0,
+            "y": 0
+          },
+          "bounds": {
+            "minX": 4,
+            "minY": 3,
+            "maxX": 28,
+            "maxY": 31
+          },
+          "anchor": {
+            "x": 0.5,
+            "y": 1
+          },
+          "worldHeight": 1.5,
+          "selectionRadius": 0.6,
+          "collisionRadius": 0.42,
+          "animation": {
+            "clips": {
+              "idle": {
+                "frames": {
+                  "kind": "range",
+                  "start": 0,
+                  "end": 15
+                },
+                "fps": 8,
+                "looping": true,
+                "assetPath": "units/sunweaver-scout/sheet.png"
+              },
+              "move": {
+                "frames": {
+                  "kind": "range",
+                  "start": 16,
+                  "end": 31
+                },
+                "fps": 12,
+                "looping": true,
+                "assetPath": "units/sunweaver-scout/sheet.png"
+              }
+            },
+            "directions": 4,
+            "directionOrder": [
+              "n",
+              "e",
+              "s",
+              "w"
+            ],
+            "mirrored": false
+          },
+          "movement": {
+            "speedSubunitsPerTick": 64,
+            "accelerationRate": 1,
+            "turnRateMilli": 3000,
+            "footprintCategory": "unit-1x1"
+          },
+          "tags": [
+            "infantry",
+            "original-fixture",
+            "animated"
+          ]
+        },
+        {
+          "schemaVersion": 2,
+          "id": "sunweaver-walker",
+          "displayName": "Sunweaver Walker (Proxy)",
+          "enabled": true,
+          "factionId": "sunweaver",
+          "assetPath": "units/sunweaver-walker-proxy/sheet.png",
+          "sourceWidth": 64,
+          "sourceHeight": 64,
+          "frameWidth": 64,
+          "frameHeight": 64,
+          "margin": {
+            "x": 0,
+            "y": 0
+          },
+          "spacing": {
+            "x": 0,
+            "y": 0
+          },
+          "bounds": {
+            "minX": 5,
+            "minY": 5,
+            "maxX": 59,
+            "maxY": 62
+          },
+          "anchor": {
+            "x": 0.5,
+            "y": 1
+          },
+          "worldHeight": 3.2,
+          "selectionRadius": 1.1,
+          "collisionRadius": 0.85,
+          "animation": {
+            "clips": {
+              "idle": {
+                "frames": {
+                  "kind": "indexes",
+                  "indexes": [
+                    0
+                  ]
+                },
+                "fps": 1,
+                "looping": true,
+                "assetPath": "units/sunweaver-walker-proxy/sheet.png"
+              },
+              "move": {
+                "frames": {
+                  "kind": "indexes",
+                  "indexes": [
+                    0
+                  ]
+                },
+                "fps": 1,
+                "looping": true,
+                "assetPath": "units/sunweaver-walker-proxy/sheet.png"
+              }
+            },
+            "directions": 1,
+            "mirrored": false,
+            "fallbackRules": {
+              "missingDirection": "proxy-omnidirectional"
+            }
+          },
+          "movement": {
+            "speedSubunitsPerTick": 48,
+            "accelerationRate": 0.8,
+            "turnRateMilli": 2000,
+            "footprintCategory": "unit-1x1"
+          },
+          "tags": [
+            "walker",
+            "proxy",
+            "missing-directional-frames",
+            "original-fixture"
+          ]
+        },
+        {
+          "schemaVersion": 2,
+          "id": "gravemark-stalker",
+          "displayName": "Gravemark Stalker",
+          "enabled": true,
+          "factionId": "gravemark",
+          "assetPath": "units/gravemark-stalker/sheet.png",
+          "sourceWidth": 128,
+          "sourceHeight": 256,
+          "frameWidth": 32,
+          "frameHeight": 32,
+          "margin": {
+            "x": 0,
+            "y": 0
+          },
+          "spacing": {
+            "x": 0,
+            "y": 0
+          },
+          "bounds": {
+            "minX": 4,
+            "minY": 3,
+            "maxX": 28,
+            "maxY": 31
+          },
+          "anchor": {
+            "x": 0.5,
+            "y": 1
+          },
+          "worldHeight": 1.55,
+          "selectionRadius": 0.65,
+          "collisionRadius": 0.5,
+          "animation": {
+            "clips": {
+              "idle": {
+                "frames": {
+                  "kind": "range",
+                  "start": 0,
+                  "end": 15
+                },
+                "fps": 8,
+                "looping": true,
+                "assetPath": "units/gravemark-stalker/sheet.png"
+              },
+              "move": {
+                "frames": {
+                  "kind": "range",
+                  "start": 16,
+                  "end": 31
+                },
+                "fps": 12,
+                "looping": true,
+                "assetPath": "units/gravemark-stalker/sheet.png"
+              }
+            },
+            "directions": 4,
+            "directionOrder": [
+              "n",
+              "e",
+              "s",
+              "w"
+            ],
+            "mirrored": false
+          },
+          "movement": {
+            "speedSubunitsPerTick": 72,
+            "accelerationRate": 1.2,
+            "turnRateMilli": 2500,
+            "footprintCategory": "unit-1x1"
+          },
+          "tags": [
+            "infantry",
+            "stalker",
+            "original-fixture",
+            "animated"
+          ]
+        },
+        {
+          "schemaVersion": 2,
+          "id": "gravemark-infantry",
+          "displayName": "Gravemark Infantry",
+          "enabled": true,
+          "factionId": "gravemark",
+          "assetPath": "units/gravemark-stalker/sheet.png",
+          "sourceWidth": 128,
+          "sourceHeight": 256,
+          "frameWidth": 32,
+          "frameHeight": 32,
+          "margin": {
+            "x": 0,
+            "y": 0
+          },
+          "spacing": {
+            "x": 0,
+            "y": 0
+          },
+          "bounds": {
+            "minX": 4,
+            "minY": 3,
+            "maxX": 28,
+            "maxY": 31
+          },
+          "anchor": {
+            "x": 0.5,
+            "y": 1
+          },
+          "worldHeight": 1.55,
+          "selectionRadius": 0.65,
+          "collisionRadius": 0.5,
+          "animation": {
+            "clips": {
+              "idle": {
+                "frames": {
+                  "kind": "range",
+                  "start": 0,
+                  "end": 15
+                },
+                "fps": 8,
+                "looping": true,
+                "assetPath": "units/gravemark-stalker/sheet.png"
+              },
+              "move": {
+                "frames": {
+                  "kind": "range",
+                  "start": 16,
+                  "end": 31
+                },
+                "fps": 12,
+                "looping": true,
+                "assetPath": "units/gravemark-stalker/sheet.png"
+              }
+            },
+            "directions": 4,
+            "directionOrder": [
+              "n",
+              "e",
+              "s",
+              "w"
+            ],
+            "mirrored": false
+          },
+          "movement": {
+            "speedSubunitsPerTick": 72,
+            "accelerationRate": 1.2,
+            "turnRateMilli": 2500,
+            "footprintCategory": "unit-1x1"
+          },
+          "tags": [
+            "infantry",
+            "original-fixture",
+            "animated"
+          ]
+        },
+        {
+          "schemaVersion": 2,
+          "id": "gravemark-walker",
+          "displayName": "Gravemark Walker (Proxy)",
+          "enabled": true,
+          "factionId": "gravemark",
+          "assetPath": "units/gravemark-walker-proxy/sheet.png",
+          "sourceWidth": 64,
+          "sourceHeight": 64,
+          "frameWidth": 64,
+          "frameHeight": 64,
+          "margin": {
+            "x": 0,
+            "y": 0
+          },
+          "spacing": {
+            "x": 0,
+            "y": 0
+          },
+          "bounds": {
+            "minX": 5,
+            "minY": 5,
+            "maxX": 59,
+            "maxY": 62
+          },
+          "anchor": {
+            "x": 0.5,
+            "y": 1
+          },
+          "worldHeight": 3.2,
+          "selectionRadius": 1.1,
+          "collisionRadius": 0.85,
+          "animation": {
+            "clips": {
+              "idle": {
+                "frames": {
+                  "kind": "indexes",
+                  "indexes": [
+                    0
+                  ]
+                },
+                "fps": 1,
+                "looping": true,
+                "assetPath": "units/gravemark-walker-proxy/sheet.png"
+              },
+              "move": {
+                "frames": {
+                  "kind": "indexes",
+                  "indexes": [
+                    0
+                  ]
+                },
+                "fps": 1,
+                "looping": true,
+                "assetPath": "units/gravemark-walker-proxy/sheet.png"
+              }
+            },
+            "directions": 1,
+            "mirrored": false,
+            "fallbackRules": {
+              "missingDirection": "proxy-omnidirectional"
+            }
+          },
+          "movement": {
+            "speedSubunitsPerTick": 48,
+            "accelerationRate": 0.8,
+            "turnRateMilli": 2000,
+            "footprintCategory": "unit-1x1"
+          },
+          "tags": [
+            "walker",
+            "proxy",
+            "missing-directional-frames",
+            "original-fixture"
+          ]
+        }
+      ],
+      "buildings": [
+        {
+          "schemaVersion": 2,
+          "id": "sunweaver-sanctum",
+          "displayName": "Sunweaver Sanctum",
+          "enabled": true,
+          "factionId": "sunweaver",
+          "assetPath": "buildings/sunweaver-sanctum/sprite.png",
+          "sourceWidth": 128,
+          "sourceHeight": 128,
+          "bounds": {
+            "minX": 8,
+            "minY": 14,
+            "maxX": 120,
+            "maxY": 122
+          },
+          "anchor": {
+            "x": 0.5,
+            "y": 1
+          },
+          "worldHeight": 3.2,
+          "footprint": {
+            "kind": "rect",
+            "cellsW": 3,
+            "cellsH": 3
+          },
+          "selectionFootprint": {
+            "kind": "rect",
+            "cellsW": 3,
+            "cellsH": 3
+          },
+          "tags": [
+            "original-fixture",
+            "building"
+          ]
+        },
+        {
+          "schemaVersion": 2,
+          "id": "gravemark-bastion",
+          "displayName": "Gravemark Bastion",
+          "enabled": true,
+          "factionId": "gravemark",
+          "assetPath": "buildings/gravemark-bastion/sprite.png",
+          "sourceWidth": 96,
+          "sourceHeight": 96,
+          "bounds": {
+            "minX": 6,
+            "minY": 10,
+            "maxX": 90,
+            "maxY": 94
+          },
+          "anchor": {
+            "x": 0.5,
+            "y": 1
+          },
+          "worldHeight": 2.4,
+          "footprint": {
+            "kind": "rect",
+            "cellsW": 2,
+            "cellsH": 2
+          },
+          "selectionFootprint": {
+            "kind": "rect",
+            "cellsW": 2,
+            "cellsH": 2
+          },
+          "tags": [
+            "original-fixture",
+            "building"
+          ]
+        },
+        {
+          "schemaVersion": 2,
+          "id": "neutral-cyan-beacon",
+          "displayName": "Cyan Beacon",
+          "enabled": true,
+          "factionId": "neutral",
+          "assetPath": "buildings/neutral-cyan-beacon/sprite.png",
+          "sourceWidth": 64,
+          "sourceHeight": 64,
+          "bounds": {
+            "minX": 7,
+            "minY": 4,
+            "maxX": 57,
+            "maxY": 62
+          },
+          "anchor": {
+            "x": 0.5,
+            "y": 1
+          },
+          "worldHeight": 1.8,
+          "footprint": {
+            "kind": "rect",
+            "cellsW": 2,
+            "cellsH": 2
+          },
+          "selectionFootprint": {
+            "kind": "rect",
+            "cellsW": 2,
+            "cellsH": 2
+          },
+          "tags": [
+            "original-fixture",
+            "building"
+          ]
+        }
+      ],
+      "maps": [
+        {
+          "id": "lab-grid",
+          "path": "maps/lab-grid.json"
+        },
+        {
+          "id": "interaction-lab-alien-fantasy",
+          "path": "maps/interaction-lab-alien-fantasy.json"
+        },
+        {
+          "id": "m11-fixture-gallery",
+          "path": "maps/m11-fixture-gallery.json"
+        }
+      ],
+      "scenarios": [
+        {
+          "id": "lab-skirmish",
+          "path": "scenarios/lab-skirmish.json",
+          "mapId": "lab-grid"
+        },
+        {
+          "id": "interaction-lab-alien-fantasy",
+          "path": "scenarios/interaction-lab-alien-fantasy.json",
+          "mapId": "interaction-lab-alien-fantasy"
+        },
+        {
+          "id": "m11-fixture-gallery",
+          "path": "scenarios/m11-fixture-gallery.json",
+          "mapId": "m11-fixture-gallery"
+        }
+      ],
+      "contentHash": "c1eea326ce929eaffaa825f732be03e8ec939d000c90521c8f6d40f442bb0995"
+    },
+    "scenario": {
+      "schemaVersion": 1,
+      "id": "interaction-lab-alien-fantasy",
+      "displayName": "Interaction Lab — Alien Fantasy",
+      "mapId": "interaction-lab-alien-fantasy",
+      "units": [
+        {
+          "archetypeId": "sunweaver-infantry",
+          "position": {
+            "x": 16384,
+            "z": 20480
+          },
+          "factionId": "sunweaver"
+        },
+        {
+          "archetypeId": "sunweaver-infantry",
+          "position": {
+            "x": 17408,
+            "z": 20480
+          },
+          "factionId": "sunweaver"
+        },
+        {
+          "archetypeId": "sunweaver-infantry",
+          "position": {
+            "x": 18432,
+            "z": 20480
+          },
+          "factionId": "sunweaver"
+        },
+        {
+          "archetypeId": "sunweaver-infantry",
+          "position": {
+            "x": 19456,
+            "z": 20480
+          },
+          "factionId": "sunweaver"
+        },
+        {
+          "archetypeId": "sunweaver-infantry",
+          "position": {
+            "x": 20480,
+            "z": 20480
+          },
+          "factionId": "sunweaver"
+        },
+        {
+          "archetypeId": "sunweaver-infantry",
+          "position": {
+            "x": 21504,
+            "z": 20480
+          },
+          "factionId": "sunweaver"
+        },
+        {
+          "archetypeId": "sunweaver-infantry",
+          "position": {
+            "x": 22528,
+            "z": 20480
+          },
+          "factionId": "sunweaver"
+        },
+        {
+          "archetypeId": "sunweaver-infantry",
+          "position": {
+            "x": 23552,
+            "z": 20480
+          },
+          "factionId": "sunweaver"
+        },
+        {
+          "archetypeId": "sunweaver-infantry",
+          "position": {
+            "x": 24576,
+            "z": 20480
+          },
+          "factionId": "sunweaver"
+        },
+        {
+          "archetypeId": "sunweaver-infantry",
+          "position": {
+            "x": 25600,
+            "z": 20480
+          },
+          "factionId": "sunweaver"
+        },
+        {
+          "archetypeId": "sunweaver-infantry",
+          "position": {
+            "x": 26624,
+            "z": 20480
+          },
+          "factionId": "sunweaver"
+        },
+        {
+          "archetypeId": "sunweaver-infantry",
+          "position": {
+            "x": 27648,
+            "z": 20480
+          },
+          "factionId": "sunweaver"
+        },
+        {
+          "archetypeId": "sunweaver-walker",
+          "position": {
+            "x": 28672,
+            "z": 21504
+          },
+          "factionId": "sunweaver"
+        },
+        {
+          "archetypeId": "gravemark-infantry",
+          "position": {
+            "x": 49152,
+            "z": 49152
+          },
+          "factionId": "gravemark"
+        },
+        {
+          "archetypeId": "gravemark-infantry",
+          "position": {
+            "x": 50176,
+            "z": 49152
+          },
+          "factionId": "gravemark"
+        },
+        {
+          "archetypeId": "gravemark-infantry",
+          "position": {
+            "x": 51200,
+            "z": 49152
+          },
+          "factionId": "gravemark"
+        },
+        {
+          "archetypeId": "gravemark-infantry",
+          "position": {
+            "x": 52224,
+            "z": 49152
+          },
+          "factionId": "gravemark"
+        },
+        {
+          "archetypeId": "gravemark-infantry",
+          "position": {
+            "x": 53248,
+            "z": 49152
+          },
+          "factionId": "gravemark"
+        },
+        {
+          "archetypeId": "gravemark-infantry",
+          "position": {
+            "x": 54272,
+            "z": 49152
+          },
+          "factionId": "gravemark"
+        },
+        {
+          "archetypeId": "gravemark-infantry",
+          "position": {
+            "x": 55296,
+            "z": 49152
+          },
+          "factionId": "gravemark"
+        },
+        {
+          "archetypeId": "gravemark-infantry",
+          "position": {
+            "x": 56320,
+            "z": 49152
+          },
+          "factionId": "gravemark"
+        },
+        {
+          "archetypeId": "gravemark-walker",
+          "position": {
+            "x": 57344,
+            "z": 50176
+          },
+          "factionId": "gravemark"
+        }
+      ],
+      "buildings": [
+        {
+          "archetypeId": "sunweaver-sanctum",
+          "originCell": {
+            "cx": 18,
+            "cz": 18
+          },
+          "factionId": "sunweaver"
+        },
+        {
+          "archetypeId": "gravemark-bastion",
+          "originCell": {
+            "cx": 130,
+            "cz": 130
+          },
+          "factionId": "gravemark"
+        },
+        {
+          "archetypeId": "neutral-cyan-beacon",
+          "originCell": {
+            "cx": 80,
+            "cz": 80
+          },
+          "factionId": "neutral"
+        }
+      ]
+    },
+    "map": {
+      "schemaVersion": 1,
+      "id": "interaction-lab-alien-fantasy",
+      "displayName": "Interaction Lab Alien Fantasy",
+      "cellsX": 160,
+      "cellsZ": 160,
+      "chunkSize": 16
+    },
+    "assetCoverage": "json-only",
+    "assetHashes": []
+  },
+  "identity": {
+    "packId": "dev-pack-v2",
+    "revision": "3",
+    "contentHash": "c1eea326ce929eaffaa825f732be03e8ec939d000c90521c8f6d40f442bb0995",
+    "simulationRulesHash": "7675a3e17dd711d341c27c240326efd33aa0405110ade623885e219f5305b1fd",
+    "visualContentHash": "5c35bc7369b4d2c99ce84c7f2e1e4515389dd7da59005eb6c18bd3d98f153d58",
+    "scenarioId": "interaction-lab-alien-fantasy",
+    "scenarioHash": "e7b6d9bc80a3325752d4c4764948ccf43686274af1dfd9aa7b982e1385a82cb8",
+    "mapId": "interaction-lab-alien-fantasy",
+    "mapHash": "a4c5c742da9f7584b463f043aa503dcfd4deffe5a9b010876ea8f18e6ee1f005",
+    "seed": 42,
+    "totalTicks": 52,
+    "assetCoverage": "json-only"
+  },
+  "replay": {
+    "commands": [],
+    "checksums": [
+      {
+        "tick": 0,
+        "hash": 3154165352
+      },
+      {
+        "tick": 1,
+        "hash": 96234545
+      },
+      {
+        "tick": 2,
+        "hash": 1876658
+      },
+      {
+        "tick": 3,
+        "hash": 154134587
+      },
+      {
+        "tick": 4,
+        "hash": 4245827396
+      },
+      {
+        "tick": 5,
+        "hash": 1219829101
+      },
+      {
+        "tick": 6,
+        "hash": 771206190
+      },
+      {
+        "tick": 7,
+        "hash": 2996314999
+      },
+      {
+        "tick": 8,
+        "hash": 1693645584
+      },
+      {
+        "tick": 9,
+        "hash": 1745399993
+      },
+      {
+        "tick": 10,
+        "hash": 1849765626
+      },
+      {
+        "tick": 11,
+        "hash": 761942787
+      },
+      {
+        "tick": 12,
+        "hash": 946656140
+      },
+      {
+        "tick": 13,
+        "hash": 1865166485
+      },
+      {
+        "tick": 14,
+        "hash": 2887107894
+      },
+      {
+        "tick": 15,
+        "hash": 737115135
+      },
+      {
+        "tick": 16,
+        "hash": 634182136
+      },
+      {
+        "tick": 17,
+        "hash": 1715223553
+      },
+      {
+        "tick": 18,
+        "hash": 3837715138
+      },
+      {
+        "tick": 19,
+        "hash": 2275462091
+      },
+      {
+        "tick": 20,
+        "hash": 1271222484
+      },
+      {
+        "tick": 21,
+        "hash": 2343861693
+      },
+      {
+        "tick": 22,
+        "hash": 3555336382
+      },
+      {
+        "tick": 23,
+        "hash": 294000007
+      },
+      {
+        "tick": 24,
+        "hash": 1937865184
+      },
+      {
+        "tick": 25,
+        "hash": 3622501705
+      },
+      {
+        "tick": 26,
+        "hash": 1265660490
+      },
+      {
+        "tick": 27,
+        "hash": 2996506643
+      },
+      {
+        "tick": 28,
+        "hash": 4011750748
+      },
+      {
+        "tick": 29,
+        "hash": 2179981477
+      },
+      {
+        "tick": 30,
+        "hash": 2333449286
+      },
+      {
+        "tick": 31,
+        "hash": 1241176271
+      },
+      {
+        "tick": 32,
+        "hash": 165960648
+      },
+      {
+        "tick": 33,
+        "hash": 1042410897
+      },
+      {
+        "tick": 34,
+        "hash": 2007528978
+      },
+      {
+        "tick": 35,
+        "hash": 1108916891
+      },
+      {
+        "tick": 36,
+        "hash": 1282835620
+      },
+      {
+        "tick": 37,
+        "hash": 3208388813
+      },
+      {
+        "tick": 38,
+        "hash": 609892494
+      },
+      {
+        "tick": 39,
+        "hash": 2159641687
+      },
+      {
+        "tick": 40,
+        "hash": 2854092400
+      },
+      {
+        "tick": 41,
+        "hash": 2225090969
+      },
+      {
+        "tick": 42,
+        "hash": 2957149658
+      },
+      {
+        "tick": 43,
+        "hash": 1590793699
+      },
+      {
+        "tick": 44,
+        "hash": 822313708
+      },
+      {
+        "tick": 45,
+        "hash": 930866421
+      },
+      {
+        "tick": 46,
+        "hash": 202401942
+      },
+      {
+        "tick": 47,
+        "hash": 2200623071
+      },
+      {
+        "tick": 48,
+        "hash": 317440728
+      },
+      {
+        "tick": 49,
+        "hash": 2019280225
+      },
+      {
+        "tick": 50,
+        "hash": 1682488738
+      },
+      {
+        "tick": 51,
+        "hash": 1940887979
+      }
+    ],
+    "commandLogLength": 25
+  },
+  "reproduction": [
+    "Load Pack v2 dev-pack-v2 revision 3.",
+    "Load scenario interaction-lab-alien-fantasy on map interaction-lab-alien-fantasy.",
+    "Run seed 42 for 52 deterministic ticks.",
+    "Compare the recorded checksum sequence before changing content or replay inputs."
+  ]
+}

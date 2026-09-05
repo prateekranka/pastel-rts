@@ -1,0 +1,112 @@
+{
+  "schemaVersion": 1,
+  "label": "game-lab",
+  "stage": "save-load-replay",
+  "project": "chromium",
+  "testTitle": "M1.1-C game command, blocker, save/load, and replay audit",
+  "screenshotPath": "/home/bobbyranka/Projects/pastel-rts/docs/roadmap/M1.1-C-artifacts/chromium-game-lab-save-load-replay.png",
+  "capturedAt": "2026-09-05T13:14:06.729Z",
+  "runtime": {
+    "url": "http://127.0.0.1:14373/?mode=interaction-lab&scenario=interaction-lab-alien-fantasy&seed=42&renderer=webgl&dpr=1&zoom=70-percent",
+    "title": "Pastel RTS — Milestone 0",
+    "canvasCount": 2,
+    "canvases": [
+      {
+        "width": 1280,
+        "height": 800,
+        "cssWidth": 1280,
+        "cssHeight": 800
+      },
+      {
+        "width": 160,
+        "height": 160,
+        "cssWidth": 130,
+        "cssHeight": 130
+      }
+    ],
+    "webglRenderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+    "bodyText": "0\nFormation: none\nFormation: line\nFormation: box\nSelect\nStop\ncontent bundle  revision 3\nhash c1eea326…0995  rules 7675a3e1…b1fd\nscenario interaction-lab-alien-fantasy  seed 42\nlab-skirmish\ninteraction-lab-alien-fantasy\nm11-fixture-gallery\nLoad scenario\nApply seed\nSunweaver Scout\nSunweaver Infantry\nSunweaver Walker (Proxy)\nSpawn\nSunweaver Sanctum\nPlace\nNav debug\nReset match\nExport save\nImport save\nReplay check\nSelect revision\nRestart pending\nAcknowledge\nDiagnostics\nCollapse\nFPS 5.5  avg 8.7  1% low 3.3\nframe 183.30ms  avg 115.59ms  p95 243.32ms  p99 298.57ms\nsim 1.00ms  nav-debug 0.10ms  snapshot latency 1325.40ms\ndraw calls 95  tris 5072  textures 7  geometries 86\nchunks 9  units 26  entities 26\nrenderer webgl (webgl) requested webgl\ninit error: none\nDPR cap 1  effective 1.00\nviewport 1280×800  buffer 1280×800\nelapsed 12.6s  soak idle\ncontent revision 3  phase ready\ncontent error: none\nRenderer\nWebGL\nWebGPU\nBenchmark\nidle-base\nnormal-midgame\ndense-battle\ncamera-pan-stress\nmaximum-population\n2x-stress\n20-minute-soak\nvisual-capture\nDPR\n1\n1.25\n1.5\nnative\nTouch debug\nHaptic\nDownload report\nStart 20-min soak"
+  },
+  "metadata": {
+    "saveSchemaVersion": 1,
+    "commandCount": 3,
+    "checksumCount": 183,
+    "replayMatched": false,
+    "savedTick": 183,
+    "entityCountAfterReload": 26
+  },
+  "browserDiagnostics": [
+    {
+      "kind": "console",
+      "type": "debug",
+      "text": "[vite] connecting...",
+      "location": {
+        "url": "http://127.0.0.1:14373/@vite/client",
+        "line": 788,
+        "column": 8,
+        "lineNumber": 788,
+        "columnNumber": 8
+      }
+    },
+    {
+      "kind": "console",
+      "type": "debug",
+      "text": "[vite] connected.",
+      "location": {
+        "url": "http://127.0.0.1:14373/@vite/client",
+        "line": 911,
+        "column": 14,
+        "lineNumber": 911,
+        "columnNumber": 14
+      }
+    },
+    {
+      "kind": "console",
+      "type": "warning",
+      "text": "[.WebGL-0x3a2c00179400]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+      "location": {
+        "url": "http://127.0.0.1:14373/?mode=interaction-lab&scenario=interaction-lab-alien-fantasy&seed=42&renderer=webgl&dpr=1&zoom=70-percent",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "kind": "console",
+      "type": "warning",
+      "text": "[.WebGL-0x3a2c00179400]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+      "location": {
+        "url": "http://127.0.0.1:14373/?mode=interaction-lab&scenario=interaction-lab-alien-fantasy&seed=42&renderer=webgl&dpr=1&zoom=70-percent",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "kind": "console",
+      "type": "warning",
+      "text": "[.WebGL-0x3a2c00179400]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+      "location": {
+        "url": "http://127.0.0.1:14373/?mode=interaction-lab&scenario=interaction-lab-alien-fantasy&seed=42&renderer=webgl&dpr=1&zoom=70-percent",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "kind": "console",
+      "type": "warning",
+      "text": "[.WebGL-0x3a2c00179400]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)",
+      "location": {
+        "url": "http://127.0.0.1:14373/?mode=interaction-lab&scenario=interaction-lab-alien-fantasy&seed=42&renderer=webgl&dpr=1&zoom=70-percent",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    }
+  ]
+}

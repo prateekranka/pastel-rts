@@ -1,0 +1,91 @@
+{
+  "console": [
+    {
+      "type": "debug",
+      "text": "[vite] connecting...",
+      "location": {
+        "url": "http://127.0.0.1:30373/@vite/client",
+        "line": 788,
+        "column": 8,
+        "lineNumber": 788,
+        "columnNumber": 8
+      },
+      "at": "2026-09-05T17:02:30.958Z"
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connected.",
+      "location": {
+        "url": "http://127.0.0.1:30373/@vite/client",
+        "line": 911,
+        "column": 14,
+        "lineNumber": 911,
+        "columnNumber": 14
+      },
+      "at": "2026-09-05T17:02:31.033Z"
+    },
+    {
+      "type": "warning",
+      "text": "[.WebGL-0x33a40017ca00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+      "location": {
+        "url": "http://127.0.0.1:30373/?mode=interaction-lab&content=studio&scenario=interaction-lab-alien-fantasy&seed=42&renderer=webgl&dpr=1&zoom=70-percent",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      },
+      "at": "2026-09-05T17:02:31.518Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "location": {
+        "url": "http://127.0.0.1:30373/favicon.ico",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      },
+      "at": "2026-09-05T17:02:31.550Z"
+    },
+    {
+      "type": "warning",
+      "text": "[.WebGL-0x33a40017ca00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+      "location": {
+        "url": "http://127.0.0.1:30373/?mode=interaction-lab&content=studio&scenario=interaction-lab-alien-fantasy&seed=42&renderer=webgl&dpr=1&zoom=70-percent",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      },
+      "at": "2026-09-05T17:02:32.372Z"
+    },
+    {
+      "type": "warning",
+      "text": "[.WebGL-0x33a40017ca00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+      "location": {
+        "url": "http://127.0.0.1:30373/?mode=interaction-lab&content=studio&scenario=interaction-lab-alien-fantasy&seed=42&renderer=webgl&dpr=1&zoom=70-percent",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      },
+      "at": "2026-09-05T17:02:32.515Z"
+    },
+    {
+      "type": "warning",
+      "text": "[.WebGL-0x33a40017ca00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)",
+      "location": {
+        "url": "http://127.0.0.1:30373/?mode=interaction-lab&content=studio&scenario=interaction-lab-alien-fantasy&seed=42&renderer=webgl&dpr=1&zoom=70-percent",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      },
+      "at": "2026-09-05T17:02:32.663Z"
+    }
+  ],
+  "pageErrors": [],
+  "requestFailed": [],
+  "httpErrors": []
+}

@@ -1,28 +1,48 @@
 import type { EntityId } from '@pastel-rts/content-schema';
-import { entityIdKey } from './snapshot';
 import type { EntityArchetypeRecord } from './types';
+import { entityIdKey } from './snapshot';
 
-/** Tracks entity id → archetype mapping from spawn/place command results. */
+/**
+ * Main-thread identity registry. Entity ids include the worker generation, so a
+ * recycled slot can never inherit an old archetype or pick target.
+ */
 export class EntityRegistry {
-  private readonly records = new Map<string, EntityArchetypeRecord>();
+  private readonly byId = new Map<string, EntityArchetypeRecord>();
 
   set(id: EntityId, record: EntityArchetypeRecord): void {
-    this.records.set(entityIdKey(id), record);
+    this.byId.set(entityIdKey(id), { ...record });
   }
 
   get(id: EntityId): EntityArchetypeRecord | undefined {
-    return this.records.get(entityIdKey(id));
+    return this.byId.get(entityIdKey(id));
   }
 
   delete(id: EntityId): void {
-    this.records.delete(entityIdKey(id));
+    this.byId.delete(entityIdKey(id));
+  }
+
+  /** Remove ids that are no longer present in the latest worker snapshot. */
+  reconcile(liveIds: readonly EntityId[]): string[] {
+    const live = new Set(liveIds.map((id) => entityIdKey(id)));
+    const removed: string[] = [];
+    for (const key of this.byId.keys()) {
+      if (!live.has(key)) {
+        this.byId.delete(key);
+        removed.push(key);
+      }
+    }
+    return removed;
+  }
+
+  entries(): Array<{ id: string; record: EntityArchetypeRecord }> {
+    return [...this.byId.entries()].map(([id, record]) => ({ id, record: { ...record } }));
   }
 
   clear(): void {
-    this.records.clear();
+    this.byId.clear();
   }
 
-  entries(): IterableIterator<[string, EntityArchetypeRecord]> {
-    return this.records.entries();
+  size(): number {
+    return this.byId.size;
   }
 }

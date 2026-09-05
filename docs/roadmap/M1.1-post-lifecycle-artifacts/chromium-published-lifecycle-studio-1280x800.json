@@ -1,0 +1,783 @@
+{
+  "schemaVersion": 1,
+  "label": "published-lifecycle",
+  "stage": "studio-1280x800",
+  "project": "chromium",
+  "testTitle": "M1.1-H initial published studio load, asset identity, drafts, failed publish, and cosmetic replacement",
+  "screenshotPath": "/home/bobbyranka/Projects/pastel-rts/docs/roadmap/M1.1-post-lifecycle-artifacts/chromium-published-lifecycle-studio-1280x800.png",
+  "capturedAt": "2026-09-05T18:23:14.410Z",
+  "runtime": {
+    "url": "http://127.0.0.1:14373/?mode=interaction-lab&scenario=interaction-lab-alien-fantasy&seed=42&renderer=webgl&dpr=1&zoom=70-percent&content=studio",
+    "title": "Pastel RTS — Milestone 0",
+    "canvasCount": 2,
+    "canvases": [
+      {
+        "width": 1280,
+        "height": 800,
+        "cssWidth": 1280,
+        "cssHeight": 800
+      },
+      {
+        "width": 160,
+        "height": 160,
+        "cssWidth": 130,
+        "cssHeight": 130
+      }
+    ],
+    "webglRenderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+    "bodyText": "0\nFormation: none\nFormation: line\nFormation: box\nSelect\nStop\ncontent studio  revision 3\nhash 7fad4bce…aee8  rules c39e7796…4018\nscenario interaction-lab-alien-fantasy  seed 42\nlab-skirmish\ninteraction-lab-alien-fantasy\nm11-fixture-gallery\nLoad scenario\nApply seed\nSunweaver Infantry\nSunweaver Scout\nSunweaver Walker (Proxy)\nSpawn\nSunweaver Sanctum\nPlace\nNav debug\nReset match\nExport save\nImport save\nReplay check\nExport bug bundle\nReproduce bug bundle\nExport a JSON-only bug bundle. On a fresh lab page, choose the file with Reproduce bug bundle. The check uses the same scenario, seed, commands, and checksum sequence.\nSelect revision\nRestart pending\nAcknowledge\nDiagnostics\nCollapse\nFPS 15.0  avg 13.3  1% low 4.0\nframe 66.70ms  avg 75.12ms  p95 95.02ms  p99 206.04ms\nsim 2.90ms  nav-debug 0.00ms  snapshot latency 925.30ms\ndraw calls 24  tris 4852  textures 7  geometries 17\nchunks 9  units 25  entities 25\nrenderer webgl (webgl) requested webgl\ninit error: none\nDPR cap 1  effective 1.00\nviewport 1280×800  buffer 1280×800\nelapsed 5.0s  soak idle\ncontent revision 3  phase ready\ncontent manifest f6b4c20ade0c029ea5c8eec8d203aadd002fed4e2aed41176848ebcd467cb05f\ncontent visual 46c4c80e590768a9337bac599e3f74a580d30e5967a6f2b8aa9c41aa3533892a\ncontent rules c39e7796863a923af79d1acb847a7d614e3bec219723091732ec388a729e4018\ncontent assets /dev-content/v2/revisions/3/assets/\ncontent error: none\nRenderer\nWebGL\nWebGPU\nBenchmark\nidle-base\nnormal-midgame\ndense-battle\ncamera-pan-stress\nmaximum-population\n2x-stress\n20-minute-soak\nvisual-capture\nDPR\n1\n1.25\n1.5\nnative\nTouch debug\nHaptic\nDownload report\nStart 20-min soak"
+  },
+  "metadata": {
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "publication": {
+      "currentRevision": "3",
+      "draftRevision": "3",
+      "current": {
+        "schemaVersion": 1,
+        "revision": "3",
+        "packId": "dev-pack-v2",
+        "manifestPath": ".content-publication/revisions/3/pack.json",
+        "manifestHash": "f6b4c20ade0c029ea5c8eec8d203aadd002fed4e2aed41176848ebcd467cb05f",
+        "visualContentHash": "46c4c80e590768a9337bac599e3f74a580d30e5967a6f2b8aa9c41aa3533892a",
+        "simulationRulesHash": "c39e7796863a923af79d1acb847a7d614e3bec219723091732ec388a729e4018",
+        "restartRequired": false,
+        "assets": [
+          {
+            "kind": "data",
+            "assetPath": "maps/interaction-lab-alien-fantasy.json",
+            "storagePath": ".content-publication/revisions/3/assets/maps/interaction-lab-alien-fantasy.json",
+            "sha256": "8a09566d0c8379912395e2f187e9de2c7df5e559594368bf5a0947cd45d567dc",
+            "byteLength": 169
+          },
+          {
+            "kind": "data",
+            "assetPath": "maps/lab-grid.json",
+            "storagePath": ".content-publication/revisions/3/assets/maps/lab-grid.json",
+            "sha256": "0ed06af57e7db77b66c9f737e5c08924650cc3ff80290e39f5f06cadae26a715",
+            "byteLength": 127
+          },
+          {
+            "kind": "data",
+            "assetPath": "maps/m11-fixture-gallery.json",
+            "storagePath": ".content-publication/revisions/3/assets/maps/m11-fixture-gallery.json",
+            "sha256": "20a71971555721dc99a1ffc8b0987fa59cb261f6ab59c65593b3496ecb265f1a",
+            "byteLength": 152
+          },
+          {
+            "kind": "data",
+            "assetPath": "scenarios/interaction-lab-alien-fantasy.json",
+            "storagePath": ".content-publication/revisions/3/assets/scenarios/interaction-lab-alien-fantasy.json",
+            "sha256": "538f1787c424a2e5d9b421185713ffe3002681ebdc3488c9d98fbe4f669df112",
+            "byteLength": 2966
+          },
+          {
+            "kind": "data",
+            "assetPath": "scenarios/lab-skirmish.json",
+            "storagePath": ".content-publication/revisions/3/assets/scenarios/lab-skirmish.json",
+            "sha256": "bacab5818f3d0375ea6bc3592698fa266274657ed05b224e12d4af67a1021e63",
+            "byteLength": 533
+          },
+          {
+            "kind": "data",
+            "assetPath": "scenarios/m11-fixture-gallery.json",
+            "storagePath": ".content-publication/revisions/3/assets/scenarios/m11-fixture-gallery.json",
+            "sha256": "91aad835d4bd6a446240a589ee413b2f6bfab93300dee916d051a79599a39824",
+            "byteLength": 1018
+          },
+          {
+            "kind": "runtime",
+            "assetPath": "buildings/gravemark-bastion/sprite.png",
+            "storagePath": ".content-publication/revisions/3/assets/buildings/gravemark-bastion/sprite.png",
+            "sha256": "9fd2fb079c825a9bd32a7f69a87899b5a19cae94142ab555dd0bbf2d021ba0cd",
+            "byteLength": 452,
+            "width": 96,
+            "height": 96
+          },
+          {
+            "kind": "runtime",
+            "assetPath": "buildings/neutral-cyan-beacon/sprite.png",
+            "storagePath": ".content-publication/revisions/3/assets/buildings/neutral-cyan-beacon/sprite.png",
+            "sha256": "79f51fcaee66fe865230e1bee210a3f8100e2118ae3c863bcbcc7d3a4121a151",
+            "byteLength": 348,
+            "width": 64,
+            "height": 64
+          },
+          {
+            "kind": "runtime",
+            "assetPath": "buildings/sunweaver-sanctum/sprite.png",
+            "storagePath": ".content-publication/revisions/3/assets/buildings/sunweaver-sanctum/sprite.png",
+            "sha256": "3b2c1b253c1ec159e21d59073d986e23b2050869ac4c48146850b441e9def28e",
+            "byteLength": 742,
+            "width": 128,
+            "height": 128
+          },
+          {
+            "kind": "runtime",
+            "assetPath": "units/gravemark-stalker/sheet.png",
+            "storagePath": ".content-publication/revisions/3/assets/units/gravemark-stalker/sheet.png",
+            "sha256": "9ad9d1c80ecba6e287ed4801bc9c8937a2a1930f00f849d311581aac6c156683",
+            "byteLength": 1728,
+            "width": 128,
+            "height": 256
+          },
+          {
+            "kind": "runtime",
+            "assetPath": "units/gravemark-walker-proxy/sheet.png",
+            "storagePath": ".content-publication/revisions/3/assets/units/gravemark-walker-proxy/sheet.png",
+            "sha256": "2ffbf2d536c9c8aeb1cf9175c38b6c1f60e3a0804e358367fddc7f3471705944",
+            "byteLength": 359,
+            "width": 64,
+            "height": 64
+          },
+          {
+            "kind": "runtime",
+            "assetPath": "units/sunweaver-scout/sheet.png",
+            "storagePath": ".content-publication/revisions/3/assets/units/sunweaver-scout/sheet.png",
+            "sha256": "a45428e676c023c7a68859662e5cfe4eb5b1177e8e42134dc0b31652f0cffd29",
+            "byteLength": 1844,
+            "width": 128,
+            "height": 256
+          },
+          {
+            "kind": "runtime",
+            "assetPath": "units/sunweaver-walker-proxy/sheet.png",
+            "storagePath": ".content-publication/revisions/3/assets/units/sunweaver-walker-proxy/sheet.png",
+            "sha256": "b28db8306360dad8e6af9db774296e83cd44e57c826228ff17fd38a0507ec7fb",
+            "byteLength": 357,
+            "width": 64,
+            "height": 64
+          }
+        ],
+        "createdAt": "2026-09-05T18:21:00.236Z",
+        "legacyManifestPath": ".content-publication/revisions/3/pack-v1.json"
+      }
+    },
+    "runtime": {
+      "content": {
+        "identity": {
+          "source": "studio",
+          "packId": "dev-pack-v2",
+          "revision": "3",
+          "contentHash": "7fad4bce34dccd487c237ae63782ce0f61ba9db7f6feded5cfa8b6b0b2b6aee8",
+          "manifestHash": "f6b4c20ade0c029ea5c8eec8d203aadd002fed4e2aed41176848ebcd467cb05f",
+          "visualContentHash": "46c4c80e590768a9337bac599e3f74a580d30e5967a6f2b8aa9c41aa3533892a",
+          "simulationRulesHash": "c39e7796863a923af79d1acb847a7d614e3bec219723091732ec388a729e4018"
+        },
+        "assetBaseUrl": "/dev-content/v2/revisions/3/assets/"
+      },
+      "status": {
+        "phase": "ready",
+        "source": "studio",
+        "selectedRevision": null,
+        "activeRevision": "3",
+        "activeContentHash": "7fad4bce34dccd487c237ae63782ce0f61ba9db7f6feded5cfa8b6b0b2b6aee8",
+        "activeManifestHash": "f6b4c20ade0c029ea5c8eec8d203aadd002fed4e2aed41176848ebcd467cb05f",
+        "activeVisualContentHash": "46c4c80e590768a9337bac599e3f74a580d30e5967a6f2b8aa9c41aa3533892a",
+        "activeSimulationRulesHash": "c39e7796863a923af79d1acb847a7d614e3bec219723091732ec388a729e4018",
+        "activeAssetBaseUrl": "/dev-content/v2/revisions/3/assets/",
+        "pendingRevision": null,
+        "pendingContentHash": null,
+        "pendingVisualContentHash": null,
+        "pendingSimulationRulesHash": null,
+        "availableRevision": null,
+        "error": null,
+        "reconnectAttempt": 0
+      },
+      "diagnostics": {
+        "content": {
+          "source": "studio",
+          "packId": "dev-pack-v2",
+          "revision": "3",
+          "contentHash": "7fad4bce34dccd487c237ae63782ce0f61ba9db7f6feded5cfa8b6b0b2b6aee8",
+          "manifestHash": "f6b4c20ade0c029ea5c8eec8d203aadd002fed4e2aed41176848ebcd467cb05f",
+          "visualContentHash": "46c4c80e590768a9337bac599e3f74a580d30e5967a6f2b8aa9c41aa3533892a",
+          "simulationRulesHash": "c39e7796863a923af79d1acb847a7d614e3bec219723091732ec388a729e4018"
+        },
+        "scenarioId": "interaction-lab-alien-fantasy",
+        "seed": 42,
+        "tick": 71,
+        "entityCount": 25,
+        "commandCount": 0,
+        "checksumCount": 71,
+        "missingUnitAssets": 0,
+        "missingBuildingAssets": 0,
+        "error": null
+      },
+      "commands": [],
+      "results": [
+        {
+          "type": "commandResult",
+          "commandId": "scenario-building-gravemark-bastion-130",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 0,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-building-neutral-cyan-beacon-80",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 1,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-building-sunweaver-sanctum-18",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 2,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-gravemark-infantry-49152",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 3,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-gravemark-infantry-50176",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 4,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-gravemark-infantry-51200",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 5,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-gravemark-infantry-52224",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 6,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-gravemark-infantry-53248",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 7,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-gravemark-infantry-54272",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 8,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-gravemark-infantry-55296",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 9,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-gravemark-infantry-56320",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 10,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-gravemark-walker-57344",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 11,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-sunweaver-infantry-16384",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 12,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-sunweaver-infantry-17408",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 13,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-sunweaver-infantry-18432",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 14,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-sunweaver-infantry-19456",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 15,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-sunweaver-infantry-20480",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 16,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-sunweaver-infantry-21504",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 17,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-sunweaver-infantry-22528",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 18,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-sunweaver-infantry-23552",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 19,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-sunweaver-infantry-24576",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 20,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-sunweaver-infantry-25600",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 21,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-sunweaver-infantry-26624",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 22,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-sunweaver-infantry-27648",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 23,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-sunweaver-walker-28672",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 24,
+            "generation": 1
+          }
+        }
+      ]
+    },
+    "browserRequests": [
+      "http://127.0.0.1:14373/?mode=interaction-lab&scenario=interaction-lab-alien-fantasy&seed=42&renderer=webgl&dpr=1&zoom=70-percent&content=studio",
+      "http://127.0.0.1:14373/@vite/client",
+      "http://127.0.0.1:14373/src/main.ts",
+      "http://127.0.0.1:14373/src/app/GameApp.ts",
+      "http://127.0.0.1:14373/src/runtime/config.ts",
+      "http://127.0.0.1:14373/src/styles.css",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/node_modules/vite/dist/client/env.mjs",
+      "http://127.0.0.1:14373/node_modules/.vite/deps/three.js?v=22c54caf",
+      "http://127.0.0.1:14373/src/config/constants.ts",
+      "http://127.0.0.1:14373/src/config/palette.ts",
+      "http://127.0.0.1:14373/src/bridge/NativeBridge.ts",
+      "http://127.0.0.1:14373/src/camera/IsometricCamera.ts",
+      "http://127.0.0.1:14373/src/diagnostics/FrameTracker.ts",
+      "http://127.0.0.1:14373/src/diagnostics/Hud.ts",
+      "http://127.0.0.1:14373/src/diagnostics/SoakController.ts",
+      "http://127.0.0.1:14373/src/entities/EntityRenderer.ts",
+      "http://127.0.0.1:14373/src/content/PublishedContentClient.ts",
+      "http://127.0.0.1:14373/src/input/PointerCameraControls.ts",
+      "http://127.0.0.1:14373/src/input/TouchDebugOverlay.ts",
+      "http://127.0.0.1:14373/src/renderer/adapter.ts",
+      "http://127.0.0.1:14373/src/runtime/CameraDirector.ts",
+      "http://127.0.0.1:14373/src/sim/SimClient.ts",
+      "http://127.0.0.1:14373/src/sim/types.ts",
+      "http://127.0.0.1:14373/src/world/LandmarkSystem.ts",
+      "http://127.0.0.1:14373/src/world/TerrainSystem.ts",
+      "http://127.0.0.1:14373/src/world/chunks.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/index.ts",
+      "http://127.0.0.1:14373/src/sandbox/createInteractionLab.ts",
+      "http://127.0.0.1:14373/src/bridge/messages.ts",
+      "http://127.0.0.1:14373/src/diagnostics/stats.ts",
+      "http://127.0.0.1:14373/src/input/gestureConstants.ts",
+      "http://127.0.0.1:14373/src/diagnostics/report.ts",
+      "http://127.0.0.1:14373/src/entities/atlas.ts",
+      "http://127.0.0.1:14373/node_modules/.vite/deps/chunk-PIWFDN4B.js?v=22c54caf",
+      "http://127.0.0.1:14373/src/util/seededRng.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/unitManifest.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/pngBounds.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/validation.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/coords.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/ids.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/animation.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/pack.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/commands.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/map.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/scenario.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/contentHash.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/publication.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/navigation/src/index.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/simulation/src/index.ts",
+      "http://127.0.0.1:14373/src/app/MatchRuntime.ts",
+      "http://127.0.0.1:14373/src/input/CommandClient.ts",
+      "http://127.0.0.1:14373/src/input/InteractionController.ts",
+      "http://127.0.0.1:14373/src/selection/SelectionController.ts",
+      "http://127.0.0.1:14373/src/selection/HitTestService.ts",
+      "http://127.0.0.1:14373/src/ui/MatchHud.ts",
+      "http://127.0.0.1:14373/src/ui/Minimap.ts",
+      "http://127.0.0.1:14373/src/ui/touchTargets.ts",
+      "http://127.0.0.1:14373/src/buildings/BuildingRenderSystem.ts",
+      "http://127.0.0.1:14373/src/buildings/placementValidation.ts",
+      "http://127.0.0.1:14373/src/qa/DebugOverlayState.ts",
+      "http://127.0.0.1:14373/src/qa/bugBundle.ts",
+      "http://127.0.0.1:14373/src/qa/deterministicSeeds.ts",
+      "http://127.0.0.1:14373/src/sandbox/EntityRegistry.ts",
+      "http://127.0.0.1:14373/src/sandbox/InteractionFeedback.ts",
+      "http://127.0.0.1:14373/src/sandbox/NavigationDebugRenderer.ts",
+      "http://127.0.0.1:14373/src/sandbox/ScenarioController.ts",
+      "http://127.0.0.1:14373/src/sandbox/UnitRenderSystem.ts",
+      "http://127.0.0.1:14373/src/sandbox/placement/BuildingPlacementController.ts",
+      "http://127.0.0.1:14373/src/sandbox/replay/CommandRecorder.ts",
+      "http://127.0.0.1:14373/src/sandbox/palettes/SpawnPalette.ts",
+      "http://127.0.0.1:14373/src/sandbox/mapPresets.ts",
+      "http://127.0.0.1:14373/src/sandbox/snapshot.ts",
+      "http://127.0.0.1:14373/src/sandbox/types.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/sha256.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/navigation/src/grid.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/navigation/src/navigationService.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/navigation/src/pathfinder.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/navigation/src/formation.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/navigation/src/separation.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/navigation/src/types.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/simulation/src/constants.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/simulation/src/entityPool.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/simulation/src/checksum.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/simulation/src/commandQueue.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/simulation/src/commandHandler.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/simulation/src/navStub.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/simulation/src/simulation.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/simulation/src/replay.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/simulation/src/testFixtures.ts",
+      "http://127.0.0.1:14373/src/content/spriteUv.ts",
+      "http://127.0.0.1:14373/src/sandbox/animation/animationResolver.ts",
+      "http://127.0.0.1:14373/src/sandbox/animation/spriteAtlas.ts",
+      "http://127.0.0.1:14373/src/sandbox/animation/direction.ts",
+      "http://127.0.0.1:14373/dev-content/v2/publication",
+      "http://127.0.0.1:14373/favicon.svg",
+      "http://127.0.0.1:14373/dev-content/v2/revisions/3",
+      "http://127.0.0.1:14373/dev-content/v2/revisions/3/pack",
+      "http://127.0.0.1:14373/dev-content/v2/revisions/3/assets/scenarios/interaction-lab-alien-fantasy.json",
+      "http://127.0.0.1:14373/dev-content/v2/revisions/3/assets/units/gravemark-stalker/sheet.png",
+      "http://127.0.0.1:14373/dev-content/v2/revisions/3/assets/units/gravemark-walker-proxy/sheet.png",
+      "http://127.0.0.1:14373/dev-content/v2/revisions/3/assets/units/sunweaver-scout/sheet.png",
+      "http://127.0.0.1:14373/dev-content/v2/revisions/3/assets/units/sunweaver-walker-proxy/sheet.png",
+      "http://127.0.0.1:14373/dev-content/v2/revisions/3/assets/buildings/gravemark-bastion/sprite.png",
+      "http://127.0.0.1:14373/dev-content/v2/revisions/3/assets/buildings/neutral-cyan-beacon/sprite.png",
+      "http://127.0.0.1:14373/dev-content/v2/revisions/3/assets/buildings/sunweaver-sanctum/sprite.png",
+      "http://127.0.0.1:14373/dev-content/events",
+      "http://127.0.0.1:14373/dev-content/v2/revisions/3/assets/maps/interaction-lab-alien-fantasy.json",
+      "http://127.0.0.1:14373/src/app/matchWorker.ts?worker_file&type=module",
+      "http://127.0.0.1:14373/dev-content/v2/acknowledgements",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/node_modules/vite/dist/client/env.mjs",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/navigation/src/index.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/simulation/src/index.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/simulation/src/constants.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/simulation/src/entityPool.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/simulation/src/checksum.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/simulation/src/commandQueue.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/simulation/src/commandHandler.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/simulation/src/navStub.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/simulation/src/simulation.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/simulation/src/replay.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/simulation/src/testFixtures.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/index.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/navigation/src/grid.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/navigation/src/navigationService.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/navigation/src/pathfinder.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/navigation/src/formation.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/navigation/src/separation.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/navigation/src/types.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/unitManifest.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/pngBounds.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/validation.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/coords.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/ids.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/animation.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/pack.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/commands.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/map.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/scenario.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/contentHash.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/publication.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/sha256.ts"
+    ],
+    "resourceEntries": [
+      "http://127.0.0.1:14373/@vite/client",
+      "http://127.0.0.1:14373/src/main.ts",
+      "http://127.0.0.1:14373/src/app/GameApp.ts",
+      "http://127.0.0.1:14373/src/runtime/config.ts",
+      "http://127.0.0.1:14373/src/styles.css",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/node_modules/vite/dist/client/env.mjs",
+      "http://127.0.0.1:14373/node_modules/.vite/deps/three.js?v=22c54caf",
+      "http://127.0.0.1:14373/src/config/constants.ts",
+      "http://127.0.0.1:14373/src/config/palette.ts",
+      "http://127.0.0.1:14373/src/bridge/NativeBridge.ts",
+      "http://127.0.0.1:14373/src/camera/IsometricCamera.ts",
+      "http://127.0.0.1:14373/src/diagnostics/FrameTracker.ts",
+      "http://127.0.0.1:14373/src/diagnostics/Hud.ts",
+      "http://127.0.0.1:14373/src/diagnostics/SoakController.ts",
+      "http://127.0.0.1:14373/src/entities/EntityRenderer.ts",
+      "http://127.0.0.1:14373/src/content/PublishedContentClient.ts",
+      "http://127.0.0.1:14373/src/input/PointerCameraControls.ts",
+      "http://127.0.0.1:14373/src/input/TouchDebugOverlay.ts",
+      "http://127.0.0.1:14373/src/renderer/adapter.ts",
+      "http://127.0.0.1:14373/src/runtime/CameraDirector.ts",
+      "http://127.0.0.1:14373/src/sim/SimClient.ts",
+      "http://127.0.0.1:14373/src/sim/types.ts",
+      "http://127.0.0.1:14373/src/world/LandmarkSystem.ts",
+      "http://127.0.0.1:14373/src/world/TerrainSystem.ts",
+      "http://127.0.0.1:14373/src/world/chunks.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/index.ts",
+      "http://127.0.0.1:14373/src/sandbox/createInteractionLab.ts",
+      "http://127.0.0.1:14373/src/bridge/messages.ts",
+      "http://127.0.0.1:14373/src/diagnostics/stats.ts",
+      "http://127.0.0.1:14373/src/input/gestureConstants.ts",
+      "http://127.0.0.1:14373/src/diagnostics/report.ts",
+      "http://127.0.0.1:14373/src/entities/atlas.ts",
+      "http://127.0.0.1:14373/node_modules/.vite/deps/chunk-PIWFDN4B.js?v=22c54caf",
+      "http://127.0.0.1:14373/src/util/seededRng.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/unitManifest.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/pngBounds.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/validation.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/coords.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/ids.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/animation.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/pack.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/commands.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/map.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/scenario.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/contentHash.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/publication.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/navigation/src/index.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/simulation/src/index.ts",
+      "http://127.0.0.1:14373/src/app/MatchRuntime.ts",
+      "http://127.0.0.1:14373/src/input/CommandClient.ts",
+      "http://127.0.0.1:14373/src/input/InteractionController.ts",
+      "http://127.0.0.1:14373/src/selection/SelectionController.ts",
+      "http://127.0.0.1:14373/src/selection/HitTestService.ts",
+      "http://127.0.0.1:14373/src/ui/MatchHud.ts",
+      "http://127.0.0.1:14373/src/ui/Minimap.ts",
+      "http://127.0.0.1:14373/src/ui/touchTargets.ts",
+      "http://127.0.0.1:14373/src/buildings/BuildingRenderSystem.ts",
+      "http://127.0.0.1:14373/src/buildings/placementValidation.ts",
+      "http://127.0.0.1:14373/src/qa/DebugOverlayState.ts",
+      "http://127.0.0.1:14373/src/qa/bugBundle.ts",
+      "http://127.0.0.1:14373/src/qa/deterministicSeeds.ts",
+      "http://127.0.0.1:14373/src/sandbox/EntityRegistry.ts",
+      "http://127.0.0.1:14373/src/sandbox/InteractionFeedback.ts",
+      "http://127.0.0.1:14373/src/sandbox/NavigationDebugRenderer.ts",
+      "http://127.0.0.1:14373/src/sandbox/ScenarioController.ts",
+      "http://127.0.0.1:14373/src/sandbox/UnitRenderSystem.ts",
+      "http://127.0.0.1:14373/src/sandbox/placement/BuildingPlacementController.ts",
+      "http://127.0.0.1:14373/src/sandbox/replay/CommandRecorder.ts",
+      "http://127.0.0.1:14373/src/sandbox/palettes/SpawnPalette.ts",
+      "http://127.0.0.1:14373/src/sandbox/mapPresets.ts",
+      "http://127.0.0.1:14373/src/sandbox/snapshot.ts",
+      "http://127.0.0.1:14373/src/sandbox/types.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/sha256.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/navigation/src/grid.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/navigation/src/navigationService.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/navigation/src/pathfinder.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/navigation/src/formation.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/navigation/src/separation.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/navigation/src/types.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/simulation/src/constants.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/simulation/src/entityPool.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/simulation/src/checksum.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/simulation/src/commandQueue.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/simulation/src/commandHandler.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/simulation/src/navStub.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/simulation/src/simulation.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/simulation/src/replay.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/simulation/src/testFixtures.ts",
+      "http://127.0.0.1:14373/src/content/spriteUv.ts",
+      "http://127.0.0.1:14373/src/sandbox/animation/animationResolver.ts",
+      "http://127.0.0.1:14373/src/sandbox/animation/spriteAtlas.ts",
+      "http://127.0.0.1:14373/src/sandbox/animation/direction.ts",
+      "http://127.0.0.1:14373/dev-content/v2/publication",
+      "http://127.0.0.1:14373/favicon.svg",
+      "http://127.0.0.1:14373/dev-content/v2/revisions/3",
+      "http://127.0.0.1:14373/dev-content/v2/revisions/3/pack",
+      "http://127.0.0.1:14373/dev-content/v2/revisions/3/assets/scenarios/interaction-lab-alien-fantasy.json",
+      "http://127.0.0.1:14373/dev-content/v2/revisions/3/assets/units/gravemark-stalker/sheet.png",
+      "http://127.0.0.1:14373/dev-content/v2/revisions/3/assets/units/gravemark-walker-proxy/sheet.png",
+      "http://127.0.0.1:14373/dev-content/v2/revisions/3/assets/units/sunweaver-scout/sheet.png",
+      "http://127.0.0.1:14373/dev-content/v2/revisions/3/assets/units/sunweaver-walker-proxy/sheet.png",
+      "http://127.0.0.1:14373/dev-content/v2/revisions/3/assets/buildings/gravemark-bastion/sprite.png",
+      "http://127.0.0.1:14373/dev-content/v2/revisions/3/assets/buildings/neutral-cyan-beacon/sprite.png",
+      "http://127.0.0.1:14373/dev-content/v2/revisions/3/assets/buildings/sunweaver-sanctum/sprite.png",
+      "http://127.0.0.1:14373/dev-content/v2/revisions/3/assets/maps/interaction-lab-alien-fantasy.json",
+      "http://127.0.0.1:14373/dev-content/v2/acknowledgements",
+      "http://127.0.0.1:14373/src/app/matchWorker.ts?worker_file&type=module",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/node_modules/vite/dist/client/env.mjs",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/navigation/src/index.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/simulation/src/index.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/simulation/src/constants.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/simulation/src/entityPool.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/simulation/src/checksum.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/simulation/src/commandQueue.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/simulation/src/commandHandler.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/simulation/src/navStub.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/simulation/src/simulation.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/simulation/src/replay.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/simulation/src/testFixtures.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/index.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/navigation/src/grid.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/navigation/src/navigationService.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/navigation/src/pathfinder.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/navigation/src/formation.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/navigation/src/separation.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/navigation/src/types.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/unitManifest.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/pngBounds.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/validation.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/coords.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/ids.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/animation.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/pack.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/commands.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/map.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/scenario.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/contentHash.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/publication.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/sha256.ts"
+    ],
+    "performance": [
+      {
+        "name": "http://127.0.0.1:14373/?mode=interaction-lab&scenario=interaction-lab-alien-fantasy&seed=42&renderer=webgl&dpr=1&zoom=70-percent&content=studio",
+        "entryType": "navigation",
+        "startTime": 0,
+        "duration": 664.2000000476837
+      }
+    ],
+    "renderValidation": "SwiftShader or configured browser renderer; physical-device validation is separate"
+  },
+  "browserDiagnostics": [
+    {
+      "kind": "console",
+      "type": "debug",
+      "text": "[vite] connecting...",
+      "location": {
+        "url": "http://127.0.0.1:14373/@vite/client",
+        "line": 788,
+        "column": 8,
+        "lineNumber": 788,
+        "columnNumber": 8
+      }
+    },
+    {
+      "kind": "console",
+      "type": "debug",
+      "text": "[vite] connected.",
+      "location": {
+        "url": "http://127.0.0.1:14373/@vite/client",
+        "line": 911,
+        "column": 14,
+        "lineNumber": 911,
+        "columnNumber": 14
+      }
+    }
+  ]
+}

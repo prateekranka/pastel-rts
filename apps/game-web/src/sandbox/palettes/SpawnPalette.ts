@@ -1,88 +1,70 @@
-import type { FactionId, PackV2, PlayableFactionId } from '@pastel-rts/content-schema';
-import { worldFloatToSubunit } from '@pastel-rts/content-schema';
+import type { BuildingArchetype, PackV2, UnitArchetype } from '@pastel-rts/content-schema';
+import { MIN_TOUCH_TARGET_CSS } from '../../input/gestureConstants';
 
-export type SpawnPaletteEntry = {
+export type PaletteEntry = {
   archetypeId: string;
   displayName: string;
-  factionId: FactionId;
-  tags: string[];
 };
 
-export type BuildPaletteEntry = {
-  archetypeId: string;
-  displayName: string;
-  factionId: FactionId;
-  footprintCells: { w: number; h: number };
-};
-
-/** Sandbox spawn palette derived from Pack v2. */
 export class SpawnPalette {
-  private readonly entries: SpawnPaletteEntry[];
+  private pack: PackV2;
+  private readonly factionId: string;
 
-  constructor(pack: PackV2, filterFaction?: PlayableFactionId) {
-    this.entries = pack.units
-      .filter((unit) => unit.enabled && (filterFaction === undefined || unit.factionId === filterFaction))
-      .map((unit) => ({
-        archetypeId: unit.id,
-        displayName: unit.displayName,
-        factionId: unit.factionId,
-        tags: unit.tags ?? [],
-      }));
+  constructor(pack: PackV2, factionId: string) {
+    this.pack = pack;
+    this.factionId = factionId;
   }
 
-  list(): readonly SpawnPaletteEntry[] {
-    return this.entries;
+  setPack(pack: PackV2): void {
+    this.pack = pack;
   }
 
-  findByTag(tag: string): SpawnPaletteEntry | undefined {
-    return this.entries.find((entry) => entry.tags.includes(tag));
+  list(): PaletteEntry[] {
+    return this.pack.units
+      .filter((unit) => unit.enabled && unit.factionId === this.factionId)
+      .map((unit) => ({ archetypeId: unit.id, displayName: unit.displayName }));
   }
 
-  defaultInfantry(factionId: PlayableFactionId): SpawnPaletteEntry | undefined {
-    return (
-      this.entries.find((entry) => entry.factionId === factionId && entry.tags.includes('infantry')) ??
-      this.entries.find((entry) => entry.factionId === factionId)
-    );
-  }
-
-  defaultWalker(factionId: PlayableFactionId): SpawnPaletteEntry | undefined {
-    return this.entries.find((entry) => entry.factionId === factionId && entry.tags.includes('walker'));
-  }
-
-  spawnPosition(worldX: number, worldZ: number): { x: number; z: number } {
-    return {
-      x: worldFloatToSubunit(worldX),
-      z: worldFloatToSubunit(worldZ),
-    };
+  get(archetypeId: string): UnitArchetype | undefined {
+    return this.pack.units.find((unit) => unit.id === archetypeId && unit.enabled);
   }
 }
 
-/** Building placement palette derived from Pack v2. */
 export class BuildPalette {
-  private readonly entries: BuildPaletteEntry[];
+  private pack: PackV2;
+  private readonly factionId: string;
 
-  constructor(pack: PackV2, filterFaction?: PlayableFactionId) {
-    this.entries = pack.buildings
-      .filter(
-        (building) =>
-          building.enabled && (filterFaction === undefined || building.factionId === filterFaction),
-      )
-      .map((building) => ({
-        archetypeId: building.id,
-        displayName: building.displayName,
-        factionId: building.factionId,
-        footprintCells: {
-          w: building.footprint.cellsW,
-          h: building.footprint.cellsH,
-        },
-      }));
+  constructor(pack: PackV2, factionId: string) {
+    this.pack = pack;
+    this.factionId = factionId;
   }
 
-  list(): readonly BuildPaletteEntry[] {
-    return this.entries;
+  setPack(pack: PackV2): void {
+    this.pack = pack;
   }
 
-  find(id: string): BuildPaletteEntry | undefined {
-    return this.entries.find((entry) => entry.archetypeId === id);
+  list(): PaletteEntry[] {
+    return this.pack.buildings
+      .filter((building) => building.enabled && building.factionId === this.factionId)
+      .map((building) => ({ archetypeId: building.id, displayName: building.displayName }));
   }
+
+  get(archetypeId: string): BuildingArchetype | undefined {
+    return this.pack.buildings.find((building) => building.id === archetypeId && building.enabled);
+  }
+}
+
+export function refreshPaletteOptions(select: HTMLSelectElement, entries: readonly PaletteEntry[]): void {
+  const selected = select.value;
+  select.replaceChildren();
+  for (const entry of entries) {
+    const option = document.createElement('option');
+    option.value = entry.archetypeId;
+    option.textContent = entry.displayName;
+    select.append(option);
+  }
+  if (entries.some((entry) => entry.archetypeId === selected)) {
+    select.value = selected;
+  }
+  select.style.minHeight = `${MIN_TOUCH_TARGET_CSS}px`;
 }

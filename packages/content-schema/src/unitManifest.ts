@@ -1,5 +1,6 @@
 import {
   isRecord,
+  isSafeAssetPath,
   isValidContentId,
   requireInt,
   requirePositiveInt,
@@ -7,6 +8,8 @@ import {
 } from './validation';
 
 export const UNIT_MANIFEST_SCHEMA_VERSION = 1;
+export const MAX_IMAGE_DIMENSION = 4096;
+export const MAX_IMAGE_PIXELS = 16_777_216;
 
 export const UNIT_FACTIONS = ['friendly', 'opposing', 'neutral'] as const;
 export type UnitFaction = (typeof UNIT_FACTIONS)[number];
@@ -78,14 +81,12 @@ export function validateUnitManifest(value: unknown): UnitManifest {
     throw new Error('Invalid faction');
   }
   const assetPath = value['assetPath'];
-  if (typeof assetPath !== 'string' || assetPath.trim().length === 0) {
-    throw new Error('assetPath is required');
-  }
-  if (assetPath.includes('..') || assetPath.startsWith('/') || !assetPath.endsWith('.png')) {
+  if (typeof assetPath !== 'string' || !assetPath.endsWith('.png') || !isSafeAssetPath(assetPath)) {
     throw new Error('assetPath must be a relative PNG path');
   }
   const sourceWidth = requirePositiveInt(value['sourceWidth'], 'sourceWidth');
   const sourceHeight = requirePositiveInt(value['sourceHeight'], 'sourceHeight');
+  assertImageDimensions(sourceWidth, sourceHeight);
   const bounds = parseBounds(value['bounds'], sourceWidth, sourceHeight);
   const anchor = parseAnchor(value['anchor']);
   const worldHeight = requirePositiveNumber(value['worldHeight'], 'worldHeight');
@@ -149,4 +150,10 @@ function parseBounds(value: unknown, width: number, height: number): PixelBounds
     throw new Error('bounds must be non-empty');
   }
   return bounds;
+}
+
+function assertImageDimensions(width: number, height: number): void {
+  if (width > MAX_IMAGE_DIMENSION || height > MAX_IMAGE_DIMENSION || width * height > MAX_IMAGE_PIXELS) {
+    throw new Error('image dimensions exceed limits');
+  }
 }

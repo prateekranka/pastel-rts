@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 2,
+  "id": "sunweaver-infantry",
+  "displayName": "Sunweaver Infantry",
+  "enabled": true,
+  "factionId": "sunweaver",
+  "assetPath": "units/sunweaver-scout/sheet.png",
+  "sourceWidth": 128,
+  "sourceHeight": 256,
+  "frameWidth": 32,
+  "frameHeight": 32,
+  "margin": {
+    "x": 0,
+    "y": 0
+  },
+  "spacing": {
+    "x": 0,
+    "y": 0
+  },
+  "bounds": {
+    "minX": 4,
+    "minY": 3,
+    "maxX": 28,
+    "maxY": 31
+  },
+  "anchor": {
+    "x": 0.5,
+    "y": 1
+  },
+  "worldHeight": 1.5,
+  "selectionRadius": 0.6,
+  "collisionRadius": 0.42,
+  "animation": {
+    "directions": 4,
+    "directionOrder": [
+      "n",
+      "e",
+      "s",
+      "w"
+    ],
+    "mirrored": false,
+    "clips": {
+      "idle": {
+        "frames": {
+          "kind": "range",
+          "start": 0,
+          "end": 15
+        },
+        "fps": 8,
+        "looping": true,
+        "assetPath": "units/sunweaver-scout/sheet.png"
+      },
+      "move": {
+        "frames": {
+          "kind": "range",
+          "start": 16,
+          "end": 31
+        },
+        "fps": 12,
+        "looping": true,
+        "assetPath": "units/sunweaver-scout/sheet.png"
+      }
+    }
+  },
+  "movement": {
+    "speedSubunitsPerTick": 64,
+    "accelerationRate": 1,
+    "turnRateMilli": 3000,
+    "footprintCategory": "unit-1x1"
+  },
+  "tags": [
+    "infantry",
+    "original-fixture",
+    "animated"
+  ]
+}

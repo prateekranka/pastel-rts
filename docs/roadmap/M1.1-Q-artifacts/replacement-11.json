@@ -1,0 +1,2129 @@
+{
+  "cycle": 11,
+  "target": "alternate-gravemark-stalker",
+  "expectedInputSha256": "9ad9d1c80ecba6e287ed4801bc9c8937a2a1930f00f849d311581aac6c156683",
+  "baselineSimulationRulesHash": "c39e7796863a923af79d1acb847a7d614e3bec219723091732ec388a729e4018",
+  "previousTick": 19829,
+  "previousVisualContentHash": "ec0b4257efc8b0ce14176ae2a1e24f1d93508b4bce0dc7171c60a938af336a1c",
+  "startedAt": "2026-09-05T17:20:03.969Z",
+  "scheduledSoakElapsedMs": 990000,
+  "draftBeforeRevision": "13",
+  "draftAfterRevision": "14",
+  "validation": {
+    "status": 200,
+    "ok": true,
+    "draftRevision": "14"
+  },
+  "expectedPublishRevision": "13",
+  "revision": "14",
+  "metadata": {
+    "schemaVersion": 1,
+    "revision": "14",
+    "packId": "dev-pack-v2",
+    "manifestPath": ".content-publication/revisions/14/pack.json",
+    "manifestHash": "6d666d272d4bb837aa365ec69a165fd3bd995fbf888ffd1a2a8ee73afa963848",
+    "visualContentHash": "51704bbde78826607d3e6154df113295c0cb4e960a84f90a802971b3d525199f",
+    "simulationRulesHash": "c39e7796863a923af79d1acb847a7d614e3bec219723091732ec388a729e4018",
+    "restartRequired": false,
+    "assets": [
+      {
+        "kind": "data",
+        "assetPath": "maps/interaction-lab-alien-fantasy.json",
+        "storagePath": ".content-publication/revisions/14/assets/maps/interaction-lab-alien-fantasy.json",
+        "sha256": "8a09566d0c8379912395e2f187e9de2c7df5e559594368bf5a0947cd45d567dc",
+        "byteLength": 169
+      },
+      {
+        "kind": "data",
+        "assetPath": "maps/lab-grid.json",
+        "storagePath": ".content-publication/revisions/14/assets/maps/lab-grid.json",
+        "sha256": "0ed06af57e7db77b66c9f737e5c08924650cc3ff80290e39f5f06cadae26a715",
+        "byteLength": 127
+      },
+      {
+        "kind": "data",
+        "assetPath": "maps/m11-fixture-gallery.json",
+        "storagePath": ".content-publication/revisions/14/assets/maps/m11-fixture-gallery.json",
+        "sha256": "20a71971555721dc99a1ffc8b0987fa59cb261f6ab59c65593b3496ecb265f1a",
+        "byteLength": 152
+      },
+      {
+        "kind": "data",
+        "assetPath": "scenarios/interaction-lab-alien-fantasy.json",
+        "storagePath": ".content-publication/revisions/14/assets/scenarios/interaction-lab-alien-fantasy.json",
+        "sha256": "538f1787c424a2e5d9b421185713ffe3002681ebdc3488c9d98fbe4f669df112",
+        "byteLength": 2966
+      },
+      {
+        "kind": "data",
+        "assetPath": "scenarios/lab-skirmish.json",
+        "storagePath": ".content-publication/revisions/14/assets/scenarios/lab-skirmish.json",
+        "sha256": "bacab5818f3d0375ea6bc3592698fa266274657ed05b224e12d4af67a1021e63",
+        "byteLength": 533
+      },
+      {
+        "kind": "data",
+        "assetPath": "scenarios/m11-fixture-gallery.json",
+        "storagePath": ".content-publication/revisions/14/assets/scenarios/m11-fixture-gallery.json",
+        "sha256": "91aad835d4bd6a446240a589ee413b2f6bfab93300dee916d051a79599a39824",
+        "byteLength": 1018
+      },
+      {
+        "kind": "runtime",
+        "assetPath": "buildings/gravemark-bastion/sprite.png",
+        "storagePath": ".content-publication/revisions/14/assets/buildings/gravemark-bastion/sprite.png",
+        "sha256": "9fd2fb079c825a9bd32a7f69a87899b5a19cae94142ab555dd0bbf2d021ba0cd",
+        "byteLength": 452,
+        "width": 96,
+        "height": 96
+      },
+      {
+        "kind": "runtime",
+        "assetPath": "buildings/neutral-cyan-beacon/sprite.png",
+        "storagePath": ".content-publication/revisions/14/assets/buildings/neutral-cyan-beacon/sprite.png",
+        "sha256": "79f51fcaee66fe865230e1bee210a3f8100e2118ae3c863bcbcc7d3a4121a151",
+        "byteLength": 348,
+        "width": 64,
+        "height": 64
+      },
+      {
+        "kind": "runtime",
+        "assetPath": "buildings/sunweaver-sanctum/sprite.png",
+        "storagePath": ".content-publication/revisions/14/assets/buildings/sunweaver-sanctum/sprite.png",
+        "sha256": "3b2c1b253c1ec159e21d59073d986e23b2050869ac4c48146850b441e9def28e",
+        "byteLength": 742,
+        "width": 128,
+        "height": 128
+      },
+      {
+        "kind": "runtime",
+        "assetPath": "units/gravemark-stalker/sheet.png",
+        "storagePath": ".content-publication/revisions/14/assets/units/gravemark-stalker/sheet.png",
+        "sha256": "9ad9d1c80ecba6e287ed4801bc9c8937a2a1930f00f849d311581aac6c156683",
+        "byteLength": 1728,
+        "width": 128,
+        "height": 256
+      },
+      {
+        "kind": "runtime",
+        "assetPath": "units/gravemark-walker-proxy/sheet.png",
+        "storagePath": ".content-publication/revisions/14/assets/units/gravemark-walker-proxy/sheet.png",
+        "sha256": "2ffbf2d536c9c8aeb1cf9175c38b6c1f60e3a0804e358367fddc7f3471705944",
+        "byteLength": 359,
+        "width": 64,
+        "height": 64
+      },
+      {
+        "kind": "runtime",
+        "assetPath": "units/sunweaver-scout/sheet.png",
+        "storagePath": ".content-publication/revisions/14/assets/units/sunweaver-scout/sheet.png",
+        "sha256": "9ad9d1c80ecba6e287ed4801bc9c8937a2a1930f00f849d311581aac6c156683",
+        "byteLength": 1728,
+        "width": 128,
+        "height": 256
+      },
+      {
+        "kind": "runtime",
+        "assetPath": "units/sunweaver-walker-proxy/sheet.png",
+        "storagePath": ".content-publication/revisions/14/assets/units/sunweaver-walker-proxy/sheet.png",
+        "sha256": "b28db8306360dad8e6af9db774296e83cd44e57c826228ff17fd38a0507ec7fb",
+        "byteLength": 357,
+        "width": 64,
+        "height": 64
+      }
+    ],
+    "createdAt": "2026-09-05T17:20:04.096Z",
+    "legacyManifestPath": ".content-publication/revisions/14/pack-v1.json",
+    "parentRevision": "13"
+  },
+  "publishStatus": 200,
+  "revisionPack": {
+    "schemaVersion": 2,
+    "id": "dev-pack-v2",
+    "revision": "14",
+    "factions": [
+      {
+        "id": "sunweaver",
+        "displayName": "Sunweaver"
+      },
+      {
+        "id": "gravemark",
+        "displayName": "Gravemark"
+      },
+      {
+        "id": "neutral",
+        "displayName": "Neutral"
+      }
+    ],
+    "units": [
+      {
+        "schemaVersion": 2,
+        "id": "gravemark-infantry",
+        "displayName": "Gravemark Infantry",
+        "enabled": true,
+        "factionId": "gravemark",
+        "assetPath": "units/gravemark-stalker/sheet.png",
+        "sourceWidth": 128,
+        "sourceHeight": 256,
+        "frameWidth": 32,
+        "frameHeight": 32,
+        "margin": {
+          "x": 0,
+          "y": 0
+        },
+        "spacing": {
+          "x": 0,
+          "y": 0
+        },
+        "bounds": {
+          "minX": 4,
+          "minY": 3,
+          "maxX": 28,
+          "maxY": 31
+        },
+        "anchor": {
+          "x": 0.5,
+          "y": 1
+        },
+        "worldHeight": 1.55,
+        "selectionRadius": 0.65,
+        "collisionRadius": 0.5,
+        "animation": {
+          "clips": {
+            "idle": {
+              "frames": {
+                "kind": "range",
+                "start": 0,
+                "end": 15
+              },
+              "fps": 8,
+              "looping": true,
+              "assetPath": "units/gravemark-stalker/sheet.png"
+            },
+            "move": {
+              "frames": {
+                "kind": "range",
+                "start": 16,
+                "end": 31
+              },
+              "fps": 12,
+              "looping": true,
+              "assetPath": "units/gravemark-stalker/sheet.png"
+            }
+          },
+          "directions": 4,
+          "directionOrder": [
+            "n",
+            "e",
+            "s",
+            "w"
+          ],
+          "mirrored": false
+        },
+        "movement": {
+          "speedSubunitsPerTick": 72,
+          "accelerationRate": 1.2,
+          "turnRateMilli": 2500,
+          "footprintCategory": "unit-1x1"
+        },
+        "tags": [
+          "infantry",
+          "original-fixture",
+          "animated"
+        ]
+      },
+      {
+        "schemaVersion": 2,
+        "id": "gravemark-stalker",
+        "displayName": "Gravemark Stalker",
+        "enabled": true,
+        "factionId": "gravemark",
+        "assetPath": "units/gravemark-stalker/sheet.png",
+        "sourceWidth": 128,
+        "sourceHeight": 256,
+        "frameWidth": 32,
+        "frameHeight": 32,
+        "margin": {
+          "x": 0,
+          "y": 0
+        },
+        "spacing": {
+          "x": 0,
+          "y": 0
+        },
+        "bounds": {
+          "minX": 4,
+          "minY": 3,
+          "maxX": 28,
+          "maxY": 31
+        },
+        "anchor": {
+          "x": 0.5,
+          "y": 1
+        },
+        "worldHeight": 1.55,
+        "selectionRadius": 0.65,
+        "collisionRadius": 0.5,
+        "animation": {
+          "clips": {
+            "idle": {
+              "frames": {
+                "kind": "range",
+                "start": 0,
+                "end": 15
+              },
+              "fps": 8,
+              "looping": true,
+              "assetPath": "units/gravemark-stalker/sheet.png"
+            },
+            "move": {
+              "frames": {
+                "kind": "range",
+                "start": 16,
+                "end": 31
+              },
+              "fps": 12,
+              "looping": true,
+              "assetPath": "units/gravemark-stalker/sheet.png"
+            }
+          },
+          "directions": 4,
+          "directionOrder": [
+            "n",
+            "e",
+            "s",
+            "w"
+          ],
+          "mirrored": false
+        },
+        "movement": {
+          "speedSubunitsPerTick": 72,
+          "accelerationRate": 1.2,
+          "turnRateMilli": 2500,
+          "footprintCategory": "unit-1x1"
+        },
+        "tags": [
+          "infantry",
+          "stalker",
+          "original-fixture",
+          "animated"
+        ]
+      },
+      {
+        "schemaVersion": 2,
+        "id": "gravemark-walker",
+        "displayName": "Gravemark Walker (Proxy)",
+        "enabled": true,
+        "factionId": "gravemark",
+        "assetPath": "units/gravemark-walker-proxy/sheet.png",
+        "sourceWidth": 64,
+        "sourceHeight": 64,
+        "frameWidth": 64,
+        "frameHeight": 64,
+        "margin": {
+          "x": 0,
+          "y": 0
+        },
+        "spacing": {
+          "x": 0,
+          "y": 0
+        },
+        "bounds": {
+          "minX": 5,
+          "minY": 5,
+          "maxX": 59,
+          "maxY": 62
+        },
+        "anchor": {
+          "x": 0.5,
+          "y": 1
+        },
+        "worldHeight": 3.2,
+        "selectionRadius": 1.1,
+        "collisionRadius": 0.85,
+        "animation": {
+          "clips": {
+            "idle": {
+              "frames": {
+                "kind": "indexes",
+                "indexes": [
+                  0
+                ]
+              },
+              "fps": 1,
+              "looping": true,
+              "assetPath": "units/gravemark-walker-proxy/sheet.png"
+            },
+            "move": {
+              "frames": {
+                "kind": "indexes",
+                "indexes": [
+                  0
+                ]
+              },
+              "fps": 1,
+              "looping": true,
+              "assetPath": "units/gravemark-walker-proxy/sheet.png"
+            }
+          },
+          "directions": 1,
+          "mirrored": false,
+          "fallbackRules": {
+            "missingDirection": "proxy-omnidirectional"
+          }
+        },
+        "movement": {
+          "speedSubunitsPerTick": 48,
+          "accelerationRate": 0.8,
+          "turnRateMilli": 2000,
+          "footprintCategory": "unit-1x1"
+        },
+        "tags": [
+          "walker",
+          "proxy",
+          "missing-directional-frames",
+          "original-fixture"
+        ]
+      },
+      {
+        "schemaVersion": 2,
+        "id": "sunweaver-infantry",
+        "displayName": "Sunweaver Infantry",
+        "enabled": true,
+        "factionId": "sunweaver",
+        "assetPath": "units/sunweaver-scout/sheet.png",
+        "sourceWidth": 128,
+        "sourceHeight": 256,
+        "frameWidth": 32,
+        "frameHeight": 32,
+        "margin": {
+          "x": 0,
+          "y": 0
+        },
+        "spacing": {
+          "x": 0,
+          "y": 0
+        },
+        "bounds": {
+          "minX": 4,
+          "minY": 3,
+          "maxX": 28,
+          "maxY": 31
+        },
+        "anchor": {
+          "x": 0.5,
+          "y": 1
+        },
+        "worldHeight": 1.5,
+        "selectionRadius": 0.6,
+        "collisionRadius": 0.42,
+        "animation": {
+          "clips": {
+            "idle": {
+              "frames": {
+                "kind": "range",
+                "start": 0,
+                "end": 15
+              },
+              "fps": 8,
+              "looping": true,
+              "assetPath": "units/sunweaver-scout/sheet.png"
+            },
+            "move": {
+              "frames": {
+                "kind": "range",
+                "start": 16,
+                "end": 31
+              },
+              "fps": 12,
+              "looping": true,
+              "assetPath": "units/sunweaver-scout/sheet.png"
+            }
+          },
+          "directions": 4,
+          "directionOrder": [
+            "n",
+            "e",
+            "s",
+            "w"
+          ],
+          "mirrored": false
+        },
+        "movement": {
+          "speedSubunitsPerTick": 64,
+          "accelerationRate": 1,
+          "turnRateMilli": 3000,
+          "footprintCategory": "unit-1x1"
+        },
+        "tags": [
+          "infantry",
+          "original-fixture",
+          "animated"
+        ]
+      },
+      {
+        "schemaVersion": 2,
+        "id": "sunweaver-scout",
+        "displayName": "Sunweaver Scout Q Cycle 11",
+        "enabled": true,
+        "factionId": "sunweaver",
+        "assetPath": "units/sunweaver-scout/sheet.png",
+        "sourceWidth": 128,
+        "sourceHeight": 256,
+        "frameWidth": 32,
+        "frameHeight": 32,
+        "margin": {
+          "x": 0,
+          "y": 0
+        },
+        "spacing": {
+          "x": 0,
+          "y": 0
+        },
+        "bounds": {
+          "minX": 4,
+          "minY": 3,
+          "maxX": 28,
+          "maxY": 31
+        },
+        "anchor": {
+          "x": 0.5,
+          "y": 1
+        },
+        "worldHeight": 1.5,
+        "selectionRadius": 0.6,
+        "collisionRadius": 0.42,
+        "animation": {
+          "clips": {
+            "idle": {
+              "frames": {
+                "kind": "range",
+                "start": 0,
+                "end": 15
+              },
+              "fps": 8,
+              "looping": true,
+              "assetPath": "units/sunweaver-scout/sheet.png"
+            },
+            "move": {
+              "frames": {
+                "kind": "range",
+                "start": 16,
+                "end": 31
+              },
+              "fps": 12,
+              "looping": true,
+              "assetPath": "units/sunweaver-scout/sheet.png"
+            }
+          },
+          "directions": 4,
+          "directionOrder": [
+            "n",
+            "e",
+            "s",
+            "w"
+          ],
+          "mirrored": false
+        },
+        "movement": {
+          "speedSubunitsPerTick": 64,
+          "accelerationRate": 1,
+          "turnRateMilli": 3000,
+          "footprintCategory": "unit-1x1"
+        },
+        "tags": [
+          "infantry",
+          "scout",
+          "original-fixture",
+          "animated"
+        ]
+      },
+      {
+        "schemaVersion": 2,
+        "id": "sunweaver-walker",
+        "displayName": "Sunweaver Walker (Proxy)",
+        "enabled": true,
+        "factionId": "sunweaver",
+        "assetPath": "units/sunweaver-walker-proxy/sheet.png",
+        "sourceWidth": 64,
+        "sourceHeight": 64,
+        "frameWidth": 64,
+        "frameHeight": 64,
+        "margin": {
+          "x": 0,
+          "y": 0
+        },
+        "spacing": {
+          "x": 0,
+          "y": 0
+        },
+        "bounds": {
+          "minX": 5,
+          "minY": 5,
+          "maxX": 59,
+          "maxY": 62
+        },
+        "anchor": {
+          "x": 0.5,
+          "y": 1
+        },
+        "worldHeight": 3.2,
+        "selectionRadius": 1.1,
+        "collisionRadius": 0.85,
+        "animation": {
+          "clips": {
+            "idle": {
+              "frames": {
+                "kind": "indexes",
+                "indexes": [
+                  0
+                ]
+              },
+              "fps": 1,
+              "looping": true,
+              "assetPath": "units/sunweaver-walker-proxy/sheet.png"
+            },
+            "move": {
+              "frames": {
+                "kind": "indexes",
+                "indexes": [
+                  0
+                ]
+              },
+              "fps": 1,
+              "looping": true,
+              "assetPath": "units/sunweaver-walker-proxy/sheet.png"
+            }
+          },
+          "directions": 1,
+          "mirrored": false,
+          "fallbackRules": {
+            "missingDirection": "proxy-omnidirectional"
+          }
+        },
+        "movement": {
+          "speedSubunitsPerTick": 48,
+          "accelerationRate": 0.8,
+          "turnRateMilli": 2000,
+          "footprintCategory": "unit-1x1"
+        },
+        "tags": [
+          "walker",
+          "proxy",
+          "missing-directional-frames",
+          "original-fixture"
+        ]
+      }
+    ],
+    "buildings": [
+      {
+        "schemaVersion": 2,
+        "id": "gravemark-bastion",
+        "displayName": "Gravemark Bastion",
+        "enabled": true,
+        "factionId": "gravemark",
+        "assetPath": "buildings/gravemark-bastion/sprite.png",
+        "sourceWidth": 96,
+        "sourceHeight": 96,
+        "bounds": {
+          "minX": 6,
+          "minY": 10,
+          "maxX": 90,
+          "maxY": 94
+        },
+        "anchor": {
+          "x": 0.5,
+          "y": 1
+        },
+        "worldHeight": 2.4,
+        "footprint": {
+          "kind": "rect",
+          "cellsW": 2,
+          "cellsH": 2
+        },
+        "selectionFootprint": {
+          "kind": "rect",
+          "cellsW": 2,
+          "cellsH": 2
+        },
+        "tags": [
+          "original-fixture",
+          "building"
+        ]
+      },
+      {
+        "schemaVersion": 2,
+        "id": "neutral-cyan-beacon",
+        "displayName": "Cyan Beacon",
+        "enabled": true,
+        "factionId": "neutral",
+        "assetPath": "buildings/neutral-cyan-beacon/sprite.png",
+        "sourceWidth": 64,
+        "sourceHeight": 64,
+        "bounds": {
+          "minX": 7,
+          "minY": 4,
+          "maxX": 57,
+          "maxY": 62
+        },
+        "anchor": {
+          "x": 0.5,
+          "y": 1
+        },
+        "worldHeight": 1.8,
+        "footprint": {
+          "kind": "rect",
+          "cellsW": 2,
+          "cellsH": 2
+        },
+        "selectionFootprint": {
+          "kind": "rect",
+          "cellsW": 2,
+          "cellsH": 2
+        },
+        "tags": [
+          "original-fixture",
+          "building"
+        ]
+      },
+      {
+        "schemaVersion": 2,
+        "id": "sunweaver-sanctum",
+        "displayName": "Sunweaver Sanctum",
+        "enabled": true,
+        "factionId": "sunweaver",
+        "assetPath": "buildings/sunweaver-sanctum/sprite.png",
+        "sourceWidth": 128,
+        "sourceHeight": 128,
+        "bounds": {
+          "minX": 8,
+          "minY": 14,
+          "maxX": 120,
+          "maxY": 122
+        },
+        "anchor": {
+          "x": 0.5,
+          "y": 1
+        },
+        "worldHeight": 3.2,
+        "footprint": {
+          "kind": "rect",
+          "cellsW": 3,
+          "cellsH": 3
+        },
+        "selectionFootprint": {
+          "kind": "rect",
+          "cellsW": 3,
+          "cellsH": 3
+        },
+        "tags": [
+          "original-fixture",
+          "building"
+        ]
+      }
+    ],
+    "maps": [
+      {
+        "id": "lab-grid",
+        "path": "maps/lab-grid.json"
+      },
+      {
+        "id": "interaction-lab-alien-fantasy",
+        "path": "maps/interaction-lab-alien-fantasy.json"
+      },
+      {
+        "id": "m11-fixture-gallery",
+        "path": "maps/m11-fixture-gallery.json"
+      }
+    ],
+    "scenarios": [
+      {
+        "id": "lab-skirmish",
+        "path": "scenarios/lab-skirmish.json",
+        "mapId": "lab-grid"
+      },
+      {
+        "id": "interaction-lab-alien-fantasy",
+        "path": "scenarios/interaction-lab-alien-fantasy.json",
+        "mapId": "interaction-lab-alien-fantasy"
+      },
+      {
+        "id": "m11-fixture-gallery",
+        "path": "scenarios/m11-fixture-gallery.json",
+        "mapId": "m11-fixture-gallery"
+      }
+    ],
+    "contentHash": "4ec9be4ae3d82b0cbaaf541dd2967228ae96b45b912f1a54e23edaf04a459455"
+  },
+  "asset": {
+    "path": "units/sunweaver-scout/sheet.png",
+    "responseStatus": 200,
+    "byteLength": 1728,
+    "servedSha256": "9ad9d1c80ecba6e287ed4801bc9c8937a2a1930f00f849d311581aac6c156683",
+    "metadataSha256": "9ad9d1c80ecba6e287ed4801bc9c8937a2a1930f00f849d311581aac6c156683",
+    "expectedInputSha256": "9ad9d1c80ecba6e287ed4801bc9c8937a2a1930f00f849d311581aac6c156683",
+    "servedMatchesMetadata": true,
+    "servedMatchesExpectedInput": true
+  },
+  "acknowledgement": {
+    "runtimeId": "game-web-interaction-lab",
+    "scenarioId": "interaction-lab-alien-fantasy",
+    "revision": "14",
+    "simulationRulesHash": "c39e7796863a923af79d1acb847a7d614e3bec219723091732ec388a729e4018",
+    "restartRequired": false,
+    "updatedAt": "2026-09-05T17:20:05.241Z"
+  },
+  "runtime": {
+    "capturedAtBrowserMs": 1085431.0999999046,
+    "url": "http://127.0.0.1:30373/?mode=interaction-lab&content=studio&scenario=interaction-lab-alien-fantasy&seed=42&renderer=webgl&dpr=1&zoom=70-percent",
+    "title": "Pastel RTS — Milestone 0",
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "devicePixelRatio": 1,
+    "canvas": {
+      "width": 1280,
+      "height": 800,
+      "cssWidth": 1280,
+      "cssHeight": 800
+    },
+    "webglRenderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+    "content": {
+      "identity": {
+        "source": "studio",
+        "packId": "dev-pack-v2",
+        "revision": "14",
+        "contentHash": "4ec9be4ae3d82b0cbaaf541dd2967228ae96b45b912f1a54e23edaf04a459455",
+        "manifestHash": "6d666d272d4bb837aa365ec69a165fd3bd995fbf888ffd1a2a8ee73afa963848",
+        "visualContentHash": "51704bbde78826607d3e6154df113295c0cb4e960a84f90a802971b3d525199f",
+        "simulationRulesHash": "c39e7796863a923af79d1acb847a7d614e3bec219723091732ec388a729e4018"
+      },
+      "assetBaseUrl": "/dev-content/v2/revisions/14/assets/"
+    },
+    "status": {
+      "phase": "ready",
+      "source": "studio",
+      "selectedRevision": null,
+      "activeRevision": "14",
+      "activeContentHash": "4ec9be4ae3d82b0cbaaf541dd2967228ae96b45b912f1a54e23edaf04a459455",
+      "activeManifestHash": "6d666d272d4bb837aa365ec69a165fd3bd995fbf888ffd1a2a8ee73afa963848",
+      "activeVisualContentHash": "51704bbde78826607d3e6154df113295c0cb4e960a84f90a802971b3d525199f",
+      "activeSimulationRulesHash": "c39e7796863a923af79d1acb847a7d614e3bec219723091732ec388a729e4018",
+      "activeAssetBaseUrl": "/dev-content/v2/revisions/14/assets/",
+      "pendingRevision": null,
+      "pendingContentHash": null,
+      "pendingVisualContentHash": null,
+      "pendingSimulationRulesHash": null,
+      "availableRevision": null,
+      "error": null,
+      "reconnectAttempt": 0
+    },
+    "diagnostics": {
+      "content": {
+        "source": "studio",
+        "packId": "dev-pack-v2",
+        "revision": "14",
+        "contentHash": "4ec9be4ae3d82b0cbaaf541dd2967228ae96b45b912f1a54e23edaf04a459455",
+        "manifestHash": "6d666d272d4bb837aa365ec69a165fd3bd995fbf888ffd1a2a8ee73afa963848",
+        "visualContentHash": "51704bbde78826607d3e6154df113295c0cb4e960a84f90a802971b3d525199f",
+        "simulationRulesHash": "c39e7796863a923af79d1acb847a7d614e3bec219723091732ec388a729e4018"
+      },
+      "scenarioId": "interaction-lab-alien-fantasy",
+      "seed": 42,
+      "tick": 21627,
+      "entityCount": 25,
+      "commandCount": 0,
+      "checksumCount": 21627,
+      "missingUnitAssets": 0,
+      "missingBuildingAssets": 0,
+      "error": null
+    },
+    "runtime": {
+      "tick": 21627,
+      "entityCount": 25,
+      "snapshotLatencyMs": 1821.4000000953674,
+      "tickDurationMs": 0.9000000953674316,
+      "navDurationMs": 0,
+      "checksumCount": 21627,
+      "paused": false
+    },
+    "renderer": {
+      "kind": "webgl",
+      "requested": "webgl",
+      "backend": "webgl",
+      "initError": null,
+      "pixelRatio": 1,
+      "drawingBuffer": {
+        "width": 1280,
+        "height": 800
+      },
+      "stats": {
+        "drawCalls": 24,
+        "triangles": 4852
+      },
+      "resources": {
+        "textures": 12,
+        "geometries": 17
+      }
+    },
+    "art": {
+      "unit": {
+        "assets": [
+          {
+            "assetPath": "units/gravemark-stalker/sheet.png",
+            "state": "ready",
+            "error": null
+          },
+          {
+            "assetPath": "units/gravemark-walker-proxy/sheet.png",
+            "state": "ready",
+            "error": null
+          },
+          {
+            "assetPath": "units/sunweaver-scout/sheet.png",
+            "state": "ready",
+            "error": null
+          },
+          {
+            "assetPath": "units/sunweaver-walker-proxy/sheet.png",
+            "state": "ready",
+            "error": null
+          }
+        ],
+        "loadedTextures": 4
+      },
+      "building": [
+        {
+          "archetypeId": "gravemark-bastion",
+          "assetPath": "buildings/gravemark-bastion/sprite.png",
+          "state": "ready",
+          "error": null
+        },
+        {
+          "archetypeId": "neutral-cyan-beacon",
+          "assetPath": "buildings/neutral-cyan-beacon/sprite.png",
+          "state": "ready",
+          "error": null
+        },
+        {
+          "archetypeId": "sunweaver-sanctum",
+          "assetPath": "buildings/sunweaver-sanctum/sprite.png",
+          "state": "ready",
+          "error": null
+        }
+      ]
+    },
+    "heap": {
+      "available": true,
+      "source": "performance.memory",
+      "usedJSHeapSize": 37549200,
+      "totalJSHeapSize": 129242784,
+      "jsHeapSizeLimit": 4151836672
+    },
+    "samplerLatest": {
+      "atMs": 1052095.1000000476,
+      "runtime": {
+        "tick": 21613,
+        "entityCount": 25,
+        "snapshotLatencyMs": 1848.1000001430511,
+        "tickDurationMs": 0.9000000953674316,
+        "navDurationMs": 0,
+        "checksumCount": 21613,
+        "paused": false
+      },
+      "diagnostics": {
+        "content": {
+          "source": "studio",
+          "packId": "dev-pack-v2",
+          "revision": "14",
+          "contentHash": "4ec9be4ae3d82b0cbaaf541dd2967228ae96b45b912f1a54e23edaf04a459455",
+          "manifestHash": "6d666d272d4bb837aa365ec69a165fd3bd995fbf888ffd1a2a8ee73afa963848",
+          "visualContentHash": "51704bbde78826607d3e6154df113295c0cb4e960a84f90a802971b3d525199f",
+          "simulationRulesHash": "c39e7796863a923af79d1acb847a7d614e3bec219723091732ec388a729e4018"
+        },
+        "scenarioId": "interaction-lab-alien-fantasy",
+        "seed": 42,
+        "tick": 21613,
+        "entityCount": 25,
+        "commandCount": 0,
+        "checksumCount": 21613,
+        "missingUnitAssets": 0,
+        "missingBuildingAssets": 0,
+        "error": null
+      },
+      "status": {
+        "phase": "ready",
+        "source": "studio",
+        "selectedRevision": null,
+        "activeRevision": "14",
+        "activeContentHash": "4ec9be4ae3d82b0cbaaf541dd2967228ae96b45b912f1a54e23edaf04a459455",
+        "activeManifestHash": "6d666d272d4bb837aa365ec69a165fd3bd995fbf888ffd1a2a8ee73afa963848",
+        "activeVisualContentHash": "51704bbde78826607d3e6154df113295c0cb4e960a84f90a802971b3d525199f",
+        "activeSimulationRulesHash": "c39e7796863a923af79d1acb847a7d614e3bec219723091732ec388a729e4018",
+        "activeAssetBaseUrl": "/dev-content/v2/revisions/14/assets/",
+        "pendingRevision": null,
+        "pendingContentHash": null,
+        "pendingVisualContentHash": null,
+        "pendingSimulationRulesHash": null,
+        "availableRevision": null,
+        "error": null,
+        "reconnectAttempt": 0
+      },
+      "renderer": {
+        "kind": "webgl",
+        "requested": "webgl",
+        "backend": "webgl",
+        "initError": null,
+        "drawingBuffer": {
+          "width": 1280,
+          "height": 800
+        },
+        "pixelRatio": 1,
+        "stats": {
+          "drawCalls": 24,
+          "triangles": 4852
+        },
+        "resources": {
+          "textures": 12,
+          "geometries": 17
+        }
+      },
+      "heap": {
+        "available": true,
+        "usedJSHeapSize": 29317908,
+        "totalJSHeapSize": 128430664,
+        "jsHeapSizeLimit": 4151836672
+      }
+    },
+    "resourceSummary": {
+      "totalEntries": 250,
+      "contentEntries": 124,
+      "contentResources": [
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/publication",
+          "initiatorType": "fetch",
+          "startTime": 878.9000000953674,
+          "duration": 51,
+          "transferSize": 4311,
+          "encodedBodySize": 4011,
+          "decodedBodySize": 4011
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/3",
+          "initiatorType": "fetch",
+          "startTime": 968.0999999046326,
+          "duration": 13.300000190734863,
+          "transferSize": 4257,
+          "encodedBodySize": 3957,
+          "decodedBodySize": 3957
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/3/pack",
+          "initiatorType": "fetch",
+          "startTime": 987.7999999523163,
+          "duration": 28.40000009536743,
+          "transferSize": 8169,
+          "encodedBodySize": 7869,
+          "decodedBodySize": 7869
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/3/assets/scenarios/interaction-lab-alien-fantasy.json",
+          "initiatorType": "fetch",
+          "startTime": 1149.5999999046326,
+          "duration": 43.200000047683716,
+          "transferSize": 3266,
+          "encodedBodySize": 2966,
+          "decodedBodySize": 2966
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/3/assets/units/gravemark-stalker/sheet.png",
+          "initiatorType": "img",
+          "startTime": 1150.2999999523163,
+          "duration": 67.10000014305115,
+          "transferSize": 2028,
+          "encodedBodySize": 1728,
+          "decodedBodySize": 1728
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/3/assets/units/gravemark-walker-proxy/sheet.png",
+          "initiatorType": "img",
+          "startTime": 1151.0999999046326,
+          "duration": 121.60000014305115,
+          "transferSize": 659,
+          "encodedBodySize": 359,
+          "decodedBodySize": 359
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/3/assets/units/sunweaver-scout/sheet.png",
+          "initiatorType": "img",
+          "startTime": 1151.4000000953674,
+          "duration": 149.89999985694885,
+          "transferSize": 2144,
+          "encodedBodySize": 1844,
+          "decodedBodySize": 1844
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/3/assets/units/sunweaver-walker-proxy/sheet.png",
+          "initiatorType": "img",
+          "startTime": 1151.7999999523163,
+          "duration": 162.40000009536743,
+          "transferSize": 657,
+          "encodedBodySize": 357,
+          "decodedBodySize": 357
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/3/assets/buildings/gravemark-bastion/sprite.png",
+          "initiatorType": "img",
+          "startTime": 1152.4000000953674,
+          "duration": 176.5,
+          "transferSize": 752,
+          "encodedBodySize": 452,
+          "decodedBodySize": 452
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/3/assets/buildings/neutral-cyan-beacon/sprite.png",
+          "initiatorType": "img",
+          "startTime": 1152.7000000476837,
+          "duration": 192,
+          "transferSize": 648,
+          "encodedBodySize": 348,
+          "decodedBodySize": 348
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/3/assets/buildings/sunweaver-sanctum/sprite.png",
+          "initiatorType": "img",
+          "startTime": 1152.7999999523163,
+          "duration": 214,
+          "transferSize": 1042,
+          "encodedBodySize": 742,
+          "decodedBodySize": 742
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/3/assets/maps/interaction-lab-alien-fantasy.json",
+          "initiatorType": "fetch",
+          "startTime": 1241.4000000953674,
+          "duration": 158.29999995231628,
+          "transferSize": 469,
+          "encodedBodySize": 169,
+          "decodedBodySize": 169
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/acknowledgements",
+          "initiatorType": "fetch",
+          "startTime": 1411.4000000953674,
+          "duration": 10.599999904632568,
+          "transferSize": 582,
+          "encodedBodySize": 282,
+          "decodedBodySize": 282
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/publication",
+          "initiatorType": "fetch",
+          "startTime": 153700.90000009537,
+          "duration": 27.5,
+          "transferSize": 4332,
+          "encodedBodySize": 4032,
+          "decodedBodySize": 4032
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/4",
+          "initiatorType": "fetch",
+          "startTime": 153937.09999990463,
+          "duration": 14.900000095367432,
+          "transferSize": 4278,
+          "encodedBodySize": 3978,
+          "decodedBodySize": 3978
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/4/pack",
+          "initiatorType": "fetch",
+          "startTime": 154192.40000009537,
+          "duration": 48.299999952316284,
+          "transferSize": 8179,
+          "encodedBodySize": 7879,
+          "decodedBodySize": 7879
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/4/assets/units/gravemark-stalker/sheet.png",
+          "initiatorType": "img",
+          "startTime": 154458.29999995232,
+          "duration": 29.700000047683716,
+          "transferSize": 2028,
+          "encodedBodySize": 1728,
+          "decodedBodySize": 1728
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/4/assets/units/gravemark-walker-proxy/sheet.png",
+          "initiatorType": "img",
+          "startTime": 154458.59999990463,
+          "duration": 51.5,
+          "transferSize": 659,
+          "encodedBodySize": 359,
+          "decodedBodySize": 359
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/4/assets/units/sunweaver-scout/sheet.png",
+          "initiatorType": "img",
+          "startTime": 154458.70000004768,
+          "duration": 66,
+          "transferSize": 2028,
+          "encodedBodySize": 1728,
+          "decodedBodySize": 1728
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/4/assets/units/sunweaver-walker-proxy/sheet.png",
+          "initiatorType": "img",
+          "startTime": 154458.79999995232,
+          "duration": 84.40000009536743,
+          "transferSize": 657,
+          "encodedBodySize": 357,
+          "decodedBodySize": 357
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/4/assets/buildings/gravemark-bastion/sprite.png",
+          "initiatorType": "img",
+          "startTime": 154459,
+          "duration": 107.59999990463257,
+          "transferSize": 752,
+          "encodedBodySize": 452,
+          "decodedBodySize": 452
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/4/assets/buildings/neutral-cyan-beacon/sprite.png",
+          "initiatorType": "img",
+          "startTime": 154459.09999990463,
+          "duration": 126.20000004768372,
+          "transferSize": 648,
+          "encodedBodySize": 348,
+          "decodedBodySize": 348
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/4/assets/buildings/sunweaver-sanctum/sprite.png",
+          "initiatorType": "img",
+          "startTime": 154459.20000004768,
+          "duration": 140.29999995231628,
+          "transferSize": 1042,
+          "encodedBodySize": 742,
+          "decodedBodySize": 742
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/acknowledgements",
+          "initiatorType": "fetch",
+          "startTime": 154460.09999990463,
+          "duration": 29.90000009536743,
+          "transferSize": 582,
+          "encodedBodySize": 282,
+          "decodedBodySize": 282
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/publication",
+          "initiatorType": "fetch",
+          "startTime": 243919.40000009537,
+          "duration": 88.29999995231628,
+          "transferSize": 4332,
+          "encodedBodySize": 4032,
+          "decodedBodySize": 4032
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/5",
+          "initiatorType": "fetch",
+          "startTime": 244236.20000004768,
+          "duration": 11.700000047683716,
+          "transferSize": 4278,
+          "encodedBodySize": 3978,
+          "decodedBodySize": 3978
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/5/pack",
+          "initiatorType": "fetch",
+          "startTime": 244456.90000009537,
+          "duration": 42.89999985694885,
+          "transferSize": 8179,
+          "encodedBodySize": 7879,
+          "decodedBodySize": 7879
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/5/assets/units/gravemark-stalker/sheet.png",
+          "initiatorType": "img",
+          "startTime": 244695,
+          "duration": 32.200000047683716,
+          "transferSize": 2028,
+          "encodedBodySize": 1728,
+          "decodedBodySize": 1728
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/5/assets/units/gravemark-walker-proxy/sheet.png",
+          "initiatorType": "img",
+          "startTime": 244695,
+          "duration": 48.799999952316284,
+          "transferSize": 659,
+          "encodedBodySize": 359,
+          "decodedBodySize": 359
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/5/assets/units/sunweaver-scout/sheet.png",
+          "initiatorType": "img",
+          "startTime": 244695.20000004768,
+          "duration": 65.79999995231628,
+          "transferSize": 2144,
+          "encodedBodySize": 1844,
+          "decodedBodySize": 1844
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/5/assets/units/sunweaver-walker-proxy/sheet.png",
+          "initiatorType": "img",
+          "startTime": 244695.40000009537,
+          "duration": 94.69999980926514,
+          "transferSize": 657,
+          "encodedBodySize": 357,
+          "decodedBodySize": 357
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/5/assets/buildings/gravemark-bastion/sprite.png",
+          "initiatorType": "img",
+          "startTime": 244695.5,
+          "duration": 111.59999990463257,
+          "transferSize": 752,
+          "encodedBodySize": 452,
+          "decodedBodySize": 452
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/5/assets/buildings/neutral-cyan-beacon/sprite.png",
+          "initiatorType": "img",
+          "startTime": 244695.59999990463,
+          "duration": 133.80000019073486,
+          "transferSize": 648,
+          "encodedBodySize": 348,
+          "decodedBodySize": 348
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/5/assets/buildings/sunweaver-sanctum/sprite.png",
+          "initiatorType": "img",
+          "startTime": 244695.79999995232,
+          "duration": 146.90000009536743,
+          "transferSize": 1042,
+          "encodedBodySize": 742,
+          "decodedBodySize": 742
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/acknowledgements",
+          "initiatorType": "fetch",
+          "startTime": 244697.70000004768,
+          "duration": 112.89999985694885,
+          "transferSize": 582,
+          "encodedBodySize": 282,
+          "decodedBodySize": 282
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/publication",
+          "initiatorType": "fetch",
+          "startTime": 333740.7000000477,
+          "duration": 23.399999856948853,
+          "transferSize": 4332,
+          "encodedBodySize": 4032,
+          "decodedBodySize": 4032
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/6",
+          "initiatorType": "fetch",
+          "startTime": 333951.2999999523,
+          "duration": 11.299999952316284,
+          "transferSize": 4278,
+          "encodedBodySize": 3978,
+          "decodedBodySize": 3978
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/6/pack",
+          "initiatorType": "fetch",
+          "startTime": 334159.7000000477,
+          "duration": 27.299999952316284,
+          "transferSize": 8179,
+          "encodedBodySize": 7879,
+          "decodedBodySize": 7879
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/6/assets/units/gravemark-stalker/sheet.png",
+          "initiatorType": "img",
+          "startTime": 334381.90000009537,
+          "duration": 21.5,
+          "transferSize": 2028,
+          "encodedBodySize": 1728,
+          "decodedBodySize": 1728
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/6/assets/units/gravemark-walker-proxy/sheet.png",
+          "initiatorType": "img",
+          "startTime": 334382,
+          "duration": 41.799999952316284,
+          "transferSize": 659,
+          "encodedBodySize": 359,
+          "decodedBodySize": 359
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/6/assets/units/sunweaver-scout/sheet.png",
+          "initiatorType": "img",
+          "startTime": 334382.2000000477,
+          "duration": 61.39999985694885,
+          "transferSize": 2028,
+          "encodedBodySize": 1728,
+          "decodedBodySize": 1728
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/6/assets/units/sunweaver-walker-proxy/sheet.png",
+          "initiatorType": "img",
+          "startTime": 334382.2999999523,
+          "duration": 80.20000004768372,
+          "transferSize": 657,
+          "encodedBodySize": 357,
+          "decodedBodySize": 357
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/6/assets/buildings/gravemark-bastion/sprite.png",
+          "initiatorType": "img",
+          "startTime": 334382.40000009537,
+          "duration": 106,
+          "transferSize": 752,
+          "encodedBodySize": 452,
+          "decodedBodySize": 452
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/6/assets/buildings/neutral-cyan-beacon/sprite.png",
+          "initiatorType": "img",
+          "startTime": 334382.5,
+          "duration": 134.09999990463257,
+          "transferSize": 648,
+          "encodedBodySize": 348,
+          "decodedBodySize": 348
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/6/assets/buildings/sunweaver-sanctum/sprite.png",
+          "initiatorType": "img",
+          "startTime": 334382.5,
+          "duration": 165.29999995231628,
+          "transferSize": 1042,
+          "encodedBodySize": 742,
+          "decodedBodySize": 742
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/acknowledgements",
+          "initiatorType": "fetch",
+          "startTime": 334385.59999990463,
+          "duration": 20.40000009536743,
+          "transferSize": 582,
+          "encodedBodySize": 282,
+          "decodedBodySize": 282
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/publication",
+          "initiatorType": "fetch",
+          "startTime": 423640.7999999523,
+          "duration": 25.600000143051147,
+          "transferSize": 4332,
+          "encodedBodySize": 4032,
+          "decodedBodySize": 4032
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/7",
+          "initiatorType": "fetch",
+          "startTime": 423886.59999990463,
+          "duration": 12.100000143051147,
+          "transferSize": 4278,
+          "encodedBodySize": 3978,
+          "decodedBodySize": 3978
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/7/pack",
+          "initiatorType": "fetch",
+          "startTime": 424165,
+          "duration": 22,
+          "transferSize": 8179,
+          "encodedBodySize": 7879,
+          "decodedBodySize": 7879
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/7/assets/units/gravemark-stalker/sheet.png",
+          "initiatorType": "img",
+          "startTime": 424388,
+          "duration": 27.90000009536743,
+          "transferSize": 2028,
+          "encodedBodySize": 1728,
+          "decodedBodySize": 1728
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/7/assets/units/gravemark-walker-proxy/sheet.png",
+          "initiatorType": "img",
+          "startTime": 424388.2000000477,
+          "duration": 40.59999990463257,
+          "transferSize": 659,
+          "encodedBodySize": 359,
+          "decodedBodySize": 359
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/7/assets/units/sunweaver-scout/sheet.png",
+          "initiatorType": "img",
+          "startTime": 424388.2999999523,
+          "duration": 57.5,
+          "transferSize": 2144,
+          "encodedBodySize": 1844,
+          "decodedBodySize": 1844
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/7/assets/units/sunweaver-walker-proxy/sheet.png",
+          "initiatorType": "img",
+          "startTime": 424388.40000009537,
+          "duration": 78.69999980926514,
+          "transferSize": 657,
+          "encodedBodySize": 357,
+          "decodedBodySize": 357
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/7/assets/buildings/gravemark-bastion/sprite.png",
+          "initiatorType": "img",
+          "startTime": 424388.5,
+          "duration": 124.09999990463257,
+          "transferSize": 752,
+          "encodedBodySize": 452,
+          "decodedBodySize": 452
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/7/assets/buildings/neutral-cyan-beacon/sprite.png",
+          "initiatorType": "img",
+          "startTime": 424388.7000000477,
+          "duration": 148.59999990463257,
+          "transferSize": 648,
+          "encodedBodySize": 348,
+          "decodedBodySize": 348
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/7/assets/buildings/sunweaver-sanctum/sprite.png",
+          "initiatorType": "img",
+          "startTime": 424388.7999999523,
+          "duration": 160.5,
+          "transferSize": 1042,
+          "encodedBodySize": 742,
+          "decodedBodySize": 742
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/acknowledgements",
+          "initiatorType": "fetch",
+          "startTime": 424389.7000000477,
+          "duration": 28.5,
+          "transferSize": 582,
+          "encodedBodySize": 282,
+          "decodedBodySize": 282
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/publication",
+          "initiatorType": "fetch",
+          "startTime": 513714.7999999523,
+          "duration": 26.5,
+          "transferSize": 4332,
+          "encodedBodySize": 4032,
+          "decodedBodySize": 4032
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/8",
+          "initiatorType": "fetch",
+          "startTime": 513952.90000009537,
+          "duration": 6.5,
+          "transferSize": 4278,
+          "encodedBodySize": 3978,
+          "decodedBodySize": 3978
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/8/pack",
+          "initiatorType": "fetch",
+          "startTime": 514181.7999999523,
+          "duration": 28.700000047683716,
+          "transferSize": 8179,
+          "encodedBodySize": 7879,
+          "decodedBodySize": 7879
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/8/assets/units/gravemark-stalker/sheet.png",
+          "initiatorType": "img",
+          "startTime": 514439.7000000477,
+          "duration": 30.59999990463257,
+          "transferSize": 2028,
+          "encodedBodySize": 1728,
+          "decodedBodySize": 1728
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/8/assets/units/gravemark-walker-proxy/sheet.png",
+          "initiatorType": "img",
+          "startTime": 514439.90000009537,
+          "duration": 40.19999980926514,
+          "transferSize": 659,
+          "encodedBodySize": 359,
+          "decodedBodySize": 359
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/8/assets/units/sunweaver-scout/sheet.png",
+          "initiatorType": "img",
+          "startTime": 514440,
+          "duration": 53.09999990463257,
+          "transferSize": 2028,
+          "encodedBodySize": 1728,
+          "decodedBodySize": 1728
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/8/assets/units/sunweaver-walker-proxy/sheet.png",
+          "initiatorType": "img",
+          "startTime": 514440.09999990463,
+          "duration": 76.60000014305115,
+          "transferSize": 657,
+          "encodedBodySize": 357,
+          "decodedBodySize": 357
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/8/assets/buildings/gravemark-bastion/sprite.png",
+          "initiatorType": "img",
+          "startTime": 514440.2000000477,
+          "duration": 106.89999985694885,
+          "transferSize": 752,
+          "encodedBodySize": 452,
+          "decodedBodySize": 452
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/8/assets/buildings/neutral-cyan-beacon/sprite.png",
+          "initiatorType": "img",
+          "startTime": 514440.2999999523,
+          "duration": 136.60000014305115,
+          "transferSize": 648,
+          "encodedBodySize": 348,
+          "decodedBodySize": 348
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/8/assets/buildings/sunweaver-sanctum/sprite.png",
+          "initiatorType": "img",
+          "startTime": 514440.40000009537,
+          "duration": 147.69999980926514,
+          "transferSize": 1042,
+          "encodedBodySize": 742,
+          "decodedBodySize": 742
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/acknowledgements",
+          "initiatorType": "fetch",
+          "startTime": 514441,
+          "duration": 116.79999995231628,
+          "transferSize": 582,
+          "encodedBodySize": 282,
+          "decodedBodySize": 282
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/publication",
+          "initiatorType": "fetch",
+          "startTime": 603703,
+          "duration": 14.900000095367432,
+          "transferSize": 4332,
+          "encodedBodySize": 4032,
+          "decodedBodySize": 4032
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/9",
+          "initiatorType": "fetch",
+          "startTime": 603940.5,
+          "duration": 7.5,
+          "transferSize": 4278,
+          "encodedBodySize": 3978,
+          "decodedBodySize": 3978
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/9/pack",
+          "initiatorType": "fetch",
+          "startTime": 604212.5,
+          "duration": 24,
+          "transferSize": 8179,
+          "encodedBodySize": 7879,
+          "decodedBodySize": 7879
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/9/assets/units/gravemark-stalker/sheet.png",
+          "initiatorType": "img",
+          "startTime": 604517.9000000954,
+          "duration": 30.09999990463257,
+          "transferSize": 2028,
+          "encodedBodySize": 1728,
+          "decodedBodySize": 1728
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/9/assets/units/gravemark-walker-proxy/sheet.png",
+          "initiatorType": "img",
+          "startTime": 604518,
+          "duration": 57.40000009536743,
+          "transferSize": 659,
+          "encodedBodySize": 359,
+          "decodedBodySize": 359
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/9/assets/units/sunweaver-scout/sheet.png",
+          "initiatorType": "img",
+          "startTime": 604518.0999999046,
+          "duration": 76,
+          "transferSize": 2144,
+          "encodedBodySize": 1844,
+          "decodedBodySize": 1844
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/9/assets/units/sunweaver-walker-proxy/sheet.png",
+          "initiatorType": "img",
+          "startTime": 604518.2000000477,
+          "duration": 91.20000004768372,
+          "transferSize": 657,
+          "encodedBodySize": 357,
+          "decodedBodySize": 357
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/9/assets/buildings/gravemark-bastion/sprite.png",
+          "initiatorType": "img",
+          "startTime": 604518.2999999523,
+          "duration": 111.60000014305115,
+          "transferSize": 752,
+          "encodedBodySize": 452,
+          "decodedBodySize": 452
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/9/assets/buildings/neutral-cyan-beacon/sprite.png",
+          "initiatorType": "img",
+          "startTime": 604518.4000000954,
+          "duration": 145.79999995231628,
+          "transferSize": 648,
+          "encodedBodySize": 348,
+          "decodedBodySize": 348
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/9/assets/buildings/sunweaver-sanctum/sprite.png",
+          "initiatorType": "img",
+          "startTime": 604518.5,
+          "duration": 180,
+          "transferSize": 1042,
+          "encodedBodySize": 742,
+          "decodedBodySize": 742
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/acknowledgements",
+          "initiatorType": "fetch",
+          "startTime": 604519.0999999046,
+          "duration": 59.30000019073486,
+          "transferSize": 582,
+          "encodedBodySize": 282,
+          "decodedBodySize": 282
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/publication",
+          "initiatorType": "fetch",
+          "startTime": 693615.2000000477,
+          "duration": 23,
+          "transferSize": 4350,
+          "encodedBodySize": 4050,
+          "decodedBodySize": 4050
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/10",
+          "initiatorType": "fetch",
+          "startTime": 693867,
+          "duration": 6.900000095367432,
+          "transferSize": 4294,
+          "encodedBodySize": 3994,
+          "decodedBodySize": 3994
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/10/pack",
+          "initiatorType": "fetch",
+          "startTime": 694157.5,
+          "duration": 18.09999990463257,
+          "transferSize": 8180,
+          "encodedBodySize": 7880,
+          "decodedBodySize": 7880
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/10/assets/units/gravemark-stalker/sheet.png",
+          "initiatorType": "img",
+          "startTime": 694428.0999999046,
+          "duration": 28.800000190734863,
+          "transferSize": 2028,
+          "encodedBodySize": 1728,
+          "decodedBodySize": 1728
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/10/assets/units/gravemark-walker-proxy/sheet.png",
+          "initiatorType": "img",
+          "startTime": 694428.2999999523,
+          "duration": 42,
+          "transferSize": 659,
+          "encodedBodySize": 359,
+          "decodedBodySize": 359
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/10/assets/units/sunweaver-scout/sheet.png",
+          "initiatorType": "img",
+          "startTime": 694428.4000000954,
+          "duration": 58.09999990463257,
+          "transferSize": 2028,
+          "encodedBodySize": 1728,
+          "decodedBodySize": 1728
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/10/assets/units/sunweaver-walker-proxy/sheet.png",
+          "initiatorType": "img",
+          "startTime": 694428.5999999046,
+          "duration": 73.20000004768372,
+          "transferSize": 657,
+          "encodedBodySize": 357,
+          "decodedBodySize": 357
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/10/assets/buildings/gravemark-bastion/sprite.png",
+          "initiatorType": "img",
+          "startTime": 694429,
+          "duration": 94.59999990463257,
+          "transferSize": 752,
+          "encodedBodySize": 452,
+          "decodedBodySize": 452
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/10/assets/buildings/neutral-cyan-beacon/sprite.png",
+          "initiatorType": "img",
+          "startTime": 694429.2999999523,
+          "duration": 112.90000009536743,
+          "transferSize": 648,
+          "encodedBodySize": 348,
+          "decodedBodySize": 348
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/10/assets/buildings/sunweaver-sanctum/sprite.png",
+          "initiatorType": "img",
+          "startTime": 694429.4000000954,
+          "duration": 128,
+          "transferSize": 1042,
+          "encodedBodySize": 742,
+          "decodedBodySize": 742
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/acknowledgements",
+          "initiatorType": "fetch",
+          "startTime": 694430.2000000477,
+          "duration": 28.899999856948853,
+          "transferSize": 583,
+          "encodedBodySize": 283,
+          "decodedBodySize": 283
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/publication",
+          "initiatorType": "fetch",
+          "startTime": 783650.2999999523,
+          "duration": 14.700000047683716,
+          "transferSize": 4351,
+          "encodedBodySize": 4051,
+          "decodedBodySize": 4051
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/11",
+          "initiatorType": "fetch",
+          "startTime": 783922.0999999046,
+          "duration": 10.800000190734863,
+          "transferSize": 4295,
+          "encodedBodySize": 3995,
+          "decodedBodySize": 3995
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/11/pack",
+          "initiatorType": "fetch",
+          "startTime": 784218.0999999046,
+          "duration": 27.700000047683716,
+          "transferSize": 8180,
+          "encodedBodySize": 7880,
+          "decodedBodySize": 7880
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/11/assets/units/gravemark-stalker/sheet.png",
+          "initiatorType": "img",
+          "startTime": 784515.7999999523,
+          "duration": 25.5,
+          "transferSize": 2028,
+          "encodedBodySize": 1728,
+          "decodedBodySize": 1728
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/11/assets/units/gravemark-walker-proxy/sheet.png",
+          "initiatorType": "img",
+          "startTime": 784516,
+          "duration": 41.200000047683716,
+          "transferSize": 659,
+          "encodedBodySize": 359,
+          "decodedBodySize": 359
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/11/assets/units/sunweaver-scout/sheet.png",
+          "initiatorType": "img",
+          "startTime": 784516.0999999046,
+          "duration": 52.90000009536743,
+          "transferSize": 2144,
+          "encodedBodySize": 1844,
+          "decodedBodySize": 1844
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/11/assets/units/sunweaver-walker-proxy/sheet.png",
+          "initiatorType": "img",
+          "startTime": 784516.2999999523,
+          "duration": 67.5,
+          "transferSize": 657,
+          "encodedBodySize": 357,
+          "decodedBodySize": 357
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/11/assets/buildings/gravemark-bastion/sprite.png",
+          "initiatorType": "img",
+          "startTime": 784516.4000000954,
+          "duration": 81.39999985694885,
+          "transferSize": 752,
+          "encodedBodySize": 452,
+          "decodedBodySize": 452
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/11/assets/buildings/neutral-cyan-beacon/sprite.png",
+          "initiatorType": "img",
+          "startTime": 784516.5999999046,
+          "duration": 127,
+          "transferSize": 648,
+          "encodedBodySize": 348,
+          "decodedBodySize": 348
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/11/assets/buildings/sunweaver-sanctum/sprite.png",
+          "initiatorType": "img",
+          "startTime": 784516.7000000477,
+          "duration": 158.5,
+          "transferSize": 1042,
+          "encodedBodySize": 742,
+          "decodedBodySize": 742
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/acknowledgements",
+          "initiatorType": "fetch",
+          "startTime": 784517.7999999523,
+          "duration": 84.79999995231628,
+          "transferSize": 583,
+          "encodedBodySize": 283,
+          "decodedBodySize": 283
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/publication",
+          "initiatorType": "fetch",
+          "startTime": 873698.2000000477,
+          "duration": 25.700000047683716,
+          "transferSize": 4351,
+          "encodedBodySize": 4051,
+          "decodedBodySize": 4051
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/12",
+          "initiatorType": "fetch",
+          "startTime": 874023,
+          "duration": 5.700000047683716,
+          "transferSize": 4295,
+          "encodedBodySize": 3995,
+          "decodedBodySize": 3995
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/12/pack",
+          "initiatorType": "fetch",
+          "startTime": 874339.0999999046,
+          "duration": 18.700000047683716,
+          "transferSize": 8180,
+          "encodedBodySize": 7880,
+          "decodedBodySize": 7880
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/12/assets/units/gravemark-stalker/sheet.png",
+          "initiatorType": "img",
+          "startTime": 874608.0999999046,
+          "duration": 30.600000143051147,
+          "transferSize": 2028,
+          "encodedBodySize": 1728,
+          "decodedBodySize": 1728
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/12/assets/units/gravemark-walker-proxy/sheet.png",
+          "initiatorType": "img",
+          "startTime": 874608.2999999523,
+          "duration": 46,
+          "transferSize": 659,
+          "encodedBodySize": 359,
+          "decodedBodySize": 359
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/12/assets/units/sunweaver-scout/sheet.png",
+          "initiatorType": "img",
+          "startTime": 874608.4000000954,
+          "duration": 58.89999985694885,
+          "transferSize": 2028,
+          "encodedBodySize": 1728,
+          "decodedBodySize": 1728
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/12/assets/units/sunweaver-walker-proxy/sheet.png",
+          "initiatorType": "img",
+          "startTime": 874608.5,
+          "duration": 70.90000009536743,
+          "transferSize": 657,
+          "encodedBodySize": 357,
+          "decodedBodySize": 357
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/12/assets/buildings/gravemark-bastion/sprite.png",
+          "initiatorType": "img",
+          "startTime": 874608.7000000477,
+          "duration": 87.59999990463257,
+          "transferSize": 752,
+          "encodedBodySize": 452,
+          "decodedBodySize": 452
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/12/assets/buildings/neutral-cyan-beacon/sprite.png",
+          "initiatorType": "img",
+          "startTime": 874608.7000000477,
+          "duration": 105.39999985694885,
+          "transferSize": 648,
+          "encodedBodySize": 348,
+          "decodedBodySize": 348
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/12/assets/buildings/sunweaver-sanctum/sprite.png",
+          "initiatorType": "img",
+          "startTime": 874608.7999999523,
+          "duration": 121.29999995231628,
+          "transferSize": 1042,
+          "encodedBodySize": 742,
+          "decodedBodySize": 742
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/acknowledgements",
+          "initiatorType": "fetch",
+          "startTime": 874609.4000000954,
+          "duration": 89.29999995231628,
+          "transferSize": 583,
+          "encodedBodySize": 283,
+          "decodedBodySize": 283
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/publication",
+          "initiatorType": "fetch",
+          "startTime": 963688.5,
+          "duration": 18.799999952316284,
+          "transferSize": 4351,
+          "encodedBodySize": 4051,
+          "decodedBodySize": 4051
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/13",
+          "initiatorType": "fetch",
+          "startTime": 963971.7999999523,
+          "duration": 6,
+          "transferSize": 4295,
+          "encodedBodySize": 3995,
+          "decodedBodySize": 3995
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/13/pack",
+          "initiatorType": "fetch",
+          "startTime": 964224.9000000954,
+          "duration": 13.799999952316284,
+          "transferSize": 8181,
+          "encodedBodySize": 7881,
+          "decodedBodySize": 7881
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/13/assets/units/gravemark-stalker/sheet.png",
+          "initiatorType": "img",
+          "startTime": 964560.5999999046,
+          "duration": 28.800000190734863,
+          "transferSize": 2028,
+          "encodedBodySize": 1728,
+          "decodedBodySize": 1728
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/13/assets/units/gravemark-walker-proxy/sheet.png",
+          "initiatorType": "img",
+          "startTime": 964560.7999999523,
+          "duration": 41.5,
+          "transferSize": 659,
+          "encodedBodySize": 359,
+          "decodedBodySize": 359
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/13/assets/units/sunweaver-scout/sheet.png",
+          "initiatorType": "img",
+          "startTime": 964561,
+          "duration": 53,
+          "transferSize": 2144,
+          "encodedBodySize": 1844,
+          "decodedBodySize": 1844
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/13/assets/units/sunweaver-walker-proxy/sheet.png",
+          "initiatorType": "img",
+          "startTime": 964561.0999999046,
+          "duration": 66.90000009536743,
+          "transferSize": 657,
+          "encodedBodySize": 357,
+          "decodedBodySize": 357
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/13/assets/buildings/gravemark-bastion/sprite.png",
+          "initiatorType": "img",
+          "startTime": 964561.2000000477,
+          "duration": 85.59999990463257,
+          "transferSize": 752,
+          "encodedBodySize": 452,
+          "decodedBodySize": 452
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/13/assets/buildings/neutral-cyan-beacon/sprite.png",
+          "initiatorType": "img",
+          "startTime": 964561.2999999523,
+          "duration": 99.40000009536743,
+          "transferSize": 648,
+          "encodedBodySize": 348,
+          "decodedBodySize": 348
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/revisions/13/assets/buildings/sunweaver-sanctum/sprite.png",
+          "initiatorType": "img",
+          "startTime": 964561.5,
+          "duration": 115.5,
+          "transferSize": 1042,
+          "encodedBodySize": 742,
+          "decodedBodySize": 742
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/acknowledgements",
+          "initiatorType": "fetch",
+          "startTime": 964562.4000000954,
+          "duration": 67.89999985694885,
+          "transferSize": 583,
+          "encodedBodySize": 283,
+          "decodedBodySize": 283
+        },
+        {
+          "name": "http://127.0.0.1:30373/dev-content/v2/publication",
+          "initiatorType": "fetch",
+          "startTime": 1053642.2000000477,
+          "duration": 21.5,
+          "transferSize": 4351,
+          "encodedBodySize": 4051,
+          "decodedBodySize": 4051
+        }
+      ]
+    }
+  },
+  "finishedAt": "2026-09-05T17:20:36.030Z",
+  "actualSoakElapsedMs": 1022062,
+  "ok": true,
+  "checkpoint": {
+    "json": "/home/bobbyranka/Projects/pastel-rts-m11-soak/docs/roadmap/M1.1-Q-artifacts/replacement-11.json",
+    "screenshot": "/home/bobbyranka/Projects/pastel-rts-m11-soak/docs/roadmap/M1.1-Q-artifacts/replacement-11.png"
+  }
+}
