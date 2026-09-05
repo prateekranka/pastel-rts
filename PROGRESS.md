@@ -8,11 +8,13 @@ Integrated checkpoints:
 - Original animated fixtures, deterministic generation, relative production web/iOS packaging and dev:studio.
 - Safe publication foundation A/A2: drafts, revisions, source preservation, references, validation, historical assets, acknowledgements.
 - Foundry D: library and editor workflow, runtime projection preview. D2 fixes projected ground-circle footprint; coordinator reran 9 Foundry tests and game typecheck successfully.
-- Runtime E checkpoint fe1a725 is now being integrated. Coordinator ran root typecheck, lint, tests and build on its combined code with A2/D; all passed. E's original smoke captures used an explicit sandbox override and are rejected. No browser acceptance is inferred from that worker report.
+- Runtime E checkpoint fe1a725 integrated as 6208146. Coordinator ran root typecheck, lint, tests and build on its combined code with A2/D; all passed. E's original smoke captures used an explicit sandbox override and are rejected. No browser acceptance is inferred from that worker report.
 
 Current validation:
 - Last complete root test run: schema 40, simulation 19, navigation 21, content server 18, game web 76 passed. Foundry is verified separately until lane F wires it into root test.
-- Previous integrated full browser run failed. Defects are recorded in docs/roadmap/M1.1-integrated-browser-findings.md. Fresh Foundry/API acceptance lane F is in progress.
+- F is integrated at 34fbbb3. Correctly seeded coordinator Foundry/API browser run at 853df6a passed all 9 tests. An earlier empty-pack invocation was invalid for fixture-dependent assertions; correction is in docs/roadmap/M1.1-recovery-evidence.md.
+- Provider recovery was confirmed by actual Luna smoke session 20260905_185350_ad6f16. Existing G/H/I sessions resumed with explicit approved pins after confirming no duplicate workers or owned listeners. No profile or credential changes.
+- Whole runtime/browser gate and actual UI bug reproduction remain pending; no whole-milestone pass.
 - Existing macOS CI run 33965323173 compiled iOS Simulator successfully at 6308242772c224b20e9a813dd2398c6fa6828b23. Web browser step failed, so overall CI is not passing. Native compile is not simulator launch or physical iPad proof.
 - Linux timing is not iPad/GPU performance proof. An unchanged desktop timing test failed once and passed on rerun; its threshold was not relaxed.
 
