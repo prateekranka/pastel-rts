@@ -143,11 +143,14 @@ async function main() {
       throw firstFailure;
     }
 
+    const studioGameUrl = `${gameOrigin}/?mode=interaction-lab&content=studio`;
+    const bundledGameUrl = `${gameOrigin}/?mode=interaction-lab`;
     console.log('Studio ready (loopback only)');
-    console.log(`  Game:    ${gameOrigin}/?mode=interaction-lab&content=studio`);
-    console.log(`  Foundry: http://${LOOPBACK}:${options.foundryPort}/`);
-    console.log(`  Content: ${contentOrigin}/health`);
-    console.log(`  Fixture: ${gameOrigin}/content/dev-pack-v2/pack.json`);
+    console.log(`  Studio game:       ${studioGameUrl}`);
+    console.log(`  Bundled/offline:   ${bundledGameUrl}`);
+    console.log(`  Foundry:           http://${LOOPBACK}:${options.foundryPort}/`);
+    console.log(`  Content:           ${contentOrigin}/health`);
+    console.log(`  Fixture pack:      ${gameOrigin}/content/dev-pack-v2/pack.json`);
     console.log(`  Pack dir: ${options.packDir}`);
     console.log('Press Ctrl-C to stop the three owned services.');
     await lifecyclePromise;
