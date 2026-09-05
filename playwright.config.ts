@@ -8,7 +8,8 @@ const serverMode = process.env['PLAYWRIGHT_SERVER_MODE'] === 'dev' ? 'dev' : 'pr
 const skipContentServer = process.env['PLAYWRIGHT_SKIP_CONTENT_SERVER'] === '1';
 const chromiumPath = process.env['PLAYWRIGHT_CHROMIUM_PATH'];
 const configuredGameOrigin = process.env['PLAYWRIGHT_GAME_WEB_ORIGIN'];
-const gameOrigin = configuredGameOrigin ?? (gamePort === 4173 ? undefined : `http://127.0.0.1:${String(gamePort)}`);
+const gameOrigin = configuredGameOrigin ?? `http://127.0.0.1:${String(gamePort)}`;
+process.env['PLAYWRIGHT_GAME_WEB_ORIGIN'] = gameOrigin;
 const configuredIgnoreDefaultArgs = process.env['PLAYWRIGHT_IGNORE_DEFAULT_ARGS'];
 const ignoreDefaultArgs = configuredIgnoreDefaultArgs
   ? configuredIgnoreDefaultArgs.split(',').map((value) => value.trim()).filter((value) => value.length > 0)

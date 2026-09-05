@@ -71,6 +71,42 @@ test.describe('Content Foundry PNG click-path', () => {
       timeout: 10_000,
     });
 
+    const draftStatus = await page.evaluate(async () => {
+      const response = await fetch('/dev-content/v2/publication');
+      return response.json() as Promise<{ currentRevision: string; draftRevision: string }>;
+    });
+    const draftPack = await page.evaluate(async () => {
+      const response = await fetch('/dev-content/v2/draft/pack');
+      return response.json();
+    });
+    expect(draftPack.schemaVersion).toBe(2);
+    expect(draftPack.units.some((unit: { id: string }) => unit.id === 'foundry-proxy')).toBe(true);
+    const unpublishedPack = await page.evaluate(async (revision) => {
+      const response = await fetch(`/dev-content/v2/revisions/${encodeURIComponent(revision)}/pack`);
+      return response.json();
+    }, draftStatus.currentRevision);
+    expect(unpublishedPack.units.some((unit: { id: string }) => unit.id === 'foundry-proxy')).toBe(false);
+
+    const validation = await page.evaluate(async (expectedDraftRevision) => {
+      const response = await fetch('/dev-content/v2/validate', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ expectedDraftRevision }),
+      });
+      return { status: response.status, body: await response.json() };
+    }, draftStatus.draftRevision);
+    expect(validation.status).toBe(200);
+    const publication = await page.evaluate(async (expectedRevision) => {
+      const response = await fetch('/dev-content/v2/publish', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ expectedRevision }),
+      });
+      return { status: response.status, body: await response.json() };
+    }, draftStatus.currentRevision);
+    expect(publication.status).toBe(200);
+    expect(publication.body.pack.units.some((unit: { id: string }) => unit.id === 'foundry-proxy')).toBe(true);
+
     const pack = await page.evaluate(async () => {
       const response = await fetch('/dev-content/pack');
       return response.json();
@@ -96,11 +132,15 @@ test.describe('Content Foundry PNG click-path', () => {
 });
 
 test.describe('Content server v2 routes', () => {
-  test('creates and validates v2 unit and building via API', async ({ page }) => {
+  test('creates, validates, and publishes v2 unit and building via API', async ({ page }) => {
     await page.goto('/', { waitUntil: 'networkidle' });
     const suffix = Date.now();
+    const initial = await page.evaluate(async () => {
+      const response = await fetch('/dev-content/v2/publication');
+      return response.json() as Promise<{ currentRevision: string; draftRevision: string }>;
+    });
 
-    const unitResult = await page.evaluate(async ({ pngBase64, suffix: s }) => {
+    const unitResult = await page.evaluate(async ({ pngBase64, suffix: s, expectedDraftRevision }) => {
       const id = `e2e-scout-${String(s)}`;
       const archetype = {
         schemaVersion: 2,
@@ -115,7 +155,7 @@ test.describe('Content server v2 routes', () => {
         frameHeight: 32,
         margin: { x: 0, y: 0 },
         spacing: { x: 0, y: 0 },
-        bounds: { minX: 4, minY: 4, maxX: 28, maxY: 28 },
+        bounds: { minX: 0, minY: 0, maxX: 1, maxY: 1 },
         anchor: { x: 0.5, y: 1 },
         worldHeight: 1.5,
         selectionRadius: 0.6,
@@ -138,15 +178,17 @@ test.describe('Content server v2 routes', () => {
       const response = await fetch('/dev-content/v2/units', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ archetype, pngBase64 }),
+        body: JSON.stringify({ archetype, pngBase64, expectedDraftRevision }),
       });
-      return { ok: response.ok, body: await response.json(), id };
-    }, { pngBase64: TINY_PNG_BASE64, suffix });
+      return { status: response.status, body: await response.json(), id };
+    }, { pngBase64: TINY_PNG_BASE64, suffix, expectedDraftRevision: initial.draftRevision });
 
-    expect(unitResult.ok).toBe(true);
+    expect(unitResult.status).toBe(200);
     expect(unitResult.body.archetype.id).toBe(unitResult.id);
+    const afterUnit = unitResult.body.publication as { currentRevision: string; draftRevision: string };
+    expect(afterUnit.currentRevision).toBe(initial.currentRevision);
 
-    const buildingResult = await page.evaluate(async ({ pngBase64, suffix: s }) => {
+    const buildingResult = await page.evaluate(async ({ pngBase64, suffix: s, expectedDraftRevision }) => {
       const id = `e2e-bastion-${String(s)}`;
       const archetype = {
         schemaVersion: 2,
@@ -157,7 +199,7 @@ test.describe('Content server v2 routes', () => {
         assetPath: `buildings/${id}/sprite.png`,
         sourceWidth: 32,
         sourceHeight: 32,
-        bounds: { minX: 4, minY: 4, maxX: 28, maxY: 28 },
+        bounds: { minX: 0, minY: 0, maxX: 1, maxY: 1 },
         anchor: { x: 0.5, y: 1 },
         worldHeight: 2.4,
         footprint: { kind: 'rect', cellsW: 2, cellsH: 2 },
@@ -165,23 +207,54 @@ test.describe('Content server v2 routes', () => {
       const response = await fetch('/dev-content/v2/buildings', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ archetype, pngBase64 }),
+        body: JSON.stringify({ archetype, pngBase64, expectedDraftRevision }),
       });
-      return { ok: response.ok, body: await response.json(), id };
-    }, { pngBase64: TINY_PNG_BASE64, suffix });
+      return { status: response.status, body: await response.json(), id };
+    }, { pngBase64: TINY_PNG_BASE64, suffix, expectedDraftRevision: afterUnit.draftRevision });
 
-    expect(buildingResult.ok).toBe(true);
+    expect(buildingResult.status).toBe(200);
     expect(buildingResult.body.archetype.id).toBe(buildingResult.id);
+    const afterDraft = buildingResult.body.publication as { currentRevision: string; draftRevision: string };
+    expect(afterDraft.currentRevision).toBe(initial.currentRevision);
 
-    const pack = await page.evaluate(async () => {
-      const response = await fetch('/dev-content/pack?schema=2');
+    const draftPack = await page.evaluate(async () => {
+      const response = await fetch('/dev-content/v2/draft/pack');
       return response.json();
     });
-    expect(pack.schemaVersion).toBe(2);
-    expect(pack.units.some((u: { id: string }) => u.id === unitResult.id)).toBe(true);
-    expect(pack.buildings.some((b: { id: string }) => b.id === buildingResult.id)).toBe(true);
-    expect(typeof pack.contentHash).toBe('string');
-    expect(pack.contentHash.length).toBe(64);
+    expect(draftPack.schemaVersion).toBe(2);
+    expect(draftPack.units.some((u: { id: string }) => u.id === unitResult.id)).toBe(true);
+    expect(draftPack.buildings.some((b: { id: string }) => b.id === buildingResult.id)).toBe(true);
+
+    const unpublishedPack = await page.evaluate(async (revision) => {
+      const response = await fetch(`/dev-content/v2/revisions/${encodeURIComponent(revision)}/pack`);
+      return response.json();
+    }, initial.currentRevision);
+    expect(unpublishedPack.units.some((u: { id: string }) => u.id === unitResult.id)).toBe(false);
+    expect(unpublishedPack.buildings.some((b: { id: string }) => b.id === buildingResult.id)).toBe(false);
+
+    const validation = await page.evaluate(async (expectedDraftRevision) => {
+      const response = await fetch('/dev-content/v2/validate', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ expectedDraftRevision }),
+      });
+      return { status: response.status, body: await response.json() };
+    }, afterDraft.draftRevision);
+    expect(validation.status).toBe(200);
+    expect(validation.body).toMatchObject({ ok: true, draftRevision: afterDraft.draftRevision });
+
+    const publication = await page.evaluate(async (expectedRevision) => {
+      const response = await fetch('/dev-content/v2/publish', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ expectedRevision }),
+      });
+      return { status: response.status, body: await response.json() };
+    }, initial.currentRevision);
+    expect(publication.status).toBe(200);
+    expect(publication.body.pack.units.some((u: { id: string }) => u.id === unitResult.id)).toBe(true);
+    expect(publication.body.pack.buildings.some((b: { id: string }) => b.id === buildingResult.id)).toBe(true);
+    expect(publication.body.pack.contentHash).toMatch(/^[a-f0-9]{64}$/);
 
     const v1Pack = await page.evaluate(async () => {
       const response = await fetch('/dev-content/pack');

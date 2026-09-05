@@ -66,16 +66,29 @@ test('M1.1-C Foundry imports unit sheets, saves content, and launches sandbox', 
     mirrored: manifest.animation.mirrored,
   });
 
+  const beforePublish = await readPublication(page);
   await page.locator('#save-unit').click();
-  await expect(page.locator('#unit-status')).toContainText(/Saved|created|updated/i, { timeout: 10_000 });
+  await expect(page.locator('#unit-status')).toContainText(/Saved .* not live publish/i, { timeout: 10_000 });
   expect(existsSync(join(PACK_DIR, 'units', id, 'sheet.png'))).toBe(true);
   expect(existsSync(join(PACK_DIR, 'units', id, 'manifest.json'))).toBe(true);
-  const savedPack = await page.evaluate(async () => {
-    const response = await fetch('/dev-content/pack?schema=2');
+  const savedDraft = await page.evaluate(async () => {
+    const response = await fetch('/dev-content/v2/draft/pack');
     return response.json() as Promise<{ units: Array<{ id: string }> }>;
   });
-  expect(savedPack.units.some((unit) => unit.id === id)).toBe(true);
-  await evidence.capture('unit-saved', { id, savedPackEntry: savedPack.units.find((unit) => unit.id === id) });
+  expect(savedDraft.units.some((unit) => unit.id === id)).toBe(true);
+  const unpublished = await fetchPublishedRevision(page, beforePublish.currentRevision);
+  expect(unpublished.units.some((unit: { id: string }) => unit.id === id)).toBe(false);
+  await page.locator('#workflow-validate').click();
+  await expect(page.locator('#workflow-status')).toContainText(/validated.*Published revision is unchanged/i, { timeout: 10_000 });
+  await page.locator('#workflow-preview').click();
+  await expect(page.locator('#workflow-status')).toContainText(/not published/i);
+  await page.locator('#workflow-publish').click();
+  await expect(page.locator('#workflow-status')).toContainText(/Published revision \d+/i, { timeout: 10_000 });
+  const afterPublish = await readPublication(page);
+  expect(afterPublish.currentRevision).not.toBe(beforePublish.currentRevision);
+  const published = await fetchPublishedRevision(page, afterPublish.currentRevision);
+  expect(published.units.some((unit: { id: string }) => unit.id === id)).toBe(true);
+  await evidence.capture('unit-published', { id, publishedEntry: published.units.find((unit: { id: string }) => unit.id === id) });
 
   const popupPromise = page.waitForEvent('popup');
   await page.locator('#sandbox-unit').click();
@@ -140,16 +153,29 @@ test('M1.1-C Foundry authors a building footprint and launches sandbox', async (
     blockedCellMask: manifest.blockedCellMask,
   });
 
+  const beforePublish = await readPublication(page);
   await page.locator('#save-building').click();
-  await expect(page.locator('#bld-status')).toContainText(/Saved|created|updated/i, { timeout: 10_000 });
+  await expect(page.locator('#bld-status')).toContainText(/Saved .* not live publish/i, { timeout: 10_000 });
   expect(existsSync(join(PACK_DIR, 'buildings', id, 'sprite.png'))).toBe(true);
   expect(existsSync(join(PACK_DIR, 'buildings', id, 'manifest.json'))).toBe(true);
-  const savedPack = await page.evaluate(async () => {
-    const response = await fetch('/dev-content/pack?schema=2');
+  const savedDraft = await page.evaluate(async () => {
+    const response = await fetch('/dev-content/v2/draft/pack');
     return response.json() as Promise<{ buildings: Array<{ id: string }> }>;
   });
-  expect(savedPack.buildings.some((building) => building.id === id)).toBe(true);
-  await evidence.capture('building-saved', { id, savedPackEntry: savedPack.buildings.find((building) => building.id === id) });
+  expect(savedDraft.buildings.some((building) => building.id === id)).toBe(true);
+  const unpublished = await fetchPublishedRevision(page, beforePublish.currentRevision);
+  expect(unpublished.buildings.some((building: { id: string }) => building.id === id)).toBe(false);
+  await page.locator('#workflow-validate').click();
+  await expect(page.locator('#workflow-status')).toContainText(/validated.*Published revision is unchanged/i, { timeout: 10_000 });
+  await page.locator('#workflow-preview').click();
+  await expect(page.locator('#workflow-status')).toContainText(/not published/i);
+  await page.locator('#workflow-publish').click();
+  await expect(page.locator('#workflow-status')).toContainText(/Published revision \d+/i, { timeout: 10_000 });
+  const afterPublish = await readPublication(page);
+  expect(afterPublish.currentRevision).not.toBe(beforePublish.currentRevision);
+  const published = await fetchPublishedRevision(page, afterPublish.currentRevision);
+  expect(published.buildings.some((building: { id: string }) => building.id === id)).toBe(true);
+  await evidence.capture('building-published', { id, publishedEntry: published.buildings.find((building: { id: string }) => building.id === id) });
 
   const popupPromise = page.waitForEvent('popup');
   await page.locator('#sandbox-building').click();
@@ -175,10 +201,26 @@ test('M1.1-C Foundry library reads the isolated published pack', async ({ page }
   await expect(page.locator('#library-status')).toContainText(/entries loaded/i, { timeout: 10_000 });
   const rows = await page.locator('#library-body tr').count();
   expect(rows).toBeGreaterThanOrEqual(0);
-  await expect(page.locator('#pack-meta')).toContainText('Revision');
+  await expect(page.locator('#pack-meta')).toContainText('Published revision');
   await evidence.capture('library', { rows, status: await page.locator('#library-status').innerText() });
 });
 
+async function readPublication(page: Page): Promise<{ currentRevision: string; draftRevision: string }> {
+  return page.evaluate(async () => {
+    const response = await fetch('/dev-content/v2/publication');
+    return response.json() as Promise<{ currentRevision: string; draftRevision: string }>;
+  });
+}
+
+async function fetchPublishedRevision(page: Page, revision: string): Promise<{
+  units: Array<{ id: string }>;
+  buildings: Array<{ id: string }>;
+}> {
+  return page.evaluate(async (selectedRevision) => {
+    const response = await fetch(`/dev-content/v2/revisions/${encodeURIComponent(selectedRevision)}/pack`);
+    return response.json() as Promise<{ units: Array<{ id: string }>; buildings: Array<{ id: string }> }>;
+  }, revision);
+}
 async function createPng(page: Page, width: number, height: number, frameCount: number): Promise<number[]> {
   return page.evaluate(async ({ width: imageWidth, height: imageHeight, frameCount: count }) => {
     const canvas = document.createElement('canvas');

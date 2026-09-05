@@ -25,7 +25,7 @@
     "build": "npm run typecheck --workspace @pastel-rts/content-schema && npm run typecheck --workspace @pastel-rts/simulation && npm run typecheck --workspace @pastel-rts/navigation && npm run typecheck --workspace @pastel-rts/content-server && npm run build --workspace @pastel-rts/game-web && npm run build --workspace @pastel-rts/foundry",
     "preview": "npm run preview --workspace @pastel-rts/game-web",
     "typecheck": "npm run typecheck --workspace @pastel-rts/content-schema && npm run typecheck --workspace @pastel-rts/simulation && npm run typecheck --workspace @pastel-rts/navigation && npm run typecheck --workspace @pastel-rts/content-server && npm run typecheck --workspace @pastel-rts/game-web && npm run typecheck --workspace @pastel-rts/foundry",
-    "test": "npm run test --workspace @pastel-rts/content-schema && npm run test --workspace @pastel-rts/simulation && npm run test --workspace @pastel-rts/navigation && npm run test --workspace @pastel-rts/content-server && npm run test --workspace @pastel-rts/game-web",
+    "test": "npm run test --workspace @pastel-rts/content-schema && npm run test --workspace @pastel-rts/simulation && npm run test --workspace @pastel-rts/navigation && npm run test --workspace @pastel-rts/content-server && npm run test --workspace @pastel-rts/foundry && npm run test --workspace @pastel-rts/game-web",
     "test:watch": "npm run test:watch --workspace @pastel-rts/game-web",
     "lint": "npm run lint --workspace @pastel-rts/game-web",
     "test:visual": "npm run build && playwright test",
