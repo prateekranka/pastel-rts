@@ -12,9 +12,12 @@ export type HudModel = {
   p95FrameTimeMs: number;
   p99FrameTimeMs: number;
   simTickMs: number;
+  navTickMs: number;
   snapshotLatencyMs: number;
   drawCalls: number;
   triangles: number;
+  textures: number;
+  geometries: number;
   visibleChunks: number;
   visibleUnits: number;
   totalEntities: number;
@@ -29,6 +32,9 @@ export type HudModel = {
   elapsedMs: number;
   soakActive: boolean;
   counts: SimCounts | null;
+  activeRevision: string | null;
+  contentPhase: string;
+  contentError: string | null;
 };
 
 export type HudHandlers = {
@@ -118,14 +124,16 @@ export class DiagnosticsHud {
     this.metrics.textContent = [
       `FPS ${model.currentFps.toFixed(1)}  avg ${model.rollingAvgFps.toFixed(1)}  1% low ${model.onePercentLowFps.toFixed(1)}`,
       `frame ${model.currentFrameTimeMs.toFixed(2)}ms  avg ${model.avgFrameTimeMs.toFixed(2)}ms  p95 ${model.p95FrameTimeMs.toFixed(2)}ms  p99 ${model.p99FrameTimeMs.toFixed(2)}ms`,
-      `sim ${model.simTickMs.toFixed(2)}ms  snapshot latency ${model.snapshotLatencyMs.toFixed(2)}ms`,
-      `draw calls ${model.drawCalls}  tris ${model.triangles}`,
+      `sim ${model.simTickMs.toFixed(2)}ms  nav-debug ${model.navTickMs.toFixed(2)}ms  snapshot latency ${model.snapshotLatencyMs.toFixed(2)}ms`,
+      `draw calls ${model.drawCalls}  tris ${model.triangles}  textures ${model.textures}  geometries ${model.geometries}`,
       `chunks ${model.visibleChunks}  units ${model.visibleUnits}  entities ${model.totalEntities}`,
       `renderer ${model.renderer} (${model.rendererBackend}) requested ${model.rendererRequested}`,
       model.rendererInitError ? `init error: ${model.rendererInitError}` : 'init error: none',
       `DPR cap ${model.dprPreset}  effective ${model.effectiveDpr.toFixed(2)}`,
       `viewport ${model.viewport.width}×${model.viewport.height}  buffer ${model.drawingBuffer.width}×${model.drawingBuffer.height}`,
       `elapsed ${(model.elapsedMs / 1000).toFixed(1)}s  soak ${model.soakActive ? 'running' : 'idle'}`,
+      `content revision ${model.activeRevision ?? 'none'}  phase ${model.contentPhase}`,
+      model.contentError ? `content error: ${model.contentError}` : 'content error: none',
     ].join('\n');
     const soakBtn = this.root.querySelector('[data-action="soak"]');
     if (soakBtn instanceof HTMLButtonElement) {

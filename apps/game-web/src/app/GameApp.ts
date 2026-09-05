@@ -13,7 +13,12 @@ import { FrameTracker } from '../diagnostics/FrameTracker';
 import { DiagnosticsHud } from '../diagnostics/Hud';
 import { SoakController, downloadReport } from '../diagnostics/SoakController';
 import { EntityRenderer } from '../entities/EntityRenderer';
-import { ContentHotReload } from '../content/ContentHotReload';
+import {
+  PublishedContentClient,
+  runtimeContentFromBundle,
+  type ContentClientStatus,
+  type LoadedRuntimeContent,
+} from '../content/PublishedContentClient';
 import { PointerCameraControls } from '../input/PointerCameraControls';
 import { TouchDebugOverlay } from '../input/TouchDebugOverlay';
 import { createRendererAdapter, type RendererAdapter } from '../renderer/adapter';
@@ -47,7 +52,8 @@ export class GameApp {
   private terrain: TerrainSystem | null = null;
   private landmarks: LandmarkSystem | null = null;
   private entities: EntityRenderer | null = null;
-  private hotReload: ContentHotReload | null = null;
+  private contentClient: PublishedContentClient | null = null;
+  private contentAckError: string | null = null;
   private readonly sim = new SimClient();
   private interpolated = new Float32Array(totalEntities(STRESS_COUNTS) * SNAPSHOT_STRIDE);
   private animationFrame = 0;
@@ -88,12 +94,6 @@ export class GameApp {
     if (!labMode) {
       this.entities = new EntityRenderer(this.scene);
     }
-    this.hotReload = new ContentHotReload(this.scene, {
-      onV2Event: () => {
-        void this.refreshLabPack();
-      },
-    });
-    this.hotReload.start();
 
     this.resizeObserver = new ResizeObserver(() => this.syncSize());
     this.resizeObserver.observe(this.canvas.parentElement ?? this.canvas);
@@ -227,7 +227,8 @@ export class GameApp {
     this.controls?.dispose();
     this.touchDebug?.dispose();
     this.entities?.dispose();
-    this.hotReload?.dispose();
+    this.contentClient?.dispose();
+    this.contentClient = null;
     this.terrain?.dispose();
     this.landmarks?.dispose();
     for (const light of this.lights) {
@@ -354,10 +355,16 @@ export class GameApp {
   private sample(frameTimeMs: number, nowMs: number): void {
     try {
       const stats = this.adapter?.getStats() ?? { drawCalls: 0, triangles: 0 };
+      const resources = this.adapter?.getResourceCounts() ?? { textures: 0, geometries: 0 };
+      const labDiagnostics = this.lab?.getDiagnostics();
+      const contentStatus = this.contentClient?.getStatus();
+      const simTickMs = this.lab?.runtime.getTickDurationMs() ?? this.sim.getTickDurationMs();
+      const navTickMs = this.lab?.runtime.getNavigationTimeMs() ?? 0;
+      const snapshotLatencyMs = this.lab?.runtime.getSnapshotLatencyMs() ?? this.sim.getSnapshotLatencyMs();
       this.tracker.sample({
         frameTimeMs,
-        simTimeMs: this.lab?.runtime.getTickDurationMs() ?? this.sim.getTickDurationMs(),
-        snapshotLatencyMs: this.lab?.runtime.getSnapshotLatencyMs() ?? this.sim.getSnapshotLatencyMs(),
+        simTimeMs: simTickMs,
+        snapshotLatencyMs,
         drawCalls: stats.drawCalls,
         triangles: stats.triangles,
         nowMs,
@@ -366,10 +373,13 @@ export class GameApp {
       const viewport = this.iso.getViewport();
       this.hud?.update({
         ...hud,
-        simTickMs: this.lab?.runtime.getTickDurationMs() ?? this.sim.getTickDurationMs(),
-        snapshotLatencyMs: this.lab?.runtime.getSnapshotLatencyMs() ?? this.sim.getSnapshotLatencyMs(),
+        simTickMs,
+        navTickMs,
+        snapshotLatencyMs,
         drawCalls: stats.drawCalls,
         triangles: stats.triangles,
+        textures: resources.textures,
+        geometries: resources.geometries,
         visibleChunks: this.terrain?.getVisibleChunkCount() ?? 0,
         visibleUnits: this.lab?.runtime.getEntityCount() ?? this.entities?.getVisibleUnitCount() ?? 0,
         totalEntities: this.lab?.runtime.getEntityCount() ?? this.entities?.getVisibleEntityCount() ?? 0,
@@ -384,6 +394,9 @@ export class GameApp {
         elapsedMs: this.tracker.durationMs(nowMs),
         soakActive: this.soak?.isRunning() ?? false,
         counts: this.sim.getCounts(),
+        activeRevision: contentStatus?.activeRevision ?? labDiagnostics?.content.revision ?? null,
+        contentPhase: contentStatus?.phase ?? (this.lab ? 'ready' : 'not-applicable'),
+        contentError: contentStatus?.error ?? labDiagnostics?.error ?? null,
       });
     } catch (error) {
       console.warn('Diagnostics sample failed', error);
@@ -410,7 +423,28 @@ export class GameApp {
   }
 
   private async startInteractionLab(config: RuntimeConfig): Promise<void> {
-    const pack = await loadPackV2();
+    let content: LoadedRuntimeContent;
+    if (config.content === 'studio') {
+      const client = new PublishedContentClient({
+        onInstall: async (candidate, reason) => {
+          if (this.lab) {
+            await this.lab.applyContent(candidate, reason);
+          }
+        },
+      });
+      this.contentClient = client;
+      try {
+        content = await client.start(config.contentRevision);
+      } catch (error) {
+        client.dispose();
+        this.contentClient = null;
+        throw error;
+      }
+    } else {
+      const pack = await loadPackV2();
+      content = runtimeContentFromBundle(pack, packV2PublicBaseUrl());
+    }
+
     const hudRoot = document.querySelector('#hud-root');
     const canvas = this.canvas;
     const controls = this.controls;
@@ -422,11 +456,42 @@ export class GameApp {
       scene: this.scene,
       camera: this.iso,
       cameraControls: controls,
-      pack,
-      packBaseUrl: packV2PublicBaseUrl(),
+      pack: content.pack,
+      packBaseUrl: content.assetBaseUrl,
+      content,
       seed: config.seed,
       requestHaptic: (reason) => this.labHaptic(reason),
     };
+    if (this.contentClient) {
+      labOptions.contentStatus = () => {
+        const status = this.contentClient?.getStatus() as ContentClientStatus;
+        if (this.contentAckError) {
+          return {
+            ...status,
+            error: status.error ?? `acknowledgement error: ${this.contentAckError}`,
+          };
+        }
+        return status;
+      };
+      labOptions.onSelectRevision = async (revision) => {
+        const selected = await this.contentClient!.selectRevision(revision);
+        if (!selected) {
+          throw new Error('Revision selection was superseded or disposed');
+        }
+        this.contentAckError = null;
+      };
+      labOptions.onRestartRevision = async () => {
+        const restarted = await this.contentClient!.restartToPending();
+        if (!restarted) {
+          throw new Error('No pending revision was restarted');
+        }
+        this.contentAckError = null;
+        await this.acknowledgeActiveScenario();
+      };
+      labOptions.onAcknowledge = async () => {
+        await this.acknowledgeActiveScenario();
+      };
+    }
     if (hudRoot instanceof HTMLElement) {
       labOptions.hudRoot = hudRoot;
     }
@@ -441,17 +506,27 @@ export class GameApp {
     }
     this.lab = createInteractionLab(labOptions);
     this.controls?.setEnabled(true);
+    await this.lab.ready;
+    if (this.contentClient) {
+      try {
+        await this.acknowledgeActiveScenario();
+      } catch (error) {
+        this.contentAckError = error instanceof Error ? error.message : String(error);
+      }
+    }
   }
 
-  private async refreshLabPack(): Promise<void> {
-    if (!this.lab) {
-      return;
+  private async acknowledgeActiveScenario(): Promise<void> {
+    const scenarioId = this.lab?.scenario.getCurrentScenario()?.id;
+    if (!scenarioId || !this.contentClient) {
+      throw new Error('No active scenario to acknowledge');
     }
     try {
-      const pack = await loadPackV2();
-      this.lab.units.hotReload(pack);
+      await this.contentClient.acknowledge(scenarioId, false);
+      this.contentAckError = null;
     } catch (error) {
-      console.warn('Lab pack refresh failed', error);
+      this.contentAckError = error instanceof Error ? error.message : String(error);
+      throw error;
     }
   }
 
@@ -482,7 +557,18 @@ export { parseRuntimeConfig };
 async function loadPackV2(): Promise<PackV2> {
   const response = await fetch(`${packV2PublicBaseUrl()}pack.json`);
   if (!response.ok) {
-    throw new Error(`Failed to load Pack v2 (${String(response.status)})`);
+    throw new Error(`Failed to load bundled Pack v2 (${String(response.status)})`);
   }
-  return validatePackV2(await response.json());
+  const raw: unknown = await response.json();
+  const pack = validatePackV2(raw);
+  if (
+    typeof raw !== 'object' ||
+    raw === null ||
+    Array.isArray(raw) ||
+    !('contentHash' in raw) ||
+    raw.contentHash !== pack.contentHash
+  ) {
+    throw new Error('Bundled Pack v2 content hash mismatch');
+  }
+  return pack;
 }

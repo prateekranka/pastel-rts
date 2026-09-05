@@ -9,6 +9,16 @@ export type MatchRuntimeOptions = {
   maxEntities?: number;
 };
 
+export type MatchRuntimeDiagnostics = {
+  tick: number;
+  entityCount: number;
+  snapshotLatencyMs: number;
+  tickDurationMs: number;
+  navDurationMs: number;
+  checksumCount: number;
+  paused: boolean;
+};
+
 /**
  * Interaction-lab worker client. Authoritative sim+nav stay in the worker;
  * the main thread only interpolates transferred snapshots.
@@ -19,7 +29,9 @@ export class MatchRuntime {
   private curr: LabSnapshotSlot | null = null;
   private lastLatencyMs = 0;
   private lastTickDurationMs = 0;
+  private lastNavDurationMs = 0;
   private paused = false;
+  private pausedAtTick: number | null = null;
   private readonly maxEntities: number;
   private readonly commandResults: CommandResult[] = [];
   private navDebug: NavDebugSnapshot | null = null;
@@ -39,6 +51,8 @@ export class MatchRuntime {
 
   start(init: Extract<LabControlMessage, { type: 'initLab' }>): void {
     this.stop();
+    this.paused = false;
+    this.pausedAtTick = null;
     this.worker = new Worker(new URL('./matchWorker.ts', import.meta.url), { type: 'module' });
     this.worker.onmessage = (event: MessageEvent<LabWorkerOutbound>) => {
       this.handleMessage(event.data);
@@ -57,17 +71,29 @@ export class MatchRuntime {
     this.commandResults.length = 0;
     this.navDebug = null;
     this.checksums = [];
+    this.pausedAtTick = this.paused ? 0 : null;
     this.post(init);
     this.post({ type: 'start' });
+    if (this.paused) {
+      this.post({ type: 'pause' });
+    }
   }
 
   pause(): void {
+    if (this.paused) {
+      return;
+    }
     this.paused = true;
+    this.pausedAtTick = this.curr?.tick ?? 0;
     this.post({ type: 'pause' });
   }
 
   resume(): void {
+    if (!this.paused) {
+      return;
+    }
     this.paused = false;
+    this.pausedAtTick = null;
     this.post({ type: 'resume' });
   }
 
@@ -84,17 +110,19 @@ export class MatchRuntime {
   }
 
   stop(): void {
-    if (!this.worker) {
-      return;
+    if (this.worker) {
+      this.worker.postMessage({ type: 'terminate' } satisfies LabControlMessage);
+      this.worker.terminate();
+      this.worker = null;
     }
-    this.worker.postMessage({ type: 'terminate' } satisfies LabControlMessage);
-    this.worker.terminate();
-    this.worker = null;
     this.prev = null;
     this.curr = null;
     this.commandResults.length = 0;
     this.navDebug = null;
     this.checksums = [];
+    this.paused = false;
+    this.pausedAtTick = null;
+    this.lastNavDurationMs = 0;
   }
 
   getSnapshotLatencyMs(): number {
@@ -103,6 +131,10 @@ export class MatchRuntime {
 
   getTickDurationMs(): number {
     return this.lastTickDurationMs;
+  }
+
+  getNavigationTimeMs(): number {
+    return this.lastNavDurationMs;
   }
 
   getLatestTick(): number {
@@ -119,6 +151,18 @@ export class MatchRuntime {
 
   getChecksums(): readonly StateChecksum[] {
     return this.checksums;
+  }
+
+  getDiagnostics(): MatchRuntimeDiagnostics {
+    return {
+      tick: this.getLatestTick(),
+      entityCount: this.getEntityCount(),
+      snapshotLatencyMs: this.lastLatencyMs,
+      tickDurationMs: this.lastTickDurationMs,
+      navDurationMs: this.lastNavDurationMs,
+      checksumCount: this.checksums.length,
+      paused: this.paused,
+    };
   }
 
   drainCommandResults(): CommandResult[] {
@@ -154,15 +198,22 @@ export class MatchRuntime {
 
   private handleMessage(message: LabWorkerOutbound): void {
     if (message.type === 'snapshot') {
+      // A pause message is asynchronous. Ignore snapshots already queued in the
+      // worker transport so native/background pause cannot expose a pause delta.
+      if (this.paused && this.pausedAtTick !== null && message.tick > this.pausedAtTick) {
+        return;
+      }
       const receivedAtMs = performance.now();
       this.lastLatencyMs = receivedAtMs - message.producedAtMs;
       this.lastTickDurationMs = message.tickDurationMs;
+      this.lastNavDurationMs = message.navDurationMs ?? 0;
       this.prev = this.curr;
       this.curr = {
         tick: message.tick,
         simTimeMs: message.simTimeMs,
         receivedAtMs,
         tickDurationMs: message.tickDurationMs,
+        navDurationMs: message.navDurationMs ?? 0,
         producedAtMs: message.producedAtMs,
         entityCount: message.entityCount,
         payload: message.payload,

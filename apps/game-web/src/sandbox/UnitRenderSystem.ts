@@ -12,7 +12,7 @@ import {
 import type { PackV2, UnitArchetype } from '@pastel-rts/content-schema';
 import { ISO_AZIMUTH } from '../config/constants';
 import { resolveUnitSpriteFrame, shouldUseMoveClip } from './animation/animationResolver';
-import { SpriteAtlasCache } from './animation/spriteAtlas';
+import { SpriteAtlasCache, type AtlasArtStatus } from './animation/spriteAtlas';
 import { entityIdKey, parseSnapshotEntity } from './snapshot';
 
 const _matrix = new Matrix4();
@@ -34,26 +34,35 @@ export type UnitRenderSystemOptions = {
   capacityPerBatch?: number;
 };
 
-/** Renders interaction-lab units with idle/move directional sprites. */
+/** Renders interaction-lab units with immutable-pack generation replacement. */
 export class UnitRenderSystem {
   private readonly scene: Scene;
   private pack: PackV2;
+  private packBaseUrl: string;
   private readonly atlas: SpriteAtlasCache;
   private readonly batches = new Map<string, FrameBatch>();
   private readonly archetypeByEntity = new Map<string, string>();
   private readonly capacityPerBatch: number;
   private frozenAnimation = false;
+  private disposed = false;
 
   constructor(options: UnitRenderSystemOptions) {
     this.scene = options.scene;
     this.pack = options.pack;
+    this.packBaseUrl = normalizeBaseUrl(options.packBaseUrl ?? './content/dev-pack-v2/');
     this.capacityPerBatch = options.capacityPerBatch ?? 64;
-    this.atlas = new SpriteAtlasCache(options.packBaseUrl);
-    void this.atlas.loadPack(options.pack);
+    this.atlas = new SpriteAtlasCache(this.packBaseUrl);
+    void this.atlas.loadPack(options.pack).then(() => {
+      if (!this.disposed) {
+        this.clearBatches();
+      }
+    });
   }
 
   registerEntityArchetype(entityKey: string, archetypeId: string): void {
-    this.archetypeByEntity.set(entityKey, archetypeId);
+    if (!this.disposed) {
+      this.archetypeByEntity.set(entityKey, archetypeId);
+    }
   }
 
   unregisterEntity(entityKey: string): void {
@@ -64,7 +73,18 @@ export class UnitRenderSystem {
     this.frozenAnimation = frozen;
   }
 
+  getPack(): PackV2 {
+    return this.pack;
+  }
+
+  getArtDiagnostics(): { assets: AtlasArtStatus[]; loadedTextures: number } {
+    return this.atlas.getDiagnostics();
+  }
+
   applySnapshot(payload: Float32Array, entityCount: number): void {
+    if (this.disposed) {
+      return;
+    }
     for (const batch of this.batches.values()) {
       batch.visible = 0;
     }
@@ -117,20 +137,28 @@ export class UnitRenderSystem {
   }
 
   dispose(): void {
-    for (const batch of this.batches.values()) {
-      this.scene.remove(batch.mesh);
-      batch.mesh.geometry.dispose();
-      (batch.mesh.material as MeshLambertMaterial).dispose();
-      batch.mesh.dispose();
+    if (this.disposed) {
+      return;
     }
-    this.batches.clear();
+    this.disposed = true;
+    this.clearBatches();
     this.atlas.dispose();
+    this.archetypeByEntity.clear();
   }
 
-  hotReload(pack: PackV2): void {
-    this.dispose();
+  /** Replace only after the caller has decided that the revision is safe. */
+  hotReload(pack: PackV2, packBaseUrl = this.packBaseUrl): void {
+    if (this.disposed) {
+      return;
+    }
+    this.clearBatches();
     this.pack = pack;
-    void this.atlas.loadPack(pack);
+    this.packBaseUrl = normalizeBaseUrl(packBaseUrl);
+    void this.atlas.replacePack(pack, this.packBaseUrl).then(() => {
+      if (!this.disposed) {
+        this.clearBatches();
+      }
+    });
   }
 
   private findArchetype(id: string): UnitArchetype | undefined {
@@ -184,6 +212,16 @@ export class UnitRenderSystem {
     this.batches.set(batchKey, batch);
     return batch;
   }
+
+  private clearBatches(): void {
+    for (const batch of this.batches.values()) {
+      this.scene.remove(batch.mesh);
+      batch.mesh.geometry.dispose();
+      (batch.mesh.material as MeshLambertMaterial).dispose();
+      batch.mesh.dispose();
+    }
+    this.batches.clear();
+  }
 }
 
 function applyUvRect(
@@ -201,4 +239,9 @@ function applyUvRect(
     uvAttr.setXY(i, uv.u + u * uv.w, uv.v + v * uv.h);
   }
   uvAttr.needsUpdate = true;
+}
+
+function normalizeBaseUrl(value: string): string {
+  const trimmed = value.trim();
+  return trimmed.endsWith('/') ? trimmed : `${trimmed}/`;
 }

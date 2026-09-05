@@ -33,6 +33,7 @@ export type BenchmarkDefinition = {
 };
 
 export type RuntimeMode = 'benchmark' | 'interaction-lab';
+export type ContentMode = 'bundle' | 'studio';
 
 export type RuntimeConfig = {
   renderer: RendererPreference;
@@ -44,6 +45,8 @@ export type RuntimeConfig = {
   soakMs: number | null;
   haptics: boolean;
   mode: RuntimeMode;
+  content: ContentMode;
+  contentRevision: string | null;
   scenarioId: string | null;
   spawnUnitId: string | null;
   spawnBuildingId: string | null;
@@ -151,6 +154,8 @@ export function parseRuntimeConfig(search = window.location.search): RuntimeConf
     soakMs: soakMsParam ? Number(soakMsParam) : null,
     haptics: params.get('haptics') !== '0',
     mode: modeParam === 'interaction-lab' ? 'interaction-lab' : 'benchmark',
+    content: params.get('content') === 'studio' ? 'studio' : 'bundle',
+    contentRevision: params.get('revision'),
     scenarioId: params.get('scenario'),
     spawnUnitId: params.get('spawnUnit'),
     spawnBuildingId: params.get('spawnBuilding'),

@@ -91,7 +91,7 @@ export type BuildingPlacementMode = {
 /** Tracks building placement mode and issues placeBuilding via callback. */
 export class BuildingPlacementController {
   private mode: BuildingPlacementMode = { active: false, archetypeId: null };
-  private readonly pack: PackV2;
+  private pack: PackV2;
   private readonly ghost: PlacementGhost;
   private readonly onPlace: (archetypeId: string, originCell: CellCoord) => void;
   private validate: (archetypeId: string, originCell: CellCoord) => PlacementValidationResult;
@@ -106,6 +106,16 @@ export class BuildingPlacementController {
     this.ghost = new PlacementGhost(options.scene);
     this.onPlace = options.onPlace;
     this.validate = options.validate;
+  }
+
+  setPack(pack: PackV2): void {
+    this.pack = pack;
+    if (this.mode.active && this.mode.archetypeId) {
+      const archetype = this.pack.buildings.find((entry) => entry.id === this.mode.archetypeId);
+      if (!archetype) {
+        this.cancelPlacement();
+      }
+    }
   }
 
   setValidator(validate: (archetypeId: string, originCell: CellCoord) => PlacementValidationResult): void {

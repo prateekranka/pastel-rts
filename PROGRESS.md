@@ -1,29 +1,31 @@
 # M1.1 progress
 
-Active scope: M1.1 only. No later milestone or optional experiment started.
+Active scope: M1.1 only. M2–M7 inactive. E1/N1 require separate approval. Numbered roadmap uploads remain unchanged.
 
-Verified baseline: root typecheck, lint, unit tests and build passed on existing M1 prerequisite 6be785f. M1.1 engineering gate remains pending.
+Coordinator: gpt-6-astra/openai-codex, current CLI requests medium. Workers: explicit gpt-5.6-luna/openai-codex/max, fast OFF. No profile configuration changes or inherited delegation. Request/persisted-metadata limitations are in docs/roadmap/M1.1-routing-addendum.md.
 
-Routing: current coordinator CLI is pinned gpt-6-astra/openai-codex/medium. Luna smoke session 20260905_154737_a9d0e4 completed; persisted model metadata says gpt-5.6-luna/openai-codex with effort max. Fast mode not requested; no profile changes.
+Integrated checkpoints:
+- Original animated fixtures, deterministic generation, relative production web/iOS packaging and dev:studio.
+- Safe publication foundation A/A2: drafts, revisions, source preservation, references, validation, historical assets, acknowledgements.
+- Foundry D: library and editor workflow, runtime projection preview. D2 fixes projected ground-circle footprint; coordinator reran 9 Foundry tests and game typecheck successfully.
+- Runtime E checkpoint fe1a725 is now being integrated. Coordinator ran root typecheck, lint, tests and build on its combined code with A2/D; all passed. E's original smoke captures used an explicit sandbox override and are rejected. No browser acceptance is inferred from that worker report.
 
-Two independent Luna workers started with explicit same pins, isolated worktrees and disjoint write scope:
-- A content publication: /home/bobbyranka/Projects/pastel-rts-m11-content, branch m1.1/content-publication, tmux pastel-m11-content. Exclusive schema/server owner.
-- B fixture packaging: /home/bobbyranka/Projects/pastel-rts-m11-fixtures, branch m1.1/fixture-packaging, tmux pastel-m11-fixtures. Exclusive scripts/root package/lockfile owner.
+Current validation:
+- Last complete root test run: schema 40, simulation 19, navigation 21, content server 18, game web 76 passed. Foundry is verified separately until lane F wires it into root test.
+- Previous integrated full browser run failed. Defects are recorded in docs/roadmap/M1.1-integrated-browser-findings.md. Fresh Foundry/API acceptance lane F is in progress.
+- Existing macOS CI run 33965323173 compiled iOS Simulator successfully at 6308242772c224b20e9a813dd2398c6fa6828b23. Web browser step failed, so overall CI is not passing. Native compile is not simulator launch or physical iPad proof.
+- Linux timing is not iPad/GPU performance proof. An unchanged desktop timing test failed once and passed on rerun; its threshold was not relaxed.
 
-Briefs and logs are under docs/roadmap. Dependent editor/runtime work waits for the publication API checkpoint. Fixture code review and focused integrated verification passed; browser acceptance remains pending.
+Outstanding engineering work:
+- Verify combined runtime against actual A2/D: published initial load, hot replacement/disposal, SSE reconnect, acknowledgement and rules restart.
+- Fix/verify blocker readback, replay and pause behavior. Preserve simulation/navigation packages.
+- Implement and exercise actual UI bounded bug export/reproduction; CLI JSON-only artifacts do not substitute for that path.
+- Run full focused/integrated browser gates and fresh independent review, document non-coder walkthrough and final artifacts.
 
-Fixture checkpoint integrated through 38c2dd8. Coordinator ran content:validate, root typecheck/lint, tests, build, ios:sync-web, and validation of the copied iOS pack. All passed on the completed rerun. The first integrated test run failed the unchanged desktop pathfinding timing budget (2364ms versus 2000ms); full rerun passed (1227ms). This variability remains performance evidence, not a relaxed threshold. Web/iOS packaged content hash c1eea326ce929eaffaa825f732be03e8ec939d000c90521c8f6d40f442bb0995.
+Publication: draft stacked PR #4, https://github.com/prateekranka/pastel-rts/pull/4, base cursor/milestone-1-interaction-lab-29a7. Git HTTPS credential helper also supports scoped gh calls without config changes. No merge or history rewrite. Checkpoints are pushed; final gate is not claimed.
 
-Independent QA lane C completed commits 81034c0 and ae7c506 in its own worktree. Its audit exposed pause, blocker readback, replay and Foundry sheet-control defects; not yet accepted/integrated. Source review is docs/roadmap/M1.1-source-review.md. Root default Playwright collides with unrelated service on 8787; isolated QA uses 14373/14374/14387. Do not stop unrelated services.
+Process isolation: do not stop unrelated service on 8787. Coordinator test ports 14373/14374/14387; lane F 20373/20374/20387. E-owned 193xx servers were cleaned up by its owner.
 
-Git HTTPS push works. Documentation commit f88998d was pushed and its remote exact ref read back. Publication status is updated below.
-
-Current integration: backend A2 and editor D through 9e282fc. Coordinator reran root typecheck/lint/tests, direct Foundry tests (4 files, 8 tests), and build; all passed. Root npm test does not yet include Foundry; fresh verification lane F owns that coverage fix and real integrated editor/API acceptance. Runtime E remains in its isolated worktree and is not accepted. Current whole-browser gate still fails as documented in M1.1-integrated-browser-findings.md.
-
-Draft stacked milestone PR #4 exists and was read back: https://github.com/prateekranka/pastel-rts/pull/4, base cursor/milestone-1-interaction-lab-29a7. Existing Git credential helper works for authenticated gh calls without altering gh or Hermes configuration. No merge performed.
-
-Luna worker metadata read from profile state.db: A2 20260905_164327_ffe67e, D 20260905_164327_860a99, E 20260905_164327_f0a112 all record gpt-5.6-luna/openai-codex and requested effort max. D was stopped and resumed in the same session to prohibit explicit security-disabling browser flags; no profile changes. Later D captures used ordinary Playwright. Raw response service-tier metadata remains unavailable; no fast option requested.
-
-Remote native evidence: existing macOS CI run 33965323173 compiled the iOS simulator target successfully at 6308242. The same run failed its browser-test step, so overall CI is not passing. Local native tools are absent; this is real remote compile evidence, not a physical-device test. Details: docs/roadmap/M1.1-native-compile-evidence.md.
-
-Gates: ENGINEERING pending; HUMAN DESIGN ACCEPTANCE pending; PHYSICAL-DEVICE VALIDATION pending.
+ENGINEERING PASS: pending.
+HUMAN DESIGN ACCEPTANCE: pending.
+PHYSICAL-DEVICE VALIDATION: pending.
