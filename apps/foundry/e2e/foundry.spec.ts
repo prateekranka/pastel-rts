@@ -5,6 +5,7 @@ import { routeIsolatedContent } from '../../game-web/e2e/support/isolated-conten
 
 const PACK_DIR = process.env['CONTENT_PACK_DIR'] ?? '/tmp/pastel-foundry-e2e';
 const CONTENT_PORT = process.env['CONTENT_PORT'] ?? '8787';
+const GAME_WEB_ORIGIN = process.env['PLAYWRIGHT_GAME_WEB_ORIGIN'] ?? 'http://127.0.0.1:5173';
 
 test.beforeEach(async ({ page }) => {
   await routeIsolatedContent(page);
@@ -249,6 +250,6 @@ test.describe('Test in sandbox', () => {
     const opened = await page.evaluate(() => (window as unknown as { __openedSandbox: string }).__openedSandbox);
     expect(opened).toContain('mode=interaction-lab');
     expect(opened).toContain('spawnUnit=');
-    expect(opened).toContain('127.0.0.1:5173');
+    expect(opened).toContain(GAME_WEB_ORIGIN);
   });
 });
