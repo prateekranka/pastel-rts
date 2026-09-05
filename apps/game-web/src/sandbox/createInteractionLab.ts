@@ -847,11 +847,11 @@ function mountLabTools(
   root.className = 'pastel-lab-tools';
   root.innerHTML = `
     <style>
-      .pastel-lab-tools { position:fixed; left:12px; top:12px; z-index:21; display:grid; gap:6px; max-width:min(520px,92vw); color:#e8f4f2; font:13px/1.2 ui-sans-serif,system-ui,sans-serif; }
+      .pastel-lab-tools { position:fixed; left:12px; top:12px; z-index:21; display:grid; gap:6px; max-width:min(520px,92vw); color:#e8f4f2; font:13px/1.2 Arial, 'Liberation Sans', sans-serif; }
       .pastel-lab-tools .lab-row { display:flex; gap:6px; flex-wrap:wrap; align-items:center; }
       .pastel-lab-tools button, .pastel-lab-tools select, .pastel-lab-tools input {
         min-height:44px; min-width:44px; pointer-events:auto; border:1px solid rgba(255,255,255,.18);
-        border-radius:10px; background:rgba(12,36,40,.9); color:#e8f4f2; font:13px/1.2 ui-sans-serif,system-ui,sans-serif; padding:0 9px;
+        border-radius:10px; background:rgba(12,36,40,.9); color:#e8f4f2; font:13px/1.2 Arial, 'Liberation Sans', sans-serif; padding:0 9px;
       }
       .pastel-lab-tools input[type=number] { width:100px; }
       .pastel-lab-tools input[data-role=revision] { width:150px; }

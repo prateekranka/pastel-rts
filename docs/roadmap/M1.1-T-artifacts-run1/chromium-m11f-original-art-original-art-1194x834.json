@@ -1,0 +1,136 @@
+{
+  "schemaVersion": 1,
+  "label": "m11f-original-art",
+  "stage": "original-art-1194x834",
+  "project": "chromium",
+  "testTitle": "M1.1-F captures original-art interaction lab at both acceptance viewports",
+  "screenshotPath": "/home/bobbyranka/Projects/pastel-rts-m11-typography/docs/roadmap/M1.1-T-artifacts-run1/chromium-m11f-original-art-original-art-1194x834.png",
+  "capturedAt": "2026-09-05T16:18:30.604Z",
+  "runtime": {
+    "url": "http://127.0.0.1:29373/?mode=interaction-lab&seed=42&renderer=webgl&dpr=1&zoom=70-percent",
+    "title": "Pastel RTS — Milestone 0",
+    "canvasCount": 2,
+    "canvases": [
+      {
+        "width": 1194,
+        "height": 834,
+        "cssWidth": 1194,
+        "cssHeight": 834
+      },
+      {
+        "width": 160,
+        "height": 160,
+        "cssWidth": 130,
+        "cssHeight": 130
+      }
+    ],
+    "webglRenderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+    "bodyText": "0\nFormation: none\nFormation: line\nFormation: box\nSelect\nStop\ncontent bundle  revision 3\nhash c1eea326…0995  rules 7675a3e1…b1fd\nscenario interaction-lab-alien-fantasy  seed 42\nlab-skirmish\ninteraction-lab-alien-fantasy\nm11-fixture-gallery\nLoad scenario\nApply seed\nSunweaver Scout\nSunweaver Infantry\nSunweaver Walker (Proxy)\nSpawn\nSunweaver Sanctum\nPlace\nNav debug\nReset match\nExport save\nImport save\nReplay check\nExport bug bundle\nReproduce bug bundle\nExport a JSON-only bug bundle. On a fresh lab page, choose the file with Reproduce bug bundle. The check uses the same scenario, seed, commands, and checksum sequence.\nSelect revision\nRestart pending\nAcknowledge\nDiagnostics\nCollapse\nFPS 12.0  avg 13.2  1% low 4.6\nframe 83.30ms  avg 75.51ms  p95 126.66ms  p99 216.68ms\nsim 2.30ms  nav-debug 0.00ms  snapshot latency 1073.30ms\ndraw calls 24  tris 4852  textures 7  geometries 17\nchunks 9  units 25  entities 25\nrenderer webgl (webgl) requested webgl\ninit error: none\nDPR cap 1  effective 1.00\nviewport 1194×834  buffer 1194×834\nelapsed 3.7s  soak idle\ncontent revision 3  phase ready\ncontent manifest none\ncontent visual 5c35bc7369b4d2c99ce84c7f2e1e4515389dd7da59005eb6c18bd3d98f153d58\ncontent rules 7675a3e17dd711d341c27c240326efd33aa0405110ade623885e219f5305b1fd\ncontent assets /content/dev-pack-v2/\ncontent error: none\nRenderer\nWebGL\nWebGPU\nBenchmark\nidle-base\nnormal-midgame\ndense-battle\ncamera-pan-stress\nmaximum-population\n2x-stress\n20-minute-soak\nvisual-capture\nDPR\n1\n1.25\n1.5\nnative\nTouch debug\nHaptic\nDownload report\nStart 20-min soak"
+  },
+  "metadata": {
+    "fixture": "content/dev-pack-v2 original PNGs",
+    "viewport": {
+      "width": 1194,
+      "height": 834
+    },
+    "review": "Engineering visual-regression capture only. No snapshot rebaseline is performed by this test."
+  },
+  "browserDiagnostics": [
+    {
+      "kind": "console",
+      "type": "debug",
+      "text": "[vite] connecting...",
+      "location": {
+        "url": "http://127.0.0.1:29373/@vite/client",
+        "line": 788,
+        "column": 8,
+        "lineNumber": 788,
+        "columnNumber": 8
+      }
+    },
+    {
+      "kind": "console",
+      "type": "debug",
+      "text": "[vite] connected.",
+      "location": {
+        "url": "http://127.0.0.1:29373/@vite/client",
+        "line": 911,
+        "column": 14,
+        "lineNumber": 911,
+        "columnNumber": 14
+      }
+    },
+    {
+      "kind": "console",
+      "type": "warning",
+      "text": "[.WebGL-0x6440017b200]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+      "location": {
+        "url": "http://127.0.0.1:29373/?mode=interaction-lab&seed=42&renderer=webgl&dpr=1&zoom=70-percent",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "kind": "console",
+      "type": "warning",
+      "text": "[.WebGL-0x6440017b200]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+      "location": {
+        "url": "http://127.0.0.1:29373/?mode=interaction-lab&seed=42&renderer=webgl&dpr=1&zoom=70-percent",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "kind": "console",
+      "type": "warning",
+      "text": "[.WebGL-0x6440017b200]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+      "location": {
+        "url": "http://127.0.0.1:29373/?mode=interaction-lab&seed=42&renderer=webgl&dpr=1&zoom=70-percent",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "kind": "console",
+      "type": "warning",
+      "text": "[.WebGL-0x6440017b200]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)",
+      "location": {
+        "url": "http://127.0.0.1:29373/?mode=interaction-lab&seed=42&renderer=webgl&dpr=1&zoom=70-percent",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "kind": "console",
+      "type": "debug",
+      "text": "[vite] connecting...",
+      "location": {
+        "url": "http://127.0.0.1:29373/@vite/client",
+        "line": 788,
+        "column": 8,
+        "lineNumber": 788,
+        "columnNumber": 8
+      }
+    },
+    {
+      "kind": "console",
+      "type": "debug",
+      "text": "[vite] connected.",
+      "location": {
+        "url": "http://127.0.0.1:29373/@vite/client",
+        "line": 911,
+        "column": 14,
+        "lineNumber": 911,
+        "columnNumber": 14
+      }
+    }
+  ]
+}
