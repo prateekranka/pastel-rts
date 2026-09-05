@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "tamperedBundlePath": "/home/bobbyranka/Projects/pastel-rts/docs/roadmap/M1.1-G-coordinator-artifacts/m11g-historical-revision-bundle.json",
+  "before": {
+    "revision": "3",
+    "contentHash": "c1eea326ce929eaffaa825f732be03e8ec939d000c90521c8f6d40f442bb0995",
+    "scenarioId": "interaction-lab-alien-fantasy",
+    "seed": 42,
+    "commandCount": 0,
+    "checksumCount": 45,
+    "expectedChecksums": []
+  },
+  "after": {
+    "revision": "3",
+    "contentHash": "c1eea326ce929eaffaa825f732be03e8ec939d000c90521c8f6d40f442bb0995",
+    "scenarioId": "interaction-lab-alien-fantasy",
+    "seed": 42,
+    "commandCount": 0,
+    "checksumCount": 91,
+    "expectedChecksums": []
+  },
+  "screenshotPath": "/home/bobbyranka/Projects/pastel-rts/docs/roadmap/M1.1-G-coordinator-artifacts/m11g-historical-revision-rejected.png",
+  "browserErrors": []
+}
