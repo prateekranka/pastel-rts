@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "id": "m11-fixture-gallery",
+  "displayName": "M1.1 Fixture Gallery Map",
+  "cellsX": 64,
+  "cellsZ": 64,
+  "chunkSize": 16
+}

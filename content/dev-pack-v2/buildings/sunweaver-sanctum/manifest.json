@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 2,
+  "id": "sunweaver-sanctum",
+  "displayName": "Sunweaver Sanctum",
+  "enabled": true,
+  "factionId": "sunweaver",
+  "assetPath": "buildings/sunweaver-sanctum/sprite.png",
+  "sourceWidth": 128,
+  "sourceHeight": 128,
+  "bounds": {
+    "minX": 8,
+    "minY": 14,
+    "maxX": 120,
+    "maxY": 122
+  },
+  "anchor": {
+    "x": 0.5,
+    "y": 1
+  },
+  "worldHeight": 3.2,
+  "footprint": {
+    "kind": "rect",
+    "cellsW": 3,
+    "cellsH": 3
+  },
+  "selectionFootprint": {
+    "kind": "rect",
+    "cellsW": 3,
+    "cellsH": 3
+  },
+  "tags": [
+    "original-fixture",
+    "building"
+  ]
+}

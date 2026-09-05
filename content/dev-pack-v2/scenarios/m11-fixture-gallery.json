@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "id": "m11-fixture-gallery",
+  "displayName": "M1.1 Original Fixture Gallery",
+  "mapId": "m11-fixture-gallery",
+  "units": [
+    {
+      "archetypeId": "sunweaver-scout",
+      "position": {
+        "x": 8192,
+        "z": 8192
+      },
+      "headingMilli": 0,
+      "factionId": "sunweaver"
+    },
+    {
+      "archetypeId": "gravemark-stalker",
+      "position": {
+        "x": 49152,
+        "z": 49152
+      },
+      "headingMilli": 3142,
+      "factionId": "gravemark"
+    },
+    {
+      "archetypeId": "sunweaver-walker",
+      "position": {
+        "x": 32768,
+        "z": 32768
+      },
+      "headingMilli": 1571,
+      "factionId": "sunweaver"
+    }
+  ],
+  "buildings": [
+    {
+      "archetypeId": "sunweaver-sanctum",
+      "originCell": {
+        "cx": 4,
+        "cz": 4
+      },
+      "factionId": "sunweaver"
+    },
+    {
+      "archetypeId": "gravemark-bastion",
+      "originCell": {
+        "cx": 52,
+        "cz": 52
+      },
+      "factionId": "gravemark"
+    }
+  ]
+}
