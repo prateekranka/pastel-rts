@@ -52,7 +52,7 @@ export class UnitRenderSystem {
     this.packBaseUrl = normalizeBaseUrl(options.packBaseUrl ?? './content/dev-pack-v2/');
     this.capacityPerBatch = options.capacityPerBatch ?? 64;
     this.atlas = new SpriteAtlasCache(this.packBaseUrl);
-    void this.atlas.loadPack(options.pack).then(() => {
+    void this.atlas.loadPack(options.pack, () => {
       if (!this.disposed) {
         this.clearBatches();
       }
@@ -154,7 +154,7 @@ export class UnitRenderSystem {
     this.clearBatches();
     this.pack = pack;
     this.packBaseUrl = normalizeBaseUrl(packBaseUrl);
-    void this.atlas.replacePack(pack, this.packBaseUrl).then(() => {
+    void this.atlas.replacePack(pack, this.packBaseUrl, () => {
       if (!this.disposed) {
         this.clearBatches();
       }

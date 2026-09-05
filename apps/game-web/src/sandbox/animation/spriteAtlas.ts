@@ -25,6 +25,11 @@ export type AtlasArtStatus = {
 
 type AtlasKey = string;
 
+type PendingAtlasLoad = {
+  generation: number;
+  entries: Map<AtlasKey, AtlasEntry>;
+};
+
 export function spriteFrameUvRect(params: {
   frameIndex: number;
   cols: number;
@@ -56,17 +61,23 @@ export class SpriteAtlasCache {
   private packBaseUrl: string;
   private generation = 0;
   private disposed = false;
+  private pendingLoad: PendingAtlasLoad | null = null;
 
   constructor(packBaseUrl = './content/dev-pack-v2/') {
     this.packBaseUrl = normalizeBaseUrl(packBaseUrl);
   }
 
-  async loadPack(pack: PackV2): Promise<void> {
+  async loadPack(pack: PackV2, onBeforeCommit?: () => void): Promise<void> {
     if (this.disposed) {
       return;
     }
     const generation = ++this.generation;
-    this.clearEntries();
+    this.disposePendingLoad();
+    const pendingLoad: PendingAtlasLoad = {
+      generation,
+      entries: new Map(),
+    };
+    this.pendingLoad = pendingLoad;
     this.statuses.clear();
     const paths = new Set<string>();
     for (const unit of pack.units) {
@@ -77,15 +88,30 @@ export class SpriteAtlasCache {
     for (const path of paths) {
       this.statuses.set(path, { assetPath: path, state: 'loading', error: null });
     }
-    await Promise.all([...paths].map((path) => this.ensureLoaded(path, pack.units, generation)));
+    await Promise.all(
+      [...paths].map((path) => this.ensureLoaded(path, pack.units, generation, pendingLoad.entries)),
+    );
+    if (this.disposed || generation !== this.generation || this.pendingLoad !== pendingLoad) {
+      if (this.pendingLoad === pendingLoad) {
+        this.pendingLoad = null;
+        this.disposeEntries(pendingLoad.entries);
+      }
+      return;
+    }
+    onBeforeCommit?.();
+    if (this.disposed || generation !== this.generation || this.pendingLoad !== pendingLoad) {
+      return;
+    }
+    this.pendingLoad = null;
+    this.commitEntries(pendingLoad.entries);
   }
 
-  async replacePack(pack: PackV2, packBaseUrl: string): Promise<void> {
+  async replacePack(pack: PackV2, packBaseUrl: string, onBeforeCommit?: () => void): Promise<void> {
     if (this.disposed) {
       return;
     }
     this.packBaseUrl = normalizeBaseUrl(packBaseUrl);
-    await this.loadPack(pack);
+    await this.loadPack(pack, onBeforeCommit);
   }
 
   getForArchetype(archetype: UnitArchetype): AtlasEntry {
@@ -137,7 +163,9 @@ export class SpriteAtlasCache {
   dispose(): void {
     this.disposed = true;
     this.generation += 1;
-    this.clearEntries();
+    this.disposePendingLoad();
+    this.disposeEntries(this.entries);
+    this.entries.clear();
     this.statuses.clear();
   }
 
@@ -145,6 +173,7 @@ export class SpriteAtlasCache {
     assetPath: string,
     units: UnitArchetype[],
     generation: number,
+    stagedEntries: Map<AtlasKey, AtlasEntry>,
   ): Promise<void> {
     const archetype = units.find((unit) => unit.assetPath === assetPath);
     if (!archetype) {
@@ -158,18 +187,18 @@ export class SpriteAtlasCache {
         texture.dispose();
         return;
       }
-      const previous = this.entries.get(assetPath);
+      const previous = stagedEntries.get(assetPath);
       if (previous) {
         previous.texture.dispose();
       }
-      this.entries.set(assetPath, makeEntry(texture, archetype, false));
+      stagedEntries.set(assetPath, makeEntry(texture, archetype, false));
       this.statuses.set(assetPath, { assetPath, state: 'ready', error: null });
     } catch {
       if (this.disposed || generation !== this.generation) {
         return;
       }
-      const entry = this.entries.get(assetPath) ?? this.createPlaceholder(archetype, generation);
-      this.entries.set(assetPath, entry);
+      const entry = stagedEntries.get(assetPath) ?? this.createPlaceholder(archetype, generation, stagedEntries);
+      stagedEntries.set(assetPath, entry);
       this.statuses.set(assetPath, {
         assetPath,
         state: 'missing',
@@ -178,8 +207,12 @@ export class SpriteAtlasCache {
     }
   }
 
-  private createPlaceholder(archetype: UnitArchetype, generation: number): AtlasEntry {
-    const existing = this.entries.get(archetype.assetPath);
+  private createPlaceholder(
+    archetype: UnitArchetype,
+    generation: number,
+    targetEntries: Map<AtlasKey, AtlasEntry> = this.entries,
+  ): AtlasEntry {
+    const existing = targetEntries.get(archetype.assetPath);
     if (existing) {
       return existing;
     }
@@ -212,7 +245,7 @@ export class SpriteAtlasCache {
     configureTexture(texture);
     const entry = makeEntry(texture, archetype, true);
     if (!this.disposed && generation === this.generation) {
-      this.entries.set(archetype.assetPath, entry);
+      targetEntries.set(archetype.assetPath, entry);
       const current = this.statuses.get(archetype.assetPath);
       if (!current) {
         this.statuses.set(archetype.assetPath, {
@@ -225,11 +258,33 @@ export class SpriteAtlasCache {
     return entry;
   }
 
-  private clearEntries(): void {
-    for (const entry of this.entries.values()) {
+  private commitEntries(nextEntries: Map<AtlasKey, AtlasEntry>): void {
+    const previousEntries = new Map(this.entries);
+    this.entries.clear();
+    for (const [assetPath, entry] of nextEntries) {
+      this.entries.set(assetPath, entry);
+    }
+    const retainedTextures = new Set([...nextEntries.values()].map((entry) => entry.texture));
+    for (const entry of previousEntries.values()) {
+      if (!retainedTextures.has(entry.texture)) {
+        entry.texture.dispose();
+      }
+    }
+  }
+
+  private disposePendingLoad(): void {
+    if (!this.pendingLoad) {
+      return;
+    }
+    this.disposeEntries(this.pendingLoad.entries);
+    this.pendingLoad = null;
+  }
+
+  private disposeEntries(entries: Map<AtlasKey, AtlasEntry>): void {
+    for (const entry of entries.values()) {
       entry.texture.dispose();
     }
-    this.entries.clear();
+    entries.clear();
   }
 }
 
