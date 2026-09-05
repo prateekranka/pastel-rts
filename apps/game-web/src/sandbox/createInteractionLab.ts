@@ -28,6 +28,15 @@ import { isMatchUiTarget } from '../ui/touchTargets';
 import { BuildingRenderSystem } from '../buildings/BuildingRenderSystem';
 import { validateBuildingPlacement } from '../buildings/placementValidation';
 import { DebugOverlayState } from '../qa/DebugOverlayState';
+import {
+  BUG_BUNDLE_LIMITS,
+  downloadBugBundle,
+  exportBugBundle as buildBugBundle,
+  importAndReproduceBugBundle,
+  type BugBundle,
+  type BugBundleReplayResult,
+  type BugBundleRuntime,
+} from '../qa/bugBundle';
 import { seedFor } from '../qa/deterministicSeeds';
 import { EntityRegistry } from './EntityRegistry';
 import { InteractionFeedback } from './InteractionFeedback';
@@ -96,6 +105,8 @@ export type InteractionLab = {
   getContent: () => LoadedRuntimeContent;
   getPickableEntities: () => readonly PickableEntity[];
   getDiagnostics: () => InteractionLabDiagnostics;
+  exportBugBundle: () => BugBundle;
+  importBugBundle: (value: unknown) => Promise<BugBundleReplayResult>;
   isReady: () => boolean;
 };
 
@@ -422,6 +433,67 @@ export function createInteractionLab(options: InteractionLabOptions): Interactio
     return entities;
   };
 
+  const getBugRuntime = (): BugBundleRuntime => {
+    const requestedRenderer = new URLSearchParams(
+      typeof window === 'undefined' ? '' : window.location.search,
+    ).get('renderer');
+    const renderer = requestedRenderer === 'webgpu' ? 'webgpu' : 'webgl';
+    const width = Math.max(1, Math.round(options.canvas.clientWidth || options.canvas.width || 1));
+    const height = Math.max(1, Math.round(options.canvas.clientHeight || options.canvas.height || 1));
+    const dpr = typeof window !== 'undefined' && Number.isFinite(window.devicePixelRatio)
+      ? window.devicePixelRatio
+      : 1;
+    return { renderer, viewport: { width, height }, dpr, mode: 'interaction-lab' };
+  };
+
+  const getBugDiagnostics = (): Record<string, unknown> => {
+    const unitArt = units.getArtDiagnostics();
+    const buildingArt = buildings.getArtDiagnostics();
+    const currentScenario = scenario.getCurrentScenario();
+    const checksums = scenario.getChecksums();
+    return {
+      activeRevision: activeContent.identity.revision,
+      contentHash: activeContent.identity.contentHash,
+      simulationRulesHash: activeContent.identity.simulationRulesHash,
+      scenarioId: currentScenario?.id ?? 'none',
+      seed: scenario.getSeed(),
+      tick: runtime.getLatestTick(),
+      entityCount: runtime.getEntityCount(),
+      commandCount: scenario.getCommandLog().length,
+      checksumCount: checksums.length,
+      checksum: checksums[checksums.length - 1]?.hash ?? 0,
+      missingUnitAssets: unitArt.assets.filter((asset) => asset.state === 'missing').length,
+      missingBuildingAssets: buildingArt.filter((asset) => asset.state === 'missing').length,
+    };
+  };
+
+  const exportCurrentBugBundle = (): BugBundle => {
+    scenario.setReplayToTick(runtime.getLatestTick());
+    return buildBugBundle({
+      pack: activePack,
+      save: scenario.exportSaveDocument(),
+      runtime: getBugRuntime(),
+      diagnostics: getBugDiagnostics(),
+    });
+  };
+
+  const importCurrentBugBundle = async (value: unknown): Promise<BugBundleReplayResult> => {
+    const result = importAndReproduceBugBundle(value, {
+      getRuntimeContent: () => ({
+        pack: activePack,
+        identity: { ...activeContent.identity },
+        scenario: scenario.getCurrentScenario(),
+        map: scenario.getCurrentMap(),
+      }),
+      exportSave: () => scenario.exportSaveDocument(),
+      importSave: (save) => scenario.importSaveDocument(save),
+    });
+    replay.setRecorded([...result.bundle.replay.commands], [...result.bundle.replay.checksums]);
+    contentError = null;
+    refreshTools();
+    return result;
+  };
+
   const getFormation = (): MoveFormation | undefined => {
     if (formationKind === 'none') {
       return undefined;
@@ -585,6 +657,10 @@ export function createInteractionLab(options: InteractionLabOptions): Interactio
         replay.setRecorded([...scenario.getCommandLog()], [...scenario.getChecksums()]);
         return replay.runReplay(runtime.getLatestTick());
       },
+      onExportBugBundle: () => {
+        downloadBugBundle(exportCurrentBugBundle());
+      },
+      onImportBugBundle: importCurrentBugBundle,
       onSpawn: (archetypeId) => {
         const look = options.camera.lookAt;
         commandClient.issueSpawnUnit({
@@ -733,6 +809,8 @@ export function createInteractionLab(options: InteractionLabOptions): Interactio
         error: contentError,
       };
     },
+    exportBugBundle: exportCurrentBugBundle,
+    importBugBundle: importCurrentBugBundle,
     isReady: () => readyResolved,
   };
 }
@@ -758,6 +836,8 @@ function mountLabTools(
     onSave: () => void;
     onImport: (value: unknown) => void;
     onReplay: () => boolean;
+    onExportBugBundle: () => void;
+    onImportBugBundle: (value: unknown) => Promise<BugBundleReplayResult>;
     onSpawn: (archetypeId: string) => void;
     onBuild: (archetypeId: string) => void;
     onNavDebug: (enabled: boolean) => void;
@@ -778,6 +858,7 @@ function mountLabTools(
       .pastel-lab-tools .lab-status { max-width:520px; padding:7px 9px; border-radius:10px; background:rgba(12,36,40,.9); white-space:pre-wrap; }
       .pastel-lab-tools .lab-status[data-state=error] { border-color:#ff6b8a; color:#ffd9e2; }
       .pastel-lab-tools .lab-status[data-state=warn] { border-color:#f5c56b; color:#ffe8b3; }
+        .pastel-lab-tools .lab-help { max-width:520px; padding:7px 9px; border-radius:10px; background:rgba(12,36,40,.78); color:#c9dedb; }
     </style>
     <div class="lab-status" data-role="status" aria-live="polite"></div>
     <div class="lab-row">
@@ -801,6 +882,12 @@ function mountLabTools(
       <button type="button" data-action="replay">Replay check</button>
     </div>
     <div class="lab-row">
+      <button type="button" data-action="bug-export">Export bug bundle</button>
+      <button type="button" data-action="bug-import">Reproduce bug bundle</button>
+      <input data-role="bug-import-file" type="file" accept="application/json,.json" aria-label="Bug bundle JSON file" hidden />
+    </div>
+    <div class="lab-help" data-role="bug-help">Export a JSON-only bug bundle. On a fresh lab page, choose the file with Reproduce bug bundle. The check uses the same scenario, seed, commands, and checksum sequence.</div>
+    <div class="lab-row">
       <input data-role="revision" type="text" placeholder="revision" aria-label="Content revision" />
       <button type="button" data-action="select-revision">Select revision</button>
       <button type="button" data-action="restart-revision">Restart pending</button>
@@ -813,6 +900,7 @@ function mountLabTools(
   const seedInput = root.querySelector('[data-role="seed"]') as HTMLInputElement;
   const revisionInput = root.querySelector('[data-role="revision"]') as HTMLInputElement;
   const importFile = root.querySelector('[data-role="import-file"]') as HTMLInputElement;
+  const bugImportFile = root.querySelector('[data-role="bug-import-file"]') as HTMLInputElement;
   const status = root.querySelector('[data-role="status"]') as HTMLDivElement;
   let notice = '';
 
@@ -872,6 +960,9 @@ function mountLabTools(
     }
     if (notice) {
       lines.push(notice);
+      if (/^Bug bundle (?:rejected|export failed)/u.test(notice)) {
+        state = 'error';
+      }
     }
     status.textContent = lines.join('\n');
     status.dataset['state'] = state;
@@ -948,6 +1039,36 @@ function mountLabTools(
       })
       .catch((error: unknown) => {
         setNotice(`Import rejected: ${error instanceof Error ? error.message : String(error)}`);
+      });
+  });
+  root.querySelector('[data-action="bug-export"]')?.addEventListener('click', () => {
+    try {
+      options.onExportBugBundle();
+      setNotice('Bug bundle exported. It contains JSON-only content identity and exact replay data.');
+    } catch (error) {
+      setNotice(`Bug bundle export failed: ${error instanceof Error ? error.message : String(error)}`);
+    }
+  });
+  root.querySelector('[data-action="bug-import"]')?.addEventListener('click', () => bugImportFile.click());
+  bugImportFile.addEventListener('change', () => {
+    const file = bugImportFile.files?.[0];
+    bugImportFile.value = '';
+    if (!file) {
+      return;
+    }
+    if (file.size > BUG_BUNDLE_LIMITS.maxArtifactBytes) {
+      setNotice(`Bug bundle rejected: file exceeds ${String(BUG_BUNDLE_LIMITS.maxArtifactBytes)} bytes`);
+      return;
+    }
+    void file
+      .text()
+      .then((text) => JSON.parse(text) as unknown)
+      .then((value) => options.onImportBugBundle(value))
+      .then((result) => {
+        setNotice(`Bug bundle reproduced: ${String(result.actual.length)} checksum samples matched exactly.`);
+      })
+      .catch((error: unknown) => {
+        setNotice(`Bug bundle rejected: ${error instanceof Error ? error.message : String(error)}`);
       });
   });
   root.querySelector('[data-action="replay"]')?.addEventListener('click', () => {

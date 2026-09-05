@@ -1,0 +1,9 @@
+Command: PACK_DIR=$(mktemp -d /home/bobbyranka/.cache/pastel-rts-m11g-pack.XXXXXX) && cp -R /home/bobbyranka/Projects/pastel-rts-m11-bundle/content/dev-pack-v2/. "$PACK_DIR"/ && PLAYWRIGHT_SERVER_MODE=dev PLAYWRIGHT_GAME_PORT=21373 PLAYWRIGHT_FOUNDRY_PORT=21374 PLAYWRIGHT_CONTENT_PORT=21387 PLAYWRIGHT_CONTENT_PACK_DIR="$PACK_DIR" M11G_ARTIFACT_DIR=/home/bobbyranka/Projects/pastel-rts-m11-bundle/docs/roadmap/M1.1-G-artifacts npx playwright test /home/bobbyranka/Projects/pastel-rts-m11-bundle/apps/game-web/e2e/m11g-bundle.spec.ts --project=chromium --workers=1
+Result: exit_code=0
+Output:
+Running 2 tests using 1 worker
+
+  ✓  1 [chromium] › apps/game-web/e2e/m11g-bundle.spec.ts:80:3 › M1.1-G runtime bug bundle › exports, imports in a fresh context, and matches the exact checksum sequence (13.7s)
+  ✓  2 [chromium] › apps/game-web/e2e/m11g-bundle.spec.ts:188:3 › M1.1-G runtime bug bundle › rejects a historical revision bundle and keeps the active scene intact (5.0s)
+
+  2 passed (26.8s)
