@@ -36,10 +36,17 @@ jobs:
           key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
       - name: Install Playwright Chromium
         run: npx playwright install --with-deps chromium
-      - name: Visual and interaction tests
+      - name: Visual and interaction tests (developer studio)
         run: npx playwright test
         env:
           CI: true
+          PLAYWRIGHT_SERVER_MODE: dev
+      - name: Production preview offline verification
+        run: npx playwright test apps/game-web/e2e/m11c-baseline.spec.ts --project=chromium --grep "M1.1-C production preview boots with content server stopped"
+        env:
+          CI: true
+          PLAYWRIGHT_SERVER_MODE: preview
+          PLAYWRIGHT_SKIP_CONTENT_SERVER: '1'
       - name: Upload Playwright report
         if: failure()
         uses: actions/upload-artifact@v4
