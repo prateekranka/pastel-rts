@@ -24,4 +24,6 @@ Draft stacked milestone PR #4 exists and was read back: https://github.com/prate
 
 Luna worker metadata read from profile state.db: A2 20260905_164327_ffe67e, D 20260905_164327_860a99, E 20260905_164327_f0a112 all record gpt-5.6-luna/openai-codex and requested effort max. D was stopped and resumed in the same session to prohibit explicit security-disabling browser flags; no profile changes. Later D captures used ordinary Playwright. Raw response service-tier metadata remains unavailable; no fast option requested.
 
+Remote native evidence: existing macOS CI run 33965323173 compiled the iOS simulator target successfully at 6308242. The same run failed its browser-test step, so overall CI is not passing. Local native tools are absent; this is real remote compile evidence, not a physical-device test. Details: docs/roadmap/M1.1-native-compile-evidence.md.
+
 Gates: ENGINEERING pending; HUMAN DESIGN ACCEPTANCE pending; PHYSICAL-DEVICE VALIDATION pending.
