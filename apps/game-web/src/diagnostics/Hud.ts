@@ -1,7 +1,12 @@
 import { BENCHMARK_NAMES, reloadWithQuery, type BenchmarkName, type RuntimeConfig } from '../runtime/config';
 import { DPR_PRESETS, type DprPreset } from '../config/constants';
+import { MIN_TOUCH_TARGET_CSS } from '../input/gestureConstants';
 import type { RendererKind } from '../renderer/adapter';
 import type { SimCounts } from '../sim/types';
+
+const MINIMAP_SIZE_CSS = MIN_TOUCH_TARGET_CSS * 3;
+const HUD_TOP_OFFSET_CSS = 12 + MINIMAP_SIZE_CSS + 12;
+const HUD_BOTTOM_RESERVE_CSS = MIN_TOUCH_TARGET_CSS + 28;
 
 export type HudModel = {
   currentFps: number;
@@ -35,6 +40,10 @@ export type HudModel = {
   activeRevision: string | null;
   contentPhase: string;
   contentError: string | null;
+  activeManifestHash: string | null;
+  activeVisualContentHash: string | null;
+  activeSimulationRulesHash: string | null;
+  activeAssetBaseUrl: string | null;
 };
 
 export type HudHandlers = {
@@ -61,9 +70,15 @@ export class DiagnosticsHud {
     this.root.innerHTML = `
       <div class="pastel-hud-bar">
         <strong>Diagnostics</strong>
-        <button type="button" data-action="toggle">Collapse</button>
+        <button
+          type="button"
+          data-action="toggle"
+          aria-controls="pastel-hud-body"
+          aria-expanded="true"
+          aria-label="Collapse diagnostics"
+        >Collapse</button>
       </div>
-      <div class="pastel-hud-body">
+      <div class="pastel-hud-body" id="pastel-hud-body">
         <pre data-role="metrics"></pre>
         <div class="pastel-hud-controls">
           <label>Renderer
@@ -95,6 +110,9 @@ export class DiagnosticsHud {
     this.metrics = this.root.querySelector('[data-role="metrics"]') as HTMLPreElement;
     this.root.addEventListener('change', (event) => this.onChange(event));
     this.root.addEventListener('click', (event) => this.onClick(event));
+    for (const eventName of ['pointerdown', 'pointermove', 'pointerup', 'pointercancel', 'wheel']) {
+      this.root.addEventListener(eventName, (event) => event.stopPropagation());
+    }
   }
 
   setHandlers(handlers: HudHandlers): void {
@@ -133,6 +151,10 @@ export class DiagnosticsHud {
       `viewport ${model.viewport.width}×${model.viewport.height}  buffer ${model.drawingBuffer.width}×${model.drawingBuffer.height}`,
       `elapsed ${(model.elapsedMs / 1000).toFixed(1)}s  soak ${model.soakActive ? 'running' : 'idle'}`,
       `content revision ${model.activeRevision ?? 'none'}  phase ${model.contentPhase}`,
+      `content manifest ${model.activeManifestHash ?? 'none'}`,
+      `content visual ${model.activeVisualContentHash ?? 'none'}`,
+      `content rules ${model.activeSimulationRulesHash ?? 'none'}`,
+      `content assets ${model.activeAssetBaseUrl ?? 'none'}`,
       model.contentError ? `content error: ${model.contentError}` : 'content error: none',
     ].join('\n');
     const soakBtn = this.root.querySelector('[data-action="soak"]');
@@ -150,11 +172,19 @@ export class DiagnosticsHud {
     if (!(target instanceof HTMLElement)) {
       return;
     }
-    const action = target.dataset['action'];
+    const actionTarget = target.closest<HTMLElement>('[data-action]');
+    const action = actionTarget?.dataset['action'];
     if (action === 'toggle') {
       this.collapsed = !this.collapsed;
-      this.body.style.display = this.collapsed ? 'none' : 'block';
-      target.textContent = this.collapsed ? 'Expand' : 'Collapse';
+      this.body.hidden = this.collapsed;
+      if (actionTarget) {
+        actionTarget.textContent = this.collapsed ? 'Expand' : 'Collapse';
+        actionTarget.setAttribute('aria-expanded', String(!this.collapsed));
+        actionTarget.setAttribute(
+          'aria-label',
+          this.collapsed ? 'Expand diagnostics' : 'Collapse diagnostics',
+        );
+      }
       this.handlers?.onToggle();
     } else if (action === 'haptic') {
       this.handlers?.onHaptic();
@@ -194,15 +224,79 @@ function injectHudStyles(): void {
   const style = document.createElement('style');
   style.id = 'pastel-hud-style';
   style.textContent = `
-    .pastel-hud { position:absolute; top:12px; right:12px; width:min(380px,92vw); background:rgba(10,24,26,.88); color:#f2e6d0; border:1px solid #4a8187; border-radius:10px; font:12px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace; overflow:hidden; }
-    .pastel-hud-bar { display:flex; justify-content:space-between; align-items:center; padding:8px 10px; background:#1c4549; }
-    .pastel-hud-bar button, .pastel-hud-controls button, .pastel-hud-controls select { pointer-events:auto; font:inherit; }
-    .pastel-hud-body { padding:8px 10px 10px; }
-    .pastel-hud pre { margin:0 0 8px; white-space:pre-wrap; }
+    .pastel-hud {
+      position:fixed;
+      top:${HUD_TOP_OFFSET_CSS}px;
+      right:12px;
+      z-index:20;
+      width:min(380px,92vw);
+      max-height:max(44px,calc(100vh - ${HUD_TOP_OFFSET_CSS + HUD_BOTTOM_RESERVE_CSS}px - env(safe-area-inset-bottom,0px)));
+      max-height:max(44px,calc(100dvh - ${HUD_TOP_OFFSET_CSS + HUD_BOTTOM_RESERVE_CSS}px - env(safe-area-inset-bottom,0px)));
+      display:flex;
+      flex-direction:column;
+      background:rgba(10,24,26,.88);
+      color:#f2e6d0;
+      border:1px solid #4a8187;
+      border-radius:10px;
+      font:12px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace;
+      overflow:hidden;
+      pointer-events:auto;
+    }
+    .pastel-hud-bar {
+      display:flex;
+      flex:0 0 auto;
+      justify-content:space-between;
+      align-items:center;
+      gap:8px;
+      min-height:${MIN_TOUCH_TARGET_CSS + 16}px;
+      padding:8px 10px;
+      background:#1c4549;
+    }
+    .pastel-hud-bar strong { min-width:0; }
+    .pastel-hud-bar button,
+    .pastel-hud-controls button,
+    .pastel-hud-controls select {
+      pointer-events:auto;
+      min-height:${MIN_TOUCH_TARGET_CSS}px;
+      font:inherit;
+    }
+    .pastel-hud-bar button {
+      flex:0 0 auto;
+      min-width:88px;
+    }
+    .pastel-hud-body {
+      min-height:0;
+      flex:1 1 auto;
+      overflow-x:hidden;
+      overflow-y:auto;
+      overscroll-behavior:contain;
+      -webkit-overflow-scrolling:touch;
+      touch-action:pan-y;
+      padding:8px 10px 10px;
+    }
+    .pastel-hud pre {
+      max-width:100%;
+      margin:0 0 8px;
+      white-space:pre-wrap;
+      overflow-wrap:anywhere;
+      word-break:break-word;
+    }
     .pastel-hud-controls { display:grid; gap:6px; }
     .pastel-hud-controls label { display:flex; flex-direction:column; gap:2px; }
-    .pastel-hud-controls label.inline { flex-direction:row; align-items:center; gap:6px; }
-    .pastel-hud button, .pastel-hud select { background:#2f565b; color:#f2e6d0; border:1px solid #5ce1e6; border-radius:6px; padding:4px 8px; }
+    .pastel-hud-controls label.inline { flex-direction:row; align-items:center; min-height:${MIN_TOUCH_TARGET_CSS}px; gap:6px; }
+    .pastel-hud button, .pastel-hud select {
+      background:#2f565b;
+      color:#f2e6d0;
+      border:1px solid #5ce1e6;
+      border-radius:6px;
+      padding:4px 8px;
+    }
+    .pastel-hud button:focus-visible,
+    .pastel-hud select:focus-visible,
+    .pastel-hud input:focus-visible {
+      outline:2px solid #f5c56b;
+      outline-offset:2px;
+    }
   `;
   document.head.append(style);
 }

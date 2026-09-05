@@ -40,10 +40,16 @@ export type ContentClientPhase =
 export type ContentClientStatus = {
   phase: ContentClientPhase;
   source: RuntimeContentSource;
+  selectedRevision: string | null;
   activeRevision: string | null;
   activeContentHash: string | null;
+  activeManifestHash: string | null;
+  activeVisualContentHash: string | null;
   activeSimulationRulesHash: string | null;
+  activeAssetBaseUrl: string | null;
   pendingRevision: string | null;
+  pendingContentHash: string | null;
+  pendingVisualContentHash: string | null;
   pendingSimulationRulesHash: string | null;
   availableRevision: string | null;
   error: string | null;
@@ -70,6 +76,7 @@ export type PublishedContentClientOptions = {
   fetchImpl?: typeof fetch;
   eventSourceFactory?: (url: string) => ContentEventSource;
   onInstall?: (content: LoadedRuntimeContent, reason: ContentInstallReason) => void | Promise<void>;
+  onInstalled?: (content: LoadedRuntimeContent, reason: ContentInstallReason) => void | Promise<void>;
   onStatus?: (status: ContentClientStatus) => void;
   maxReconnectDelayMs?: number;
 };
@@ -98,18 +105,21 @@ export class PublishedContentClient {
   private readonly fetchImpl: typeof fetch;
   private readonly eventSourceFactory: ((url: string) => ContentEventSource) | null;
   private readonly onInstall: ((content: LoadedRuntimeContent, reason: ContentInstallReason) => void | Promise<void>) | null;
+  private readonly onInstalled: ((content: LoadedRuntimeContent, reason: ContentInstallReason) => void | Promise<void>) | null;
   private readonly onStatus: ((status: ContentClientStatus) => void) | null;
   private readonly maxReconnectDelayMs: number;
   private eventSource: ContentEventSource | null = null;
   private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
   private reconnectAttempt = 0;
   private requestGeneration = 0;
+  private installQueue: Promise<void> = Promise.resolve();
   private disposed = false;
   private started = false;
   private selectedRevision: string | null = null;
   private active: LoadedRuntimeContent | null = null;
   private pending: LoadedRuntimeContent | null = null;
   private availableRevision: string | null = null;
+  private latestPublishedRevision: string | null = null;
   private phase: ContentClientPhase = 'idle';
   private error: string | null = null;
 
@@ -119,6 +129,7 @@ export class PublishedContentClient {
     this.fetchImpl = options.fetchImpl ?? ((input, init) => fetch(input, init));
     this.eventSourceFactory = options.eventSourceFactory ?? defaultEventSourceFactory();
     this.onInstall = options.onInstall ?? null;
+    this.onInstalled = options.onInstalled ?? null;
     this.onStatus = options.onStatus ?? null;
     this.maxReconnectDelayMs = Math.max(250, options.maxReconnectDelayMs ?? DEFAULT_MAX_RECONNECT_DELAY_MS);
   }
@@ -127,10 +138,16 @@ export class PublishedContentClient {
     return {
       phase: this.phase,
       source: 'studio',
+      selectedRevision: this.selectedRevision,
       activeRevision: this.active?.identity.revision ?? null,
       activeContentHash: this.active?.identity.contentHash ?? null,
+      activeManifestHash: this.active?.identity.manifestHash ?? null,
+      activeVisualContentHash: this.active?.identity.visualContentHash ?? null,
       activeSimulationRulesHash: this.active?.identity.simulationRulesHash ?? null,
+      activeAssetBaseUrl: this.active?.assetBaseUrl ?? null,
       pendingRevision: this.pending?.identity.revision ?? null,
+      pendingContentHash: this.pending?.identity.contentHash ?? null,
+      pendingVisualContentHash: this.pending?.identity.visualContentHash ?? null,
       pendingSimulationRulesHash: this.pending?.identity.simulationRulesHash ?? null,
       availableRevision: this.availableRevision,
       error: this.error,
@@ -189,8 +206,8 @@ export class PublishedContentClient {
     }
     const generation = ++this.requestGeneration;
     try {
-      await this.install(candidate, 'restart');
-      if (generation !== this.requestGeneration || this.disposed) {
+      const installed = await this.install(candidate, 'restart', generation);
+      if (!installed || generation !== this.requestGeneration || this.disposed) {
         return null;
       }
       this.pending = null;
@@ -199,7 +216,9 @@ export class PublishedContentClient {
       this.setPhase('ready', null);
       return candidate;
     } catch (reason) {
-      this.fail(reason);
+      if (generation === this.requestGeneration && !this.disposed) {
+        this.fail(reason);
+      }
       return null;
     }
   }
@@ -226,7 +245,15 @@ export class PublishedContentClient {
     if (!response.ok) {
       throw new Error(`Acknowledgement failed (${String(response.status)})`);
     }
-    return response.json() as Promise<unknown>;
+    const body = await response.json() as unknown;
+    validateAcknowledgementResponse(body, {
+      runtimeId: this.runtimeId,
+      scenarioId: safeScenarioId,
+      revision: active.identity.revision,
+      simulationRulesHash: active.identity.simulationRulesHash,
+      restartRequired,
+    });
+    return body;
   }
 
   async readAcknowledgements(): Promise<unknown> {
@@ -248,16 +275,25 @@ export class PublishedContentClient {
     this.onStatus?.(this.getStatus());
   }
 
-  private async sync(reason: Exclude<ContentInstallReason, 'restart'>): Promise<LoadedRuntimeContent | null> {
+  private async sync(
+    reason: Exclude<ContentInstallReason, 'restart'>,
+    requestedRevision?: string,
+  ): Promise<LoadedRuntimeContent | null> {
     const generation = ++this.requestGeneration;
     try {
       const publication = await this.readPublicationStatus();
-      const revision = this.selectedRevision ?? publication.currentRevision;
+      const revision = this.selectedRevision ?? newestRevision(publication.currentRevision, requestedRevision);
       const candidate = await this.loadRevision(revision);
       if (generation !== this.requestGeneration || this.disposed) {
         return null;
       }
-      await this.considerCandidate(candidate, reason);
+      await this.considerCandidate(candidate, reason, generation);
+      if (generation !== this.requestGeneration || this.disposed) {
+        return null;
+      }
+      if (this.selectedRevision === null) {
+        this.latestPublishedRevision = newestRevision(this.latestPublishedRevision, candidate.identity.revision);
+      }
       return candidate;
     } catch (caught) {
       if (generation === this.requestGeneration && !this.disposed) {
@@ -270,6 +306,7 @@ export class PublishedContentClient {
   private async considerCandidate(
     candidate: LoadedRuntimeContent,
     reason: Exclude<ContentInstallReason, 'restart'>,
+    generation: number,
   ): Promise<void> {
     if (this.active?.identity.revision === candidate.identity.revision) {
       if (this.active.identity.contentHash !== candidate.identity.contentHash) {
@@ -293,22 +330,52 @@ export class PublishedContentClient {
       return;
     }
 
-    await this.install(candidate, reason);
+    const installed = await this.install(candidate, reason, generation);
+    if (!installed || generation !== this.requestGeneration || this.disposed) {
+      return;
+    }
     this.pending = null;
     this.availableRevision = null;
     this.error = null;
     this.setPhase('ready', null);
   }
 
-  private async install(candidate: LoadedRuntimeContent, reason: ContentInstallReason): Promise<void> {
-    // The callback is the transaction boundary. Active content changes only after
-    // rendering/runtime replacement succeeds, so a failed candidate cannot poison
-    // the last good revision.
-    await this.onInstall?.(candidate, reason);
-    if (this.disposed) {
-      return;
-    }
-    this.active = candidate;
+  private async install(
+    candidate: LoadedRuntimeContent,
+    reason: ContentInstallReason,
+    generation: number,
+  ): Promise<boolean> {
+    let installed = false;
+    const run = async (): Promise<void> => {
+      if (!this.canCommit(generation)) {
+        return;
+      }
+      const current = this.active;
+      if (current?.identity.revision === candidate.identity.revision) {
+        if (current.identity.contentHash !== candidate.identity.contentHash) {
+          throw new Error(`Immutable revision ${candidate.identity.revision} changed content hash`);
+        }
+        installed = true;
+        return;
+      }
+      // The callback is the transaction boundary. Active content changes only
+      // after rendering/runtime replacement succeeds, so a failed candidate
+      // cannot poison the last good revision.
+      await this.onInstall?.(candidate, reason);
+      if (!this.canCommit(generation)) {
+        return;
+      }
+      this.active = candidate;
+      installed = true;
+      // This callback runs after the exact candidate is active. It is awaited
+      // in publication order so repeated replacements do not race an
+      // acknowledgement for an older revision.
+      await this.onInstalled?.(candidate, reason);
+    };
+    const operation = this.installQueue.then(run, run);
+    this.installQueue = operation.then(() => undefined, () => undefined);
+    await operation;
+    return installed;
   }
 
   private async readPublicationStatus(): Promise<PublicationStatusResponse> {
@@ -358,6 +425,7 @@ export class PublishedContentClient {
     if (simulationRulesHash !== metadata.simulationRulesHash) {
       throw new Error(`Published simulation rules hash mismatch: ${metadata.revision}`);
     }
+    validateAssetIdentity(pack, metadata);
 
     return {
       source: 'studio',
@@ -421,12 +489,18 @@ export class PublishedContentClient {
     }
     if (this.selectedRevision !== null) {
       if (revision !== this.selectedRevision) {
-        this.availableRevision = revision;
+        if (isRevisionNewer(revision, this.availableRevision ?? this.selectedRevision)) {
+          this.availableRevision = revision;
+        }
         this.onStatus?.(this.getStatus());
       }
       return;
     }
-    void this.sync('refresh').catch(() => undefined);
+    if (!isRevisionNewer(revision, this.latestPublishedRevision)) {
+      return;
+    }
+    this.latestPublishedRevision = revision;
+    void this.sync('refresh', revision).catch(() => undefined);
   }
 
   private handleEventSourceError(source: ContentEventSource | null): void {
@@ -481,6 +555,10 @@ export class PublishedContentClient {
       clearTimeout(this.reconnectTimer);
       this.reconnectTimer = null;
     }
+  }
+
+  private canCommit(generation: number): boolean {
+    return generation === this.requestGeneration && !this.disposed;
   }
 
   private assertUsable(): void {
@@ -566,6 +644,119 @@ function validateOptionalRevision(value: string | null | undefined): string | nu
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function validateAssetIdentity(pack: PackV2, metadata: RevisionMetadata): void {
+  const expected = new Map<string, 'runtime' | 'data'>();
+  const addExpected = (assetPath: string | undefined, kind: 'runtime' | 'data'): void => {
+    if (!assetPath) {
+      throw new Error(`Published ${kind} asset path is missing`);
+    }
+    const previous = expected.get(assetPath);
+    if (previous !== undefined && previous !== kind) {
+      throw new Error(`Published asset kind mismatch: ${assetPath}`);
+    }
+    expected.set(assetPath, kind);
+  };
+
+  for (const unit of pack.units) {
+    addExpected(unit.assetPath, 'runtime');
+    addExpected(unit.animation.clips.idle.assetPath ?? unit.assetPath, 'runtime');
+    addExpected(unit.animation.clips.move.assetPath ?? unit.assetPath, 'runtime');
+  }
+  for (const building of pack.buildings) {
+    addExpected(building.assetPath, 'runtime');
+    addExpected(building.animation?.clips.idle.assetPath ?? building.assetPath, 'runtime');
+    addExpected(building.animation?.clips.move?.assetPath ?? building.assetPath, 'runtime');
+  }
+  for (const map of pack.maps ?? []) {
+    addExpected(map.path, 'data');
+  }
+  for (const scenario of pack.scenarios ?? []) {
+    addExpected(scenario.path, 'data');
+  }
+
+  const seen = new Set<string>();
+  for (const asset of metadata.assets) {
+    if (seen.has(asset.assetPath)) {
+      throw new Error(`Published asset manifest contains duplicate path: ${asset.assetPath}`);
+    }
+    seen.add(asset.assetPath);
+    const expectedKind = expected.get(asset.assetPath);
+    if (expectedKind === undefined) {
+      throw new Error(`Published asset is not referenced by Pack v2: ${asset.assetPath}`);
+    }
+    if (asset.kind !== expectedKind) {
+      throw new Error(`Published asset kind mismatch: ${asset.assetPath}`);
+    }
+  }
+  for (const [assetPath] of expected) {
+    if (!seen.has(assetPath)) {
+      throw new Error(`Published asset manifest is missing path: ${assetPath}`);
+    }
+  }
+}
+
+type AcknowledgementExpectation = {
+  runtimeId: string;
+  scenarioId: string;
+  revision: string;
+  simulationRulesHash: string;
+  restartRequired: boolean;
+};
+
+function validateAcknowledgementResponse(
+  value: unknown,
+  expected: AcknowledgementExpectation,
+): void {
+  if (!isRecord(value) || value['ok'] !== true || !isRecord(value['acknowledgement'])) {
+    throw new Error('Acknowledgement response shape is invalid');
+  }
+  const acknowledgement = value['acknowledgement'];
+  if (
+    acknowledgement['runtimeId'] !== expected.runtimeId ||
+    acknowledgement['scenarioId'] !== expected.scenarioId ||
+    acknowledgement['revision'] !== expected.revision ||
+    acknowledgement['simulationRulesHash'] !== expected.simulationRulesHash ||
+    acknowledgement['restartRequired'] !== expected.restartRequired
+  ) {
+    throw new Error('Acknowledgement response identity mismatch');
+  }
+}
+
+function newestRevision(current: string | null, candidate: string | undefined): string {
+  if (candidate === undefined || candidate.length === 0) {
+    if (current === null) {
+      throw new Error('No publication revision is available');
+    }
+    return current;
+  }
+  if (current === null || isRevisionNewer(candidate, current)) {
+    return candidate;
+  }
+  return current;
+}
+
+function isRevisionNewer(candidate: string, current: string | null): boolean {
+  if (current === null || candidate === current) {
+    return current === null;
+  }
+  const candidateNumber = numericRevision(candidate);
+  const currentNumber = numericRevision(current);
+  if (candidateNumber !== null && currentNumber !== null) {
+    return candidateNumber > currentNumber;
+  }
+  // Non-numeric revision ids have no ordering contract. Event arrival is the
+  // only trustworthy order for those ids; equal ids were handled above.
+  return true;
+}
+
+function numericRevision(value: string): number | null {
+  if (!/^\d+$/.test(value)) {
+    return null;
+  }
+  const parsed = Number(value);
+  return Number.isSafeInteger(parsed) ? parsed : null;
 }
 
 function toError(value: unknown): Error {

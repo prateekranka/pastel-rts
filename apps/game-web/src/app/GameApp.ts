@@ -260,6 +260,10 @@ export class GameApp {
     return this.lab;
   }
 
+  getContentStatus(): ContentClientStatus | null {
+    return this.contentClient?.getStatus() ?? null;
+  }
+
   isInteractionLab(): boolean {
     return this.lab !== null;
   }
@@ -358,6 +362,7 @@ export class GameApp {
       const resources = this.adapter?.getResourceCounts() ?? { textures: 0, geometries: 0 };
       const labDiagnostics = this.lab?.getDiagnostics();
       const contentStatus = this.contentClient?.getStatus();
+      const activeContent = this.lab?.getContent();
       const simTickMs = this.lab?.runtime.getTickDurationMs() ?? this.sim.getTickDurationMs();
       const navTickMs = this.lab?.runtime.getNavigationTimeMs() ?? 0;
       const snapshotLatencyMs = this.lab?.runtime.getSnapshotLatencyMs() ?? this.sim.getSnapshotLatencyMs();
@@ -397,6 +402,10 @@ export class GameApp {
         activeRevision: contentStatus?.activeRevision ?? labDiagnostics?.content.revision ?? null,
         contentPhase: contentStatus?.phase ?? (this.lab ? 'ready' : 'not-applicable'),
         contentError: contentStatus?.error ?? labDiagnostics?.error ?? null,
+        activeManifestHash: contentStatus?.activeManifestHash ?? labDiagnostics?.content.manifestHash ?? null,
+        activeVisualContentHash: contentStatus?.activeVisualContentHash ?? labDiagnostics?.content.visualContentHash ?? null,
+        activeSimulationRulesHash: contentStatus?.activeSimulationRulesHash ?? labDiagnostics?.content.simulationRulesHash ?? null,
+        activeAssetBaseUrl: contentStatus?.activeAssetBaseUrl ?? activeContent?.assetBaseUrl ?? null,
       });
     } catch (error) {
       console.warn('Diagnostics sample failed', error);
@@ -429,6 +438,19 @@ export class GameApp {
         onInstall: async (candidate, reason) => {
           if (this.lab) {
             await this.lab.applyContent(candidate, reason);
+          }
+        },
+        onInstalled: async (_candidate, reason) => {
+          // Initial content is installed before the lab exists. Rules changes
+          // are acknowledged by the explicit restart action below.
+          if (!this.lab || reason === 'initial' || reason === 'restart') {
+            return;
+          }
+          try {
+            await this.acknowledgeActiveScenario(false);
+          } catch {
+            // acknowledgeActiveScenario stores the exact failure for the lab
+            // status line. The content install itself remains observable.
           }
         },
       });
@@ -486,7 +508,7 @@ export class GameApp {
           throw new Error('No pending revision was restarted');
         }
         this.contentAckError = null;
-        await this.acknowledgeActiveScenario();
+        await this.acknowledgeActiveScenario(true);
       };
       labOptions.onAcknowledge = async () => {
         await this.acknowledgeActiveScenario();
@@ -516,13 +538,13 @@ export class GameApp {
     }
   }
 
-  private async acknowledgeActiveScenario(): Promise<void> {
+  private async acknowledgeActiveScenario(restartRequired = false): Promise<void> {
     const scenarioId = this.lab?.scenario.getCurrentScenario()?.id;
     if (!scenarioId || !this.contentClient) {
       throw new Error('No active scenario to acknowledge');
     }
     try {
-      await this.contentClient.acknowledge(scenarioId, false);
+      await this.contentClient.acknowledge(scenarioId, restartRequired);
       this.contentAckError = null;
     } catch (error) {
       this.contentAckError = error instanceof Error ? error.message : String(error);

@@ -6,6 +6,7 @@ const LAB_URL =
   '/?mode=interaction-lab&scenario=interaction-lab-alien-fantasy&seed=42&renderer=webgl&dpr=1&zoom=70-percent';
 
 const GAME_VIEWPORT = { width: 1280, height: 800 };
+const CONTENT_ORIGIN = `http://127.0.0.1:${process.env['PLAYWRIGHT_CONTENT_PORT'] ?? '8787'}`;
 
 test.describe.configure({ mode: 'serial' });
 
@@ -121,38 +122,52 @@ test('M1.1-C game command, blocker, save/load, and replay audit', async ({ page 
   });
 });
 
-test('M1.1-C development content SSE hot reload audit', async ({ page }, testInfo) => {
+test('M1.1-C published v2 runtime loads exact revision and asset identity', async ({ page, request }, testInfo) => {
   test.skip(
     process.env['PLAYWRIGHT_SERVER_MODE'] !== 'dev' || process.env['PLAYWRIGHT_SKIP_CONTENT_SERVER'] === '1',
-    'SSE hot reload requires the isolated development server and content server.',
+    'Published v2 runtime audit requires the isolated development server and content server.',
   );
-  const evidence = observeBrowser(page, testInfo, 'content-hot-reload');
-  await page.goto(LAB_URL, { waitUntil: 'domcontentloaded' });
+  const evidence = observeBrowser(page, testInfo, 'content-v2-runtime');
+  const browserRequests: string[] = [];
+  page.on('request', (requestEvent) => browserRequests.push(requestEvent.url()));
+  const publicationResponse = await request.get(`${CONTENT_ORIGIN}/v2/publication`);
+  expect(publicationResponse.ok()).toBeTruthy();
+  const publication = (await publicationResponse.json()) as {
+    currentRevision: string;
+    current: { revision: string; packId: string; manifestHash: string; visualContentHash: string; simulationRulesHash: string };
+  };
+  await page.goto(`${LAB_URL}&content=studio`, { waitUntil: 'domcontentloaded' });
   await waitForLab(page);
-  await page.waitForTimeout(400);
-  const sceneChildrenBefore = await readSceneChildCount(page);
-  const id = `m11c-hot-reload-${String(Date.now())}`;
-  const pngBase64 = await createPngBase64(page);
-  const result = await publishV1AndWaitForEvent(page, id, pngBase64);
-  expect(result.status).toBe(200);
-  expect(result.eventType).toBe('unit-published');
-  expect(result.eventId).toBe(id);
-  await page.waitForFunction(
-    (before) => {
-      const app = (window as unknown as { __pastelApp?: { scene?: { children?: unknown[] } } }).__pastelApp;
-      return (app?.scene?.children?.length ?? 0) > before;
-    },
-    sceneChildrenBefore,
-    { timeout: 15_000 },
+  const runtime = await readPublishedRuntime(page);
+  expect(runtime.status?.activeRevision).toBe(publication.currentRevision);
+  expect(runtime.content?.identity.revision).toBe(publication.currentRevision);
+  expect(runtime.content?.identity.packId).toBe(publication.current.packId);
+  expect(runtime.status?.activeManifestHash).toBe(publication.current.manifestHash);
+  expect(runtime.status?.activeVisualContentHash).toBe(publication.current.visualContentHash);
+  expect(runtime.status?.activeSimulationRulesHash).toBe(publication.current.simulationRulesHash);
+  const metadataResponse = await request.get(`${CONTENT_ORIGIN}/v2/revisions/${encodeURIComponent(publication.currentRevision)}`);
+  expect(metadataResponse.ok()).toBeTruthy();
+  const metadata = (await metadataResponse.json()) as {
+    assets: Array<{ assetPath: string; kind: string; sha256: string }>;
+  };
+  const runtimeAsset = metadata.assets.find((asset) => asset.kind === 'runtime');
+  expect(runtimeAsset).toBeDefined();
+  if (!runtimeAsset) {
+    return;
+  }
+  const assetPath = runtimeAsset.assetPath.split('/').map((segment) => encodeURIComponent(segment)).join('/');
+  const assetResponse = await request.get(
+    `${CONTENT_ORIGIN}/v2/revisions/${encodeURIComponent(publication.currentRevision)}/assets/${assetPath}`,
   );
-  const sceneChildrenAfter = await readSceneChildCount(page);
-  await evidence.capture('v1-sse-publish', {
-    id,
-    responseStatus: result.status,
-    eventType: result.eventType,
-    eventId: result.eventId,
-    sceneChildrenBefore,
-    sceneChildrenAfter,
+  expect(assetResponse.ok()).toBeTruthy();
+  expect(assetResponse.headers()['content-type']).toContain('image/png');
+  expect(browserRequests.some((url) => url.includes(`/dev-content/v2/revisions/${publication.currentRevision}/`))).toBeTruthy();
+  await evidence.capture('published-v2-runtime', {
+    publication,
+    runtime,
+    runtimeAsset,
+    assetStatus: assetResponse.status(),
+    resourceEntries: await readResourceEntries(page),
   });
 });
 
@@ -162,15 +177,21 @@ test('M1.1-C production preview boots with content server stopped', async ({ pag
     'Offline production audit is run with preview servers and no content webServer.',
   );
   const evidence = observeBrowser(page, testInfo, 'production-offline');
+  const browserRequests: string[] = [];
+  page.on('request', (requestEvent) => browserRequests.push(requestEvent.url()));
   await page.goto(LAB_URL, { waitUntil: 'domcontentloaded' });
   await waitForLab(page);
   const state = await readLabState(page);
   expect(state.entityCount).toBeGreaterThanOrEqual(25);
   expect(state.buildingCount).toBeGreaterThanOrEqual(3);
+  expect(browserRequests.some((url) => url.includes('/dev-content'))).toBeFalsy();
+  expect(browserRequests.some((url) => url.includes('/events'))).toBeFalsy();
   await evidence.capture('bundled-pack-offline', {
     entityCount: state.entityCount,
     buildingCount: state.buildingCount,
     contentServerExpected: 'stopped',
+    browserRequests,
+    resourceEntries: await readResourceEntries(page),
     physicalValidationStatus: 'awaiting-physical-validation',
   });
 });
@@ -205,6 +226,38 @@ async function readLabState(page: Page): Promise<{
       tick: lab?.runtime.getLatestTick() ?? 0,
     };
   });
+}
+
+async function readPublishedRuntime(page: Page): Promise<{
+  content: { identity: { revision: string; packId: string } } | null;
+  status: {
+    activeRevision: string | null;
+    activeManifestHash: string | null;
+    activeVisualContentHash: string | null;
+    activeSimulationRulesHash: string | null;
+  } | null;
+}> {
+  return page.evaluate(() => {
+    const app = (window as unknown as { __pastelApp?: AppHook }).__pastelApp;
+    const lab = app?.getInteractionLab?.();
+    const content = lab?.getContent();
+    const status = app?.getContentStatus?.();
+    return {
+      content: content ? { identity: { revision: content.identity.revision, packId: content.identity.packId } } : null,
+      status: status
+        ? {
+            activeRevision: status.activeRevision,
+            activeManifestHash: status.activeManifestHash,
+            activeVisualContentHash: status.activeVisualContentHash,
+            activeSimulationRulesHash: status.activeSimulationRulesHash,
+          }
+        : null,
+    };
+  });
+}
+
+async function readResourceEntries(page: Page): Promise<string[]> {
+  return page.evaluate(() => performance.getEntriesByType('resource').map((entry) => entry.name));
 }
 
 async function readSelectedEntity(page: Page): Promise<{ x: number; z: number } | null> {
@@ -399,90 +452,6 @@ async function readPackAssetRequests(page: Page): Promise<string[]> {
   );
 }
 
-async function readSceneChildCount(page: Page): Promise<number> {
-  return page.evaluate(() => {
-    const app = (window as unknown as { __pastelApp?: { scene?: { children?: unknown[] } } }).__pastelApp;
-    return app?.scene?.children?.length ?? 0;
-  });
-}
-
-async function createPngBase64(page: Page): Promise<string> {
-  return page.evaluate(async () => {
-    const canvas = document.createElement('canvas');
-    canvas.width = 32;
-    canvas.height = 32;
-    const context = canvas.getContext('2d');
-    if (!context) {
-      throw new Error('2d context missing');
-    }
-    context.fillStyle = '#e07a3d';
-    context.fillRect(6, 4, 20, 24);
-    const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/png'));
-    if (!blob) {
-      throw new Error('PNG encode failed');
-    }
-    const bytes = new Uint8Array(await blob.arrayBuffer());
-    let binary = '';
-    for (const byte of bytes) {
-      binary += String.fromCharCode(byte);
-    }
-    return btoa(binary);
-  });
-}
-
-async function publishV1AndWaitForEvent(
-  page: Page,
-  id: string,
-  pngBase64: string,
-): Promise<{ status: number; eventType: string | null; eventId: string | null }> {
-  return page.evaluate(async ({ id: unitId, png }) => {
-    const source = new EventSource('/dev-content/events');
-    let eventResolve: (value: { type: string | null; id: string | null }) => void = () => undefined;
-    const eventPromise = new Promise<{ type: string | null; id: string | null }>((resolve) => {
-      eventResolve = resolve;
-    });
-    source.onmessage = (message) => {
-      const payload = JSON.parse(message.data) as { type?: string; id?: string };
-      if (payload.type === 'unit-published' && payload.id === unitId) {
-        eventResolve({ type: payload.type, id: payload.id });
-      }
-    };
-    await new Promise<void>((resolve) => {
-      source.onopen = () => resolve();
-      window.setTimeout(resolve, 2000);
-    });
-    const response = await fetch('/dev-content/units', {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({
-        manifest: {
-          schemaVersion: 1,
-          id: unitId,
-          displayName: 'M1.1-C Hot Reload Unit',
-          enabled: true,
-          faction: 'friendly',
-          assetPath: `units/${unitId}/sprite.png`,
-          sourceWidth: 32,
-          sourceHeight: 32,
-          bounds: { minX: 6, minY: 4, maxX: 26, maxY: 28 },
-          anchor: { x: 0.5, y: 1 },
-          worldHeight: 1.5,
-          selectionRadius: 0.6,
-        },
-        pngBase64: png,
-      }),
-    });
-    const event = await Promise.race([
-      eventPromise,
-      new Promise<{ type: string | null; id: string | null }>((resolve) =>
-        window.setTimeout(() => resolve({ type: null, id: null }), 5000),
-      ),
-    ]);
-    source.close();
-    return { status: response.status, eventType: event.type, eventId: event.id };
-  }, { id, png: pngBase64 });
-}
-
 type EntityHook = {
   id: { index: number; generation: number };
   kind: string;
@@ -493,6 +462,7 @@ type EntityHook = {
 
 type LabHook = {
   isReady: () => boolean;
+  getContent: () => { identity: { revision: string; packId: string } };
   getPickableEntities: () => EntityHook[];
   selection: { getSelected: () => Array<{ index: number; generation: number }>; selectMany: (ids: unknown[]) => void };
   interaction: { issuedCommands: Array<{ kind: string }> };
@@ -517,6 +487,12 @@ type LabHook = {
 
 type AppHook = {
   getInteractionLab?: () => LabHook | null;
+  getContentStatus?: () => {
+    activeRevision: string | null;
+    activeManifestHash: string | null;
+    activeVisualContentHash: string | null;
+    activeSimulationRulesHash: string | null;
+  } | null;
   getCamera: () => {
     camera: {
       position: {
