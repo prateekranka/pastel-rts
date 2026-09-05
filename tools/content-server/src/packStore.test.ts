@@ -1,4 +1,15 @@
-import { mkdtempSync, readFileSync, rmSync, existsSync, mkdirSync, writeFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import {
+  mkdtempSync,
+  readFileSync,
+  readdirSync,
+  rmSync,
+  existsSync,
+  mkdirSync,
+  writeFileSync,
+  renameSync,
+  symlinkSync,
+} from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
@@ -78,6 +89,10 @@ function crc32(data: Buffer): number {
     }
   }
   return (crc ^ 0xffffffff) >>> 0;
+}
+
+function sha256(bytes: Buffer): string {
+  return createHash('sha256').update(bytes).digest('hex');
 }
 
 let tempDir: string;
@@ -262,6 +277,22 @@ describe('PackStore v2 operations', () => {
     expect(existsSync(join(tempDir, reference.storagePath))).toBe(true);
   });
 
+  it('rejects symlinked mutable asset directories before writing outside the pack', () => {
+    const outsideDir = mkdtempSync(join(tmpdir(), 'pastel-pack-outside-'));
+    try {
+      symlinkSync(outsideDir, join(tempDir, 'units', 'outside-unit'), 'dir');
+      expect(() =>
+        store.createUnitArchetype(
+          { ...validUnitArchetype, id: 'outside-unit', assetPath: 'units/outside-unit/sheet.png' },
+          TINY_PNG_BASE64,
+        ),
+      ).toThrow(/symbolic link|symlink/i);
+      expect(existsSync(join(outsideDir, 'sheet.png'))).toBe(false);
+    } finally {
+      rmSync(outsideDir, { recursive: true, force: true });
+    }
+  });
+
   it('leaves the last good publication readable when validation fails', () => {
     const initial = store.getPublicationStatus();
     store.createUnitArchetype(validUnitArchetype, TINY_PNG_BASE64, initial.draftRevision);
@@ -297,6 +328,90 @@ describe('PackStore v2 operations', () => {
     ).toThrow(/image dimensions/i);
     expect(() => sanitizeRelativePath('units/a/%2e%2e/secret.png')).toThrow(/invalid path/i);
     expect(() => sanitizeRelativePath('units/a/../secret.png')).toThrow(/invalid path/i);
+  });
+});
+
+describe('PackStore A2 preservation', () => {
+  it('retains every unpublished replacement through failed publish and removal', () => {
+    const initial = store.getPublicationStatus();
+    store.createUnitArchetype(validUnitArchetype, TINY_PNG_BASE64, initial.draftRevision);
+    const published = store.publish(initial.currentRevision);
+    const firstBytes = Buffer.from(pngWithText('unpublished-one'), 'base64');
+    const secondBytes = Buffer.from(pngWithText('unpublished-two'), 'base64');
+
+    let draft = store.getPublicationStatus();
+    store.updateUnitArchetype(
+      'test-scout',
+      { ...validUnitArchetype, displayName: 'Unpublished One' },
+      firstBytes.toString('base64'),
+      draft.draftRevision,
+    );
+    draft = store.getPublicationStatus();
+    store.updateUnitArchetype(
+      'test-scout',
+      { ...validUnitArchetype, displayName: 'Unpublished Two' },
+      secondBytes.toString('base64'),
+      draft.draftRevision,
+    );
+
+    const originalFiles = readdirSync(store.originalsDir).filter((file) => file.endsWith('.png'));
+    expect(originalFiles).toHaveLength(3);
+    expect(readFileSync(join(store.originalsDir, `${sha256(firstBytes)}.png`))).toEqual(firstBytes);
+    expect(readFileSync(join(store.originalsDir, `${sha256(secondBytes)}.png`))).toEqual(secondBytes);
+
+    const badScenario = {
+      schemaVersion: 1,
+      id: 'bad-scenario',
+      displayName: 'Bad Scenario',
+      mapId: 'lab-grid',
+      units: [{ archetypeId: 'missing-unit', position: { x: 1024, z: 1024 } }],
+      buildings: [],
+    };
+    mkdirSync(join(tempDir, 'scenarios'), { recursive: true });
+    writeFileSync(join(tempDir, 'scenarios/bad-scenario.json'), JSON.stringify(badScenario));
+    const badDraft = { ...store.readPackV2(), scenarios: [{ id: 'bad-scenario', path: 'scenarios/bad-scenario.json' }] };
+    writeFileSync(store.draftPackPath, `${JSON.stringify(badDraft, null, 2)}\n`);
+    writeFileSync(store.v2IndexPath, `${JSON.stringify(badDraft, null, 2)}\n`);
+
+    expect(() => store.publish(published.metadata.revision)).toThrow(/missing unit/i);
+    expect(store.getPublicationStatus().currentRevision).toBe(published.metadata.revision);
+    expect(readFileSync(join(store.originalsDir, `${sha256(firstBytes)}.png`))).toEqual(firstBytes);
+    expect(readFileSync(join(store.originalsDir, `${sha256(secondBytes)}.png`))).toEqual(secondBytes);
+
+    const deletion = store.deleteUnitArchetype('test-scout', true, store.getPublicationStatus().draftRevision);
+    expect(deletion.deleted).toBe(true);
+    expect(readFileSync(join(store.originalsDir, `${sha256(firstBytes)}.png`))).toEqual(firstBytes);
+    expect(readFileSync(join(store.originalsDir, `${sha256(secondBytes)}.png`))).toEqual(secondBytes);
+  });
+
+  it('rolls back a publication when the state rename fails after snapshot assembly', () => {
+    const failureDir = mkdtempSync(join(tmpdir(), 'pastel-pack-failure-'));
+    try {
+      let failingStore: PackStore;
+      let failStateRename = false;
+      const fileSystem = {
+        renameSync: ((source, destination) => {
+          if (failStateRename && String(destination) === failingStore.statePath) {
+            throw new Error('injected state rename failure');
+          }
+          return renameSync(source, destination);
+        }) as typeof renameSync,
+      };
+      failingStore = new PackStore({ packDir: failureDir, fileSystem });
+      const initial = failingStore.getPublicationStatus();
+      failingStore.createUnitArchetype(validUnitArchetype, TINY_PNG_BASE64, initial.draftRevision);
+      const stateBeforePublish = readFileSync(failingStore.statePath);
+      failStateRename = true;
+
+      expect(() => failingStore.publish(initial.currentRevision)).toThrow(/injected state rename failure/i);
+      expect(readFileSync(failingStore.statePath)).toEqual(stateBeforePublish);
+      expect(failingStore.getPublicationStatus().currentRevision).toBe(initial.currentRevision);
+      expect(failingStore.readPublishedPackV2().units).toHaveLength(0);
+      expect(failingStore.listRevisionMetadata()).toHaveLength(1);
+      expect(readdirSync(failingStore.revisionsDir).some((name) => name.startsWith('.'))).toBe(false);
+    } finally {
+      rmSync(failureDir, { recursive: true, force: true });
+    }
   });
 });
 

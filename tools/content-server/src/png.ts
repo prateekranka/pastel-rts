@@ -128,15 +128,19 @@ export function decodePng(input: Uint8Array): DecodedPng {
 
   const channels = channelsForColorType(header.colorType);
   const bitsPerPixel = channels * header.bitDepth;
+  const decodedRgbaBytes = header.width * header.height * 4;
+  if (!Number.isSafeInteger(decodedRgbaBytes) || decodedRgbaBytes > MAX_DECODED_PNG_BYTES) {
+    throw new Error('PNG decoded pixels exceed limits');
+  }
   const rowBytes = Math.ceil((header.width * bitsPerPixel) / 8);
   const expectedDecodedBytes = (rowBytes + 1) * header.height;
-  if (expectedDecodedBytes > MAX_DECODED_PNG_BYTES + header.height) {
+  if (!Number.isSafeInteger(expectedDecodedBytes) || expectedDecodedBytes > MAX_DECODED_PNG_BYTES + header.height) {
     throw new Error('PNG decoded data exceeds limits');
   }
 
   let filtered: Buffer;
   try {
-    filtered = inflateSync(Buffer.concat(idat));
+    filtered = inflateSync(Buffer.concat(idat), { maxOutputLength: expectedDecodedBytes });
   } catch {
     throw new Error('PNG image data is corrupt');
   }

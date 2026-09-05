@@ -20,6 +20,8 @@
     "dev:studio": "node scripts/dev-studio.mjs",
     "fixture:generate": "node scripts/generate-fixture-pack.mjs",
     "content:validate": "tsx scripts/validate-content-pack.ts",
+    "qa:scenario": "tsx scripts/qa-scenario.ts",
+    "qa:bundle": "tsx scripts/qa-bundle.ts",
     "build": "npm run typecheck --workspace @pastel-rts/content-schema && npm run typecheck --workspace @pastel-rts/simulation && npm run typecheck --workspace @pastel-rts/navigation && npm run typecheck --workspace @pastel-rts/content-server && npm run build --workspace @pastel-rts/game-web && npm run build --workspace @pastel-rts/foundry",
     "preview": "npm run preview --workspace @pastel-rts/game-web",
     "typecheck": "npm run typecheck --workspace @pastel-rts/content-schema && npm run typecheck --workspace @pastel-rts/simulation && npm run typecheck --workspace @pastel-rts/navigation && npm run typecheck --workspace @pastel-rts/content-server && npm run typecheck --workspace @pastel-rts/game-web && npm run typecheck --workspace @pastel-rts/foundry",

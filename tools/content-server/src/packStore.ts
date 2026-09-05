@@ -2,6 +2,7 @@ import {
   copyFileSync,
   cpSync,
   existsSync,
+  lstatSync,
   mkdirSync,
   readdirSync,
   readFileSync,
@@ -43,6 +44,32 @@ import { decodePng } from './png';
 
 export type PackStoreOptions = {
   packDir: string;
+  /** Narrow seam for deterministic publication failure tests. */
+  fileSystem?: Partial<PackStoreFileSystem>;
+};
+
+export type PackStoreFileSystem = {
+  copyFileSync: typeof copyFileSync;
+  cpSync: typeof cpSync;
+  existsSync: typeof existsSync;
+  lstatSync: typeof lstatSync;
+  mkdirSync: typeof mkdirSync;
+  readFileSync: typeof readFileSync;
+  renameSync: typeof renameSync;
+  rmSync: typeof rmSync;
+  writeFileSync: typeof writeFileSync;
+};
+
+const DEFAULT_FILE_SYSTEM: PackStoreFileSystem = {
+  copyFileSync,
+  cpSync,
+  existsSync,
+  lstatSync,
+  mkdirSync,
+  readFileSync,
+  renameSync,
+  rmSync,
+  writeFileSync,
 };
 
 export type HotReloadEvent =
@@ -118,6 +145,16 @@ export class ContentNotFoundError extends Error {
   }
 }
 
+export class ContentIntegrityError extends Error {
+  readonly status = 500;
+  readonly code = 'content-integrity';
+
+  constructor(message: string) {
+    super(message);
+    this.name = 'ContentIntegrityError';
+  }
+}
+
 const DEFAULT_FACTIONS: PackV2['factions'] = [
   { id: 'sunweaver', displayName: 'Sunweaver' },
   { id: 'gravemark', displayName: 'Gravemark' },
@@ -141,8 +178,11 @@ export class PackStore {
   readonly draftPackPath: string;
   readonly referencesPath: string;
   readonly referencesDir: string;
+  readonly originalsDir: string;
+  readonly fileSystem: PackStoreFileSystem;
 
   constructor(options: PackStoreOptions) {
+    this.fileSystem = { ...DEFAULT_FILE_SYSTEM, ...(options.fileSystem ?? {}) };
     this.packDir = options.packDir;
     this.unitsDir = join(this.packDir, 'units');
     this.buildingsDir = join(this.packDir, 'buildings');
@@ -156,12 +196,22 @@ export class PackStore {
     this.draftPackPath = join(this.publicationDir, 'draft-pack.json');
     this.referencesPath = join(this.publicationDir, 'references.json');
     this.referencesDir = join(this.publicationDir, 'references');
-    mkdirSync(this.unitsDir, { recursive: true });
-    mkdirSync(this.buildingsDir, { recursive: true });
-    mkdirSync(this.mapsDir, { recursive: true });
-    mkdirSync(this.scenariosDir, { recursive: true });
-    mkdirSync(this.revisionsDir, { recursive: true });
-    mkdirSync(this.referencesDir, { recursive: true });
+    this.originalsDir = join(this.publicationDir, 'originals');
+    assertPackRootSafe(this.packDir);
+    for (const directory of [
+      this.publicationDir,
+      this.unitsDir,
+      this.buildingsDir,
+      this.mapsDir,
+      this.scenariosDir,
+      this.revisionsDir,
+      this.referencesDir,
+      this.originalsDir,
+    ]) {
+      assertNoSymlinkPath(this.packDir, directory);
+      mkdirSync(directory, { recursive: true });
+      assertNoSymlinkPath(this.packDir, directory);
+    }
     this.materializeCanonicalV2Pack();
     this.initializePublicationState();
   }
@@ -172,6 +222,7 @@ export class PackStore {
 
   readPublishedPackV1(): PackV1 {
     const metadata = this.getCurrentRevisionMetadata();
+    this.readRevisionPack(metadata);
     if (metadata.legacyManifestPath !== undefined) {
       const path = this.resolveRevisionRelativePath(metadata.revision, metadata.legacyManifestPath);
       if (existsSync(path)) {
@@ -197,13 +248,27 @@ export class PackStore {
     return this.readRevisionPack(metadata);
   }
 
+  getRevisionPack(revision: string): PackV2 {
+    return this.readRevisionPack(this.getRevisionMetadata(revision));
+  }
+
   getPublicationStatus(): PublicationStatus {
     const state = this.readPublicationState();
+    const current = this.getRevisionMetadata(state.currentRevision);
+    this.readRevisionPack(current);
     return {
       currentRevision: state.currentRevision,
       draftRevision: state.draftRevision,
-      current: this.getRevisionMetadata(state.currentRevision),
+      current,
     };
+  }
+
+  validateDraft(expectedDraftRevision: string): { ok: true; draftRevision: string } {
+    const current = this.getCurrentRevisionMetadata();
+    this.assertCurrentRevision(expectedDraftRevision, current, 'draft');
+    const draft = validatePackV2(this.readDraftPackV2());
+    this.validateDraftAssets(draft);
+    return { ok: true, draftRevision: draft.revision };
   }
 
   listRevisionMetadata(): RevisionMetadata[] {
@@ -236,50 +301,68 @@ export class PackStore {
 
   publish(expectedRevision: string): PublicationOperationResult {
     const current = this.getCurrentRevisionMetadata();
+    this.readRevisionPack(current);
     this.assertCurrentRevision(expectedRevision, current, 'publication');
     const draft = validatePackV2(this.readDraftPackV2());
     const revision = this.nextPublicationRevision();
     const legacyPack = this.readDraftPackV1();
-    const metadata = this.writeRevisionSnapshot(revision, draft, {
-      allowMissingAssets: false,
-      parentRevision: current.revision,
-      legacyPack,
-    });
-    const publishedPack = this.readRevisionPack(metadata);
-    const state = this.readPublicationState();
-    atomicWriteJson(this.statePath, {
-      schemaVersion: state.schemaVersion,
-      currentRevision: metadata.revision,
-      draftRevision: draft.revision,
-    } satisfies PublicationState);
-    return {
-      metadata,
-      pack: publishedPack,
-      previousRevision: current.revision,
-      draftRevision: draft.revision,
-    };
+    let metadata: RevisionMetadata | undefined;
+    try {
+      metadata = this.writeRevisionSnapshot(revision, draft, {
+        allowMissingAssets: false,
+        parentRevision: current.revision,
+        legacyPack,
+      });
+      const publishedPack = this.readRevisionPack(metadata);
+      const state = this.readPublicationState();
+      atomicWriteJson(this.statePath, {
+        schemaVersion: state.schemaVersion,
+        currentRevision: metadata.revision,
+        draftRevision: draft.revision,
+      } satisfies PublicationState, this.fileSystem);
+      return {
+        metadata,
+        pack: publishedPack,
+        previousRevision: current.revision,
+        draftRevision: draft.revision,
+      };
+    } catch (error) {
+      if (metadata) {
+        this.removeOwnedRevision(metadata.revision);
+      }
+      throw error;
+    }
   }
 
   revert(targetRevision: string, expectedCurrentRevision: string): PublicationOperationResult {
     const current = this.getCurrentRevisionMetadata();
+    this.readRevisionPack(current);
     this.assertCurrentRevision(expectedCurrentRevision, current, 'publication');
     const target = this.getRevisionMetadata(targetRevision);
     const targetPack = this.readRevisionPack(target);
     const revision = this.nextPublicationRevision();
-    const metadata = this.writeRevisionFromRetainedRevision(revision, target, targetPack, current.revision);
-    const publishedPack = this.readRevisionPack(metadata);
-    const state = this.readPublicationState();
-    atomicWriteJson(this.statePath, {
-      schemaVersion: state.schemaVersion,
-      currentRevision: metadata.revision,
-      draftRevision: state.draftRevision,
-    } satisfies PublicationState);
-    return {
-      metadata,
-      pack: publishedPack,
-      previousRevision: current.revision,
-      draftRevision: state.draftRevision,
-    };
+    let metadata: RevisionMetadata | undefined;
+    try {
+      metadata = this.writeRevisionFromRetainedRevision(revision, target, targetPack, current.revision);
+      const publishedPack = this.readRevisionPack(metadata);
+      const state = this.readPublicationState();
+      atomicWriteJson(this.statePath, {
+        schemaVersion: state.schemaVersion,
+        currentRevision: metadata.revision,
+        draftRevision: state.draftRevision,
+      } satisfies PublicationState, this.fileSystem);
+      return {
+        metadata,
+        pack: publishedPack,
+        previousRevision: current.revision,
+        draftRevision: state.draftRevision,
+      };
+    } catch (error) {
+      if (metadata) {
+        this.removeOwnedRevision(metadata.revision);
+      }
+      throw error;
+    }
   }
 
   writePackV1Index(): void {
@@ -299,9 +382,13 @@ export class PackStore {
     this.assertDraftRevision(expectedRevision);
     const validated = validateUnitManifest(manifest);
     const dir = join(this.unitsDir, validated.id);
+    assertNoSymlinkPath(this.packDir, dir);
     mkdirSync(dir, { recursive: true });
+    assertNoSymlinkPath(this.packDir, dir);
     const pngPath = join(dir, 'sprite.png');
-    writePngAtomic(pngPath, pngBase64);
+    const bytes = decodeAndValidateUploadedPng(pngBase64);
+    this.storeOriginalPng(bytes);
+    writePngAtomic(pngPath, bytes, this.fileSystem);
     const saved: UnitManifest = { ...validated, assetPath: `units/${validated.id}/sprite.png` };
     atomicWriteJson(join(dir, 'manifest.json'), saved);
 
@@ -323,7 +410,9 @@ export class PackStore {
     if (existsSync(join(dir, 'manifest.json'))) {
       throw new Error(`Unit archetype already exists: ${validated.id}`);
     }
+    assertNoSymlinkPath(this.packDir, dir);
     mkdirSync(dir, { recursive: true });
+    assertNoSymlinkPath(this.packDir, dir);
     const saved = this.persistUnitArchetype(dir, validated, pngBase64);
     const draft = this.readDraftPackV2();
     const nextDraft: PackV2 = {
@@ -399,6 +488,7 @@ export class PackStore {
     if (existsSync(join(destinationDir, 'manifest.json'))) {
       throw new Error(`Unit archetype already exists: ${newId}`);
     }
+    assertNoSymlinkPath(this.packDir, destinationDir);
     const sourcePath = this.resolveDraftArchetypeAssetPath('unit', source);
     const fileName = basenameFromAssetPath(source.assetPath);
     mkdirSync(destinationDir, { recursive: true });
@@ -455,7 +545,9 @@ export class PackStore {
     if (existsSync(join(dir, 'manifest.json'))) {
       throw new Error(`Building archetype already exists: ${validated.id}`);
     }
+    assertNoSymlinkPath(this.packDir, dir);
     mkdirSync(dir, { recursive: true });
+    assertNoSymlinkPath(this.packDir, dir);
     const saved = this.persistBuildingArchetype(dir, validated, pngBase64);
     const draft = this.readDraftPackV2();
     this.saveDraftPack({
@@ -534,6 +626,7 @@ export class PackStore {
     if (existsSync(join(destinationDir, 'manifest.json'))) {
       throw new Error(`Building archetype already exists: ${newId}`);
     }
+    assertNoSymlinkPath(this.packDir, destinationDir);
     const sourcePath = this.resolveDraftArchetypeAssetPath('building', source);
     const fileName = basenameFromAssetPath(source.assetPath);
     mkdirSync(destinationDir, { recursive: true });
@@ -589,9 +682,14 @@ export class PackStore {
     const hash = sha256Buffer(bytes);
     const storageRelative = `${PUBLICATION_DIR}/references/${input.id}/${hash}.png`;
     const storagePath = join(this.packDir, storageRelative);
+    assertNoSymlinkPath(this.packDir, dirname(storagePath));
     if (!existsSync(storagePath)) {
       mkdirSync(dirname(storagePath), { recursive: true });
+      assertNoSymlinkPath(this.packDir, dirname(storagePath));
+      assertNoSymlinkPath(this.packDir, storagePath);
       writeFileSync(storagePath, bytes, { flag: 'wx' });
+    } else {
+      assertNoSymlinkPath(this.packDir, storagePath);
     }
     const metadata = validateReferenceAttachmentMetadata({
       schemaVersion: 1,
@@ -627,28 +725,65 @@ export class PackStore {
   resolveAssetPath(relativePath: string): string {
     const safe = sanitizeRelativePath(relativePath);
     const metadata = this.getCurrentRevisionMetadata();
+    const pack = this.readRevisionPack(metadata);
     const asset = metadata.assets.find((entry) => entry.assetPath === safe);
-    if (!asset) {
+    if (!asset || asset.kind !== assetKindForPack(pack, safe)) {
       throw new ContentNotFoundError('Asset not found');
     }
-    const absolute = this.resolveRevisionStoragePath(metadata.revision, asset.storagePath);
-    if (!existsSync(absolute)) {
-      throw new Error('Published asset is missing');
-    }
-    return absolute;
+    return this.resolveRevisionStoragePath(metadata.revision, asset.storagePath);
   }
 
   resolveUnitFilePath(relativePath: string): string {
     return this.resolveAssetPath(`units/${relativePath}`);
   }
 
+  resolveRevisionAssetPath(revision: string, relativePath: string): string {
+    const metadata = this.getRevisionMetadata(revision);
+    const pack = this.readRevisionPack(metadata);
+    const safe = sanitizeRelativePath(relativePath);
+    const asset = metadata.assets.find((entry) => entry.assetPath === safe);
+    if (!asset || asset.kind !== assetKindForPack(pack, safe)) {
+      throw new ContentNotFoundError(`Published asset not found: ${safe}`);
+    }
+    return this.resolveRevisionStoragePath(metadata.revision, asset.storagePath);
+  }
+
   resolveDraftAssetPath(relativePath: string): string {
     const safe = sanitizeRelativePath(relativePath);
-    const absolute = join(this.packDir, safe);
-    assertWithinPack(this.packDir, absolute);
-    if (!existsSync(absolute)) {
-      throw new ContentNotFoundError('Draft asset not found');
+    const pack = validatePackV2(this.readDraftPackV2());
+    const kind = assetKindForPack(pack, safe);
+    if (kind === undefined) {
+      throw new ContentNotFoundError(`Draft asset not found: ${safe}`);
     }
+    const absolute = this.resolveDraftReferencedAssetPath(pack, safe, kind);
+    if (!existsSync(absolute)) {
+      throw new ContentNotFoundError(`Draft asset not found: ${safe}`);
+    }
+    assertNoSymlinkPath(this.packDir, absolute);
+    if (kind === 'runtime') {
+      decodePng(readFileSync(absolute));
+    }
+    return absolute;
+  }
+
+  resolveReferenceImagePath(id: string): string {
+    assertContentId(id, 'reference id');
+    const reference = this.readReferenceAttachments().find((entry) => entry.id === id);
+    if (!reference) {
+      throw new ContentNotFoundError(`Reference attachment not found: ${id}`);
+    }
+    const expectedStoragePath = `${PUBLICATION_DIR}/references/${id}/${reference.sha256}.png`;
+    const expectedAssetPath = `references/${id}/${reference.sha256}.png`;
+    if (reference.storagePath !== expectedStoragePath || reference.assetPath !== expectedAssetPath) {
+      throw new ContentIntegrityError(`Reference attachment metadata is invalid: ${id}`);
+    }
+    const absolute = join(this.packDir, reference.storagePath);
+    assertWithinPack(this.packDir, absolute);
+    assertNoSymlinkPath(this.packDir, absolute);
+    if (!existsSync(absolute)) {
+      throw new ContentIntegrityError(`Reference attachment is missing: ${id}`);
+    }
+    decodePng(readFileSync(absolute));
     return absolute;
   }
 
@@ -658,26 +793,35 @@ export class PackStore {
       return null;
     }
     const current = this.getCurrentRevisionMetadata();
+    this.readRevisionPack(current);
     const draft = validatePackV2(this.readDraftPackV2());
     const revision = this.nextPublicationRevision();
-    const metadata = this.writeRevisionSnapshot(revision, draft, {
-      allowMissingAssets: true,
-      parentRevision: current.revision,
-      legacyPack: this.readDraftPackV1(),
-    });
-    const publishedPack = this.readRevisionPack(metadata);
-    const state = this.readPublicationState();
-    atomicWriteJson(this.statePath, {
-      schemaVersion: state.schemaVersion,
-      currentRevision: metadata.revision,
-      draftRevision: draft.revision,
-    } satisfies PublicationState);
-    return {
-      metadata,
-      pack: publishedPack,
-      previousRevision: current.revision,
-      draftRevision: draft.revision,
-    };
+    let metadata: RevisionMetadata | undefined;
+    try {
+      metadata = this.writeRevisionSnapshot(revision, draft, {
+        allowMissingAssets: true,
+        parentRevision: current.revision,
+        legacyPack: this.readDraftPackV1(),
+      });
+      const publishedPack = this.readRevisionPack(metadata);
+      const state = this.readPublicationState();
+      atomicWriteJson(this.statePath, {
+        schemaVersion: state.schemaVersion,
+        currentRevision: metadata.revision,
+        draftRevision: draft.revision,
+      } satisfies PublicationState, this.fileSystem);
+      return {
+        metadata,
+        pack: publishedPack,
+        previousRevision: current.revision,
+        draftRevision: draft.revision,
+      };
+    } catch (error) {
+      if (metadata) {
+        this.removeOwnedRevision(metadata.revision);
+      }
+      throw error;
+    }
   }
 
   private initializePublicationState(): void {
@@ -852,7 +996,9 @@ export class PackStore {
     }
     for (const unit of pack.units) {
       const dir = join(this.unitsDir, unit.id);
+      assertNoSymlinkPath(this.packDir, dir);
       mkdirSync(dir, { recursive: true });
+      assertNoSymlinkPath(this.packDir, dir);
       const manifest = join(dir, 'manifest.json');
       if (!existsSync(manifest)) {
         atomicWriteJson(manifest, unit);
@@ -860,11 +1006,39 @@ export class PackStore {
     }
     for (const building of pack.buildings) {
       const dir = join(this.buildingsDir, building.id);
+      assertNoSymlinkPath(this.packDir, dir);
       mkdirSync(dir, { recursive: true });
+      assertNoSymlinkPath(this.packDir, dir);
       const manifest = join(dir, 'manifest.json');
       if (!existsSync(manifest)) {
         atomicWriteJson(manifest, building);
       }
+    }
+  }
+
+  private storeOriginalPng(bytes: Buffer): void {
+    const hash = sha256Buffer(bytes);
+    const path = join(this.originalsDir, `${hash}.png`);
+    assertWithinPack(this.packDir, path);
+    assertNoSymlinkPath(this.packDir, this.originalsDir);
+    if (existsSync(path)) {
+      assertNoSymlinkPath(this.packDir, path);
+      const existing = readFileSync(path);
+      if (!existing.equals(bytes)) {
+        throw new ContentIntegrityError(`Content-addressed original hash collision: ${hash}`);
+      }
+      return;
+    }
+    mkdirSync(this.originalsDir, { recursive: true });
+    assertNoSymlinkPath(this.packDir, this.originalsDir);
+    assertNoSymlinkPath(this.packDir, path);
+    const tempPath = join(this.originalsDir, `.${hash}.${randomBytes(8).toString('hex')}.tmp`);
+    try {
+      writeFileSync(tempPath, bytes, { flag: 'wx' });
+      renameSync(tempPath, path);
+    } catch (error) {
+      rmSync(tempPath, { force: true });
+      throw error;
     }
   }
 
@@ -873,7 +1047,9 @@ export class PackStore {
     const assetFileName = basenameFromAssetPath(validated.assetPath);
     const pngPath = join(dir, assetFileName);
     if (pngBase64 !== undefined) {
-      writePngAtomic(pngPath, pngBase64);
+      const bytes = decodeAndValidateUploadedPng(pngBase64);
+      this.storeOriginalPng(bytes);
+      writePngAtomic(pngPath, bytes, this.fileSystem);
     } else if (existsSync(pngPath)) {
       decodePng(readFileSync(pngPath));
     } else {
@@ -896,7 +1072,9 @@ export class PackStore {
     const assetFileName = basenameFromAssetPath(validated.assetPath);
     const pngPath = join(dir, assetFileName);
     if (pngBase64 !== undefined) {
-      writePngAtomic(pngPath, pngBase64);
+      const bytes = decodeAndValidateUploadedPng(pngBase64);
+      this.storeOriginalPng(bytes);
+      writePngAtomic(pngPath, bytes, this.fileSystem);
     } else if (existsSync(pngPath)) {
       decodePng(readFileSync(pngPath));
     } else {
@@ -986,6 +1164,71 @@ export class PackStore {
     return refs.sort();
   }
 
+  private validateDraftAssets(pack: PackV2): void {
+    for (const unit of pack.units) {
+      const sourcePath = this.resolveDraftArchetypeAssetPath('unit', unit);
+      if (!existsSync(sourcePath)) {
+        throw new ContentIntegrityError(`Runtime asset is missing: ${unit.assetPath}`);
+      }
+      assertNoSymlinkPath(this.packDir, sourcePath);
+      decodePng(readFileSync(sourcePath));
+    }
+    for (const building of pack.buildings) {
+      const sourcePath = this.resolveDraftArchetypeAssetPath('building', building);
+      if (!existsSync(sourcePath)) {
+        throw new ContentIntegrityError(`Runtime asset is missing: ${building.assetPath}`);
+      }
+      assertNoSymlinkPath(this.packDir, sourcePath);
+      decodePng(readFileSync(sourcePath));
+    }
+    for (const reference of pack.maps ?? []) {
+      this.validateDraftDataAsset(reference.path, validateMapDef);
+    }
+    for (const reference of pack.scenarios ?? []) {
+      this.validateDraftDataAsset(reference.path, validateScenarioDef);
+    }
+    this.validateDraftDependencies(pack);
+  }
+
+  private validateDraftDataAsset(path: string, validate: (value: unknown) => unknown): void {
+    const sourcePath = this.resolveDraftReferencePath(path);
+    if (!existsSync(sourcePath)) {
+      throw new ContentIntegrityError(`Referenced content is missing: ${path}`);
+    }
+    assertNoSymlinkPath(this.packDir, sourcePath);
+    if (!path.endsWith('.json')) {
+      throw new ContentIntegrityError(`Referenced data must be JSON: ${path}`);
+    }
+    validate(JSON.parse(readFileSync(sourcePath, 'utf8')));
+  }
+
+  private resolveDraftReferencedAssetPath(
+    pack: PackV2,
+    assetPath: string,
+    kind: 'runtime' | 'data',
+  ): string {
+    if (kind === 'runtime') {
+      const unit = pack.units.find((entry) => entry.assetPath === assetPath);
+      if (unit) {
+        return this.resolveDraftArchetypeAssetPath('unit', unit);
+      }
+      const building = pack.buildings.find((entry) => entry.assetPath === assetPath);
+      if (building) {
+        return this.resolveDraftArchetypeAssetPath('building', building);
+      }
+    }
+    return this.resolveDraftReferencePath(assetPath);
+  }
+
+  private removeOwnedRevision(revision: string): void {
+    assertSafeRevision(revision);
+    const path = join(this.revisionsDir, revision);
+    if (existsSync(path)) {
+      assertNoSymlinkPath(this.revisionsDir, path);
+      this.fileSystem.rmSync(path, { recursive: true, force: true });
+    }
+  }
+
   private writeRevisionSnapshot(
     revision: string,
     draft: PackV2,
@@ -1002,19 +1245,19 @@ export class PackStore {
       throw new Error(`Revision already exists: ${revision}`);
     }
     const tempDir = join(this.revisionsDir, `.${revision}.${randomBytes(8).toString('hex')}.tmp`);
-    mkdirSync(join(tempDir, 'assets'), { recursive: true });
+    this.fileSystem.mkdirSync(join(tempDir, 'assets'), { recursive: true });
     try {
       const pack = validatePackV2({ ...draft, revision });
       const packText = jsonText(pack);
       const assetRefs = this.collectRevisionAssets(pack, tempDir, revision, options.allowMissingAssets);
       const metadata = this.buildRevisionMetadata(revision, pack, assetRefs, options);
-      writeFileSync(join(tempDir, 'pack.json'), packText);
-      writeFileSync(join(tempDir, 'pack-v1.json'), jsonText(options.legacyPack));
-      atomicWriteJson(join(tempDir, 'metadata.json'), metadata);
-      renameSync(tempDir, finalDir);
+      this.fileSystem.writeFileSync(join(tempDir, 'pack.json'), packText);
+      this.fileSystem.writeFileSync(join(tempDir, 'pack-v1.json'), jsonText(options.legacyPack));
+      atomicWriteJson(join(tempDir, 'metadata.json'), metadata, this.fileSystem);
+      this.fileSystem.renameSync(tempDir, finalDir);
       return metadata;
     } catch (error) {
-      rmSync(tempDir, { recursive: true, force: true });
+      this.fileSystem.rmSync(tempDir, { recursive: true, force: true });
       throw error;
     }
   }
@@ -1033,7 +1276,7 @@ export class PackStore {
     }
     const tempDir = join(this.revisionsDir, `.${revision}.${randomBytes(8).toString('hex')}.tmp`);
     try {
-      cpSync(sourceDir, tempDir, { recursive: true, errorOnExist: true });
+      this.fileSystem.cpSync(sourceDir, tempDir, { recursive: true, errorOnExist: true });
       const pack = validatePackV2({ ...sourcePack, revision });
       const packText = jsonText(pack);
       const assets: ImmutableAssetReference[] = sourceMetadata.assets.map((asset) => {
@@ -1060,12 +1303,12 @@ export class PackStore {
         parentRevision,
         sourceRevision: sourceMetadata.revision,
       });
-      writeFileSync(join(tempDir, 'pack.json'), packText);
-      atomicWriteJson(join(tempDir, 'metadata.json'), metadata);
-      renameSync(tempDir, finalDir);
+      this.fileSystem.writeFileSync(join(tempDir, 'pack.json'), packText);
+      atomicWriteJson(join(tempDir, 'metadata.json'), metadata, this.fileSystem);
+      this.fileSystem.renameSync(tempDir, finalDir);
       return metadata;
     } catch (error) {
-      rmSync(tempDir, { recursive: true, force: true });
+      this.fileSystem.rmSync(tempDir, { recursive: true, force: true });
       throw error;
     }
   }
@@ -1152,6 +1395,7 @@ export class PackStore {
         }
         throw new Error(`Referenced content is missing: ${entry.assetPath}`);
       }
+      assertNoSymlinkPath(this.packDir, entry.sourcePath);
       const parsed = JSON.parse(readFileSync(entry.sourcePath, 'utf8')) as unknown;
       entry.validate(parsed);
       this.copyRevisionAsset(entry, tempDir, revision, false, seen, assets);
@@ -1174,6 +1418,7 @@ export class PackStore {
       }
       throw new Error(`Runtime asset is missing: ${entry.assetPath}`);
     }
+    assertNoSymlinkPath(this.packDir, entry.sourcePath);
     const bytes = readFileSync(entry.sourcePath);
     let width: number | undefined;
     let height: number | undefined;
@@ -1252,11 +1497,79 @@ export class PackStore {
 
   private readRevisionPack(metadata: RevisionMetadata): PackV2 {
     const path = this.resolveRevisionRelativePath(metadata.revision, metadata.manifestPath);
-    const pack = validatePackV2(JSON.parse(readFileSync(path, 'utf8')));
+    const manifestText = readFileSync(path, 'utf8');
+    const parsed: unknown = JSON.parse(manifestText);
+    const pack = validatePackV2(parsed);
     if (pack.revision !== metadata.revision) {
-      throw new Error(`Published pack revision mismatch: ${metadata.revision}`);
+      throw new ContentIntegrityError(`Published pack revision mismatch: ${metadata.revision}`);
     }
+    if (sha256Text(manifestText) !== metadata.manifestHash) {
+      throw new ContentIntegrityError(`Published manifest hash mismatch: ${metadata.revision}`);
+    }
+    if (
+      !isRecordLike(parsed) ||
+      parsed['contentHash'] !== pack.contentHash ||
+      metadata.manifestPath !== `${PUBLICATION_DIR}/${REVISION_DIR}/${metadata.revision}/pack.json`
+    ) {
+      throw new ContentIntegrityError(`Published manifest is not immutable revision content: ${metadata.revision}`);
+    }
+    this.validateRevisionAssets(metadata, pack);
     return pack;
+  }
+
+  private validateRevisionAssets(metadata: RevisionMetadata, pack: PackV2): void {
+    const expected = expectedAssetKinds(pack);
+    const seen = new Set<string>();
+    for (const asset of metadata.assets) {
+      const expectedKind = expected.get(asset.assetPath);
+      const key = `${asset.kind}:${asset.assetPath}`;
+      if (expectedKind !== asset.kind || seen.has(key)) {
+        throw new ContentIntegrityError(`Published asset metadata is not allowlisted: ${asset.assetPath}`);
+      }
+      seen.add(key);
+      const expectedStoragePath = `${PUBLICATION_DIR}/${REVISION_DIR}/${metadata.revision}/assets/${asset.assetPath}`;
+      if (asset.storagePath !== expectedStoragePath) {
+        throw new ContentIntegrityError(`Published asset storage is not immutable: ${asset.assetPath}`);
+      }
+      let absolute: string;
+      try {
+        absolute = this.resolveRevisionStoragePath(metadata.revision, asset.storagePath);
+      } catch (error) {
+        if (error instanceof ContentNotFoundError) {
+          throw new ContentIntegrityError(`Published asset is missing: ${asset.assetPath}`);
+        }
+        throw error;
+      }
+      assertNoSymlinkPath(this.packDir, absolute);
+      const bytes = readFileSync(absolute);
+      if (bytes.length !== asset.byteLength || sha256Buffer(bytes) !== asset.sha256) {
+        throw new ContentIntegrityError(`Published asset hash mismatch: ${asset.assetPath}`);
+      }
+      if (asset.kind === 'runtime') {
+        const decoded = decodePng(bytes);
+        if (asset.width !== decoded.width || asset.height !== decoded.height) {
+          throw new ContentIntegrityError(`Published asset dimensions mismatch: ${asset.assetPath}`);
+        }
+      } else {
+        const map = pack.maps?.find((reference) => reference.path === asset.assetPath);
+        const scenario = pack.scenarios?.find((reference) => reference.path === asset.assetPath);
+        if (map) {
+          validateMapDef(JSON.parse(bytes.toString('utf8')));
+        } else if (scenario) {
+          validateScenarioDef(JSON.parse(bytes.toString('utf8')));
+        } else {
+          throw new ContentIntegrityError(`Published data asset is not referenced: ${asset.assetPath}`);
+        }
+      }
+    }
+    if (seen.size !== expected.size) {
+      const missing = [...expected.keys()].find((assetPath) => !seen.has(`${expected.get(assetPath)}:${assetPath}`));
+      throw new ContentIntegrityError(`Published asset is missing: ${missing ?? 'unknown'}`);
+    }
+    if (metadata.legacyManifestPath !== undefined) {
+      const legacyPath = this.resolveRevisionRelativePath(metadata.revision, metadata.legacyManifestPath);
+      parsePackV1(readFileSync(legacyPath, 'utf8'));
+    }
   }
 
   private resolveRevisionRelativePath(revision: string, path: string): string {
@@ -1266,6 +1579,7 @@ export class PackStore {
     assertWithinPack(this.packDir, absolute);
     const expectedRoot = join(this.revisionsDir, revision);
     assertWithinPack(expectedRoot, absolute);
+    assertNoSymlinkPath(this.packDir, absolute);
     if (!existsSync(absolute)) {
       throw new ContentNotFoundError(`Published file not found: ${path}`);
     }
@@ -1273,12 +1587,11 @@ export class PackStore {
   }
 
   private resolveRevisionStoragePath(revision: string, storagePath: string): string {
-    const absolute = this.resolveRevisionRelativePath(revision, storagePath);
     const expectedPrefix = `${PUBLICATION_DIR}/${REVISION_DIR}/${revision}/assets/`;
     if (!storagePath.startsWith(expectedPrefix)) {
-      throw new Error('Revision asset points outside its immutable revision');
+      throw new ContentIntegrityError('Revision asset points outside its immutable revision');
     }
-    return absolute;
+    return this.resolveRevisionRelativePath(revision, storagePath);
   }
 
   private nextPublicationRevision(): string {
@@ -1371,6 +1684,63 @@ export function sanitizeRelativePath(path: string): string {
   return segments.join('/');
 }
 
+function assetKindForPack(pack: PackV2, assetPath: string): 'runtime' | 'data' | undefined {
+  return expectedAssetKinds(pack).get(assetPath);
+}
+
+function expectedAssetKinds(pack: PackV2): Map<string, 'runtime' | 'data'> {
+  const result = new Map<string, 'runtime' | 'data'>();
+  const add = (assetPath: string, kind: 'runtime' | 'data'): void => {
+    const previous = result.get(assetPath);
+    if (previous !== undefined && previous !== kind) {
+      throw new ContentIntegrityError(`Asset is both runtime and data content: ${assetPath}`);
+    }
+    result.set(assetPath, kind);
+  };
+  for (const unit of pack.units) {
+    add(unit.assetPath, 'runtime');
+  }
+  for (const building of pack.buildings) {
+    add(building.assetPath, 'runtime');
+  }
+  for (const map of pack.maps ?? []) {
+    add(map.path, 'data');
+  }
+  for (const scenario of pack.scenarios ?? []) {
+    add(scenario.path, 'data');
+  }
+  return result;
+}
+
+function assertPackRootSafe(root: string): void {
+  if (existsSync(root) && lstatSync(root).isSymbolicLink()) {
+    throw new ContentIntegrityError('Selected pack directory must not be a symbolic link');
+  }
+}
+
+function assertNoSymlinkPath(root: string, target: string): void {
+  assertWithinPack(root, target);
+  const relativePath = relative(root, target);
+  let current = root;
+  const parts = relativePath === '' ? [] : relativePath.split(sep);
+  for (const part of parts) {
+    current = join(current, part);
+    try {
+      if (lstatSync(current).isSymbolicLink()) {
+        throw new ContentIntegrityError(`Symlinked content is not allowed: ${relative(root, current)}`);
+      }
+    } catch (error) {
+      if (!isMissingPathError(error)) {
+        throw error;
+      }
+    }
+  }
+}
+
+function isMissingPathError(error: unknown): boolean {
+  return Boolean(error && typeof error === 'object' && 'code' in error && error.code === 'ENOENT');
+}
+
 function assertWithinPack(root: string, target: string): void {
   const rel = relative(root, target);
   if (rel === '..' || rel.startsWith(`..${sep}`) || rel.includes(`${sep}..${sep}`)) {
@@ -1378,20 +1748,38 @@ function assertWithinPack(root: string, target: string): void {
   }
 }
 
-function atomicWriteJson(path: string, value: unknown): void {
-  mkdirSync(dirname(path), { recursive: true });
+function atomicWriteJson(
+  path: string,
+  value: unknown,
+  fileSystem: PackStoreFileSystem = DEFAULT_FILE_SYSTEM,
+): void {
+  fileSystem.mkdirSync(dirname(path), { recursive: true });
   const tempPath = `${path}.${randomBytes(8).toString('hex')}.tmp`;
-  writeFileSync(tempPath, jsonText(value));
-  renameSync(tempPath, path);
+  try {
+    fileSystem.writeFileSync(tempPath, jsonText(value));
+    fileSystem.renameSync(tempPath, path);
+  } catch (error) {
+    fileSystem.rmSync(tempPath, { force: true });
+    throw error;
+  }
 }
 
-function writePngAtomic(path: string, pngBase64: string): void {
-  const buffer = decodePngBase64(pngBase64);
+function writePngAtomic(
+  path: string,
+  png: string | Uint8Array,
+  fileSystem: PackStoreFileSystem = DEFAULT_FILE_SYSTEM,
+): void {
+  const buffer = typeof png === 'string' ? decodePngBase64(png) : Buffer.from(png);
   decodePng(buffer);
-  mkdirSync(dirname(path), { recursive: true });
+  fileSystem.mkdirSync(dirname(path), { recursive: true });
   const tempPath = `${path}.${randomBytes(8).toString('hex')}.tmp`;
-  writeFileSync(tempPath, buffer);
-  renameSync(tempPath, path);
+  try {
+    fileSystem.writeFileSync(tempPath, buffer);
+    fileSystem.renameSync(tempPath, path);
+  } catch (error) {
+    fileSystem.rmSync(tempPath, { force: true });
+    throw error;
+  }
 }
 
 function copyPngAtomic(sourcePath: string, destinationPath: string): void {
@@ -1401,6 +1789,12 @@ function copyPngAtomic(sourcePath: string, destinationPath: string): void {
   const tempPath = `${destinationPath}.${randomBytes(8).toString('hex')}.tmp`;
   writeFileSync(tempPath, bytes);
   renameSync(tempPath, destinationPath);
+}
+
+function decodeAndValidateUploadedPng(pngBase64: string): Buffer {
+  const buffer = decodePngBase64(pngBase64);
+  decodePng(buffer);
+  return buffer;
 }
 
 function decodePngBase64(pngBase64: string): Buffer {

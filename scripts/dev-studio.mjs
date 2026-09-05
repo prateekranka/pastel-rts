@@ -26,13 +26,18 @@ async function main() {
   let stopping = false;
   let firstFailure = null;
   let rejectFailure;
+  let rejectCancellation;
   let resolveLifecycle;
   const failurePromise = new Promise((_, reject) => {
     rejectFailure = reject;
   });
+  const cancellationPromise = new Promise((_, reject) => {
+    rejectCancellation = reject;
+  });
   const lifecyclePromise = new Promise((resolvePromise) => {
     resolveLifecycle = resolvePromise;
   });
+  const readinessAbortController = new AbortController();
 
   const reportFailure = (error) => {
     if (firstFailure || stopping) {
@@ -43,12 +48,20 @@ async function main() {
     resolveLifecycle();
   };
 
+  const gameOrigin = `http://${LOOPBACK}:${options.gamePort}`;
+  const contentOrigin = `http://${LOOPBACK}:${options.contentPort}`;
   const childEnv = {
     ...process.env,
     CONTENT_PACK_DIR: options.packDir,
     CONTENT_PORT: String(options.contentPort),
     STUDIO_CONTENT_PORT: String(options.contentPort),
     STUDIO_FOUNDRY_PORT: String(options.foundryPort),
+    VITE_GAME_WEB_ORIGIN: gameOrigin,
+    VITE_SANDBOX_PORT: String(options.gamePort),
+    VITE_CONTENT_SERVER_URL: contentOrigin,
+    VITE_CONTENT_SERVER_ORIGIN: contentOrigin,
+    VITE_CONTENT_STATUS_URL: `${contentOrigin}/health`,
+    VITE_CONTENT_HEALTH_URL: `${contentOrigin}/health`,
   };
 
   const spawnService = (name, args) => {
@@ -79,6 +92,8 @@ async function main() {
     if (!stopping) {
       console.log('Studio shutdown requested. Stopping owned services.');
       stopping = true;
+      readinessAbortController.abort();
+      rejectCancellation(new Error('Studio shutdown requested'));
       resolveLifecycle();
     }
   };
@@ -116,11 +131,12 @@ async function main() {
 
     await Promise.race([
       Promise.all([
-        waitForHttp(`http://${LOOPBACK}:${options.gamePort}/`, 'game'),
-        waitForHttp(`http://${LOOPBACK}:${options.foundryPort}/`, 'foundry'),
-        waitForHttp(`http://${LOOPBACK}:${options.contentPort}/health`, 'content'),
+        waitForHttp(`${gameOrigin}/`, 'game', readinessAbortController.signal),
+        waitForHttp(`http://${LOOPBACK}:${options.foundryPort}/`, 'foundry', readinessAbortController.signal),
+        waitForHttp(`${contentOrigin}/health`, 'content', readinessAbortController.signal),
       ]),
       failurePromise,
+      cancellationPromise,
     ]);
 
     if (firstFailure) {
@@ -128,10 +144,10 @@ async function main() {
     }
 
     console.log('Studio ready (loopback only)');
-    console.log(`  Game:    http://${LOOPBACK}:${options.gamePort}/`);
+    console.log(`  Game:    ${gameOrigin}/?mode=interaction-lab&content=studio`);
     console.log(`  Foundry: http://${LOOPBACK}:${options.foundryPort}/`);
-    console.log(`  Content: http://${LOOPBACK}:${options.contentPort}/health`);
-    console.log(`  Fixture: http://${LOOPBACK}:${options.gamePort}/content/dev-pack-v2/pack.json`);
+    console.log(`  Content: ${contentOrigin}/health`);
+    console.log(`  Fixture: ${gameOrigin}/content/dev-pack-v2/pack.json`);
     console.log(`  Pack dir: ${options.packDir}`);
     console.log('Press Ctrl-C to stop the three owned services.');
     await lifecyclePromise;
@@ -140,10 +156,13 @@ async function main() {
       process.exitCode = 1;
     }
   } catch (error) {
-    console.error(`Studio failed: ${error instanceof Error ? error.message : String(error)}`);
-    process.exitCode = 1;
+    if (!stopping) {
+      console.error(`Studio failed: ${error instanceof Error ? error.message : String(error)}`);
+      process.exitCode = 1;
+    }
   } finally {
     stopping = true;
+    readinessAbortController.abort();
     process.removeListener('SIGINT', signalHandler);
     process.removeListener('SIGTERM', signalHandler);
     await stopChildren(children);
@@ -236,17 +255,25 @@ function prefixStream(stream, name) {
   });
 }
 
-async function waitForHttp(url, name) {
+async function waitForHttp(url, name, cancellationSignal) {
   const deadline = Date.now() + 20000;
   let lastError = 'no response';
   while (Date.now() < deadline) {
+    if (cancellationSignal.aborted) {
+      throw new Error('Studio shutdown requested');
+    }
     try {
-      const response = await fetch(url, { signal: AbortSignal.timeout(1200) });
+      const response = await fetch(url, {
+        signal: AbortSignal.any([cancellationSignal, AbortSignal.timeout(1200)]),
+      });
       if (response.ok) {
         return;
       }
       lastError = `HTTP ${response.status}`;
     } catch (error) {
+      if (cancellationSignal.aborted) {
+        throw new Error('Studio shutdown requested');
+      }
       lastError = error instanceof Error ? error.message : String(error);
     }
     await delay(100);
@@ -259,40 +286,50 @@ function delay(ms) {
 }
 
 async function stopChildren(records) {
+  await signalProcessGroups(records, 'SIGTERM');
+  await waitForProcessGroups(records, 2000);
+  const remaining = records.filter((record) => processGroupAlive(record));
+  if (remaining.length > 0) {
+    await signalProcessGroups(remaining, 'SIGKILL');
+    await waitForProcessGroups(remaining, 2000);
+  }
+}
+
+async function signalProcessGroups(records, signal) {
   await Promise.all(records.map(async ({ name, child }) => {
-    if (child.exitCode !== null || child.signalCode !== null) {
-      return;
-    }
     try {
       if (child.pid) {
-        process.kill(-child.pid, 'SIGTERM');
-      } else {
-        child.kill('SIGTERM');
+        process.kill(-child.pid, signal);
+      } else if (child.exitCode === null && child.signalCode === null) {
+        child.kill(signal);
       }
     } catch (error) {
       if (error?.code !== 'ESRCH') {
-        console.error(`Could not stop ${name}: ${error instanceof Error ? error.message : String(error)}`);
-      }
-    }
-  }));
-  await delay(150);
-  await Promise.all(records.map(async ({ name, child }) => {
-    if (child.exitCode !== null || child.signalCode !== null) {
-      return;
-    }
-    try {
-      if (child.pid) {
-        process.kill(-child.pid, 'SIGKILL');
-      } else {
-        child.kill('SIGKILL');
-      }
-    } catch (error) {
-      if (error?.code !== 'ESRCH') {
-        console.error(`Could not force-stop ${name}: ${error instanceof Error ? error.message : String(error)}`);
+        console.error(`Could not send ${signal} to ${name}: ${error instanceof Error ? error.message : String(error)}`);
       }
     }
   }));
 }
+
+async function waitForProcessGroups(records, timeoutMs) {
+  const deadline = Date.now() + timeoutMs;
+  while (Date.now() < deadline && records.some((record) => processGroupAlive(record))) {
+    await delay(25);
+  }
+}
+
+function processGroupAlive({ child }) {
+  if (!child.pid) {
+    return child.exitCode === null && child.signalCode === null;
+  }
+  try {
+    process.kill(-child.pid, 0);
+    return true;
+  } catch (error) {
+    return error?.code !== 'ESRCH';
+  }
+}
+
 
 function printUsage() {
   console.log('Usage: npm run dev:studio -- [options]');

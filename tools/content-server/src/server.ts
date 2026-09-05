@@ -1,13 +1,16 @@
 import { createServer, type IncomingMessage, type ServerResponse } from 'node:http';
-import { existsSync, readFileSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
+  isValidContentId,
+  isValidRevision,
   validateBuildingArchetype,
   validateUnitArchetype,
   validateUnitManifest,
 } from '@pastel-rts/content-schema';
 import {
+  ContentIntegrityError,
   ContentNotFoundError,
   DependencyConflictError,
   PackStore,
@@ -23,6 +26,29 @@ const PORT = Number(process.env['CONTENT_PORT'] ?? 8787);
 
 const store = new PackStore({ packDir });
 const sseClients = new Set<ServerResponse>();
+const acknowledgements = new Map<string, Acknowledgement>();
+const MAX_ACKNOWLEDGEMENTS = 32;
+const MAX_REQUEST_BODY_BYTES = 16 * 1024 * 1024;
+const HASH_PATTERN = /^[a-f0-9]{64}$/;
+
+type Acknowledgement = {
+  runtimeId: string;
+  scenarioId: string;
+  revision: string;
+  simulationRulesHash: string;
+  restartRequired: boolean;
+  updatedAt: string;
+};
+
+class RequestBodyLimitError extends Error {
+  readonly status = 413;
+  readonly code = 'request-too-large';
+
+  constructor() {
+    super(`request body exceeds the ${String(MAX_REQUEST_BODY_BYTES)} byte limit`);
+    this.name = 'RequestBodyLimitError';
+  }
+}
 
 const server = createServer((req, res) => {
   void handle(req, res);
@@ -60,6 +86,28 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
     }
     if (req.method === 'GET' && url.pathname === '/v2/publication') {
       json(res, 200, store.getPublicationStatus());
+      return;
+    }
+    if (req.method === 'GET' && url.pathname === '/v2/draft/pack') {
+      json(res, 200, store.readPackV2());
+      return;
+    }
+    if (req.method === 'GET' && url.pathname.startsWith('/v2/draft/assets/')) {
+      serveDraftAsset(url.pathname, res);
+      return;
+    }
+    if (req.method === 'GET' && url.pathname === '/v2/acknowledgements') {
+      json(res, 200, { acknowledgements: [...acknowledgements.values()] });
+      return;
+    }
+    const revisionPack = matchRevisionPackPath(url.pathname);
+    if (req.method === 'GET' && revisionPack) {
+      json(res, 200, store.getRevisionPack(revisionPack.revision));
+      return;
+    }
+    const revisionAsset = matchRevisionAssetPath(url.pathname);
+    if (req.method === 'GET' && revisionAsset) {
+      serveRevisionAsset(revisionAsset.revision, revisionAsset.assetPath, res);
       return;
     }
     if (req.method === 'GET' && url.pathname === '/v2/revisions') {
@@ -120,8 +168,21 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
       json(res, 200, { references: store.listReferenceAttachments() });
       return;
     }
+    if (req.method === 'GET' && url.pathname.startsWith('/v2/references/') && url.pathname.endsWith('/image')) {
+      const id = decodePathSegment(url.pathname.replace(/^\/v2\/references\//, '').replace(/\/image$/, ''));
+      serveReferenceImage(id, res);
+      return;
+    }
     if (req.method === 'POST' && url.pathname === '/units') {
       await handlePostUnitV1(req, res);
+      return;
+    }
+    if (req.method === 'POST' && url.pathname === '/v2/acknowledgements') {
+      await handleAcknowledgement(req, res);
+      return;
+    }
+    if (req.method === 'POST' && url.pathname === '/v2/validate') {
+      await handleValidate(req, res);
       return;
     }
     if (req.method === 'POST' && url.pathname === '/v2/publish') {
@@ -360,6 +421,46 @@ async function handlePostReference(req: IncomingMessage, res: ServerResponse): P
   json(res, 200, { ok: true, reference });
 }
 
+async function handleAcknowledgement(req: IncomingMessage, res: ServerResponse): Promise<void> {
+  const record = await readJsonObject(req);
+  const runtimeId = requireStableId(record['runtimeId'], 'runtimeId');
+  const scenarioId = requireStableId(record['scenarioId'], 'scenarioId');
+  const revision = requireRevisionValue(record['revision']);
+  const simulationRulesHash = requireHashValue(record['simulationRulesHash'], 'simulationRulesHash');
+  if (typeof record['restartRequired'] !== 'boolean') {
+    throw new Error('restartRequired must be a boolean');
+  }
+  const metadata = store.getRevisionMetadata(revision);
+  if (simulationRulesHash !== metadata.simulationRulesHash) {
+    throw new Error(`simulationRulesHash does not match revision ${revision}`);
+  }
+  const acknowledgement: Acknowledgement = {
+    runtimeId,
+    scenarioId,
+    revision,
+    simulationRulesHash,
+    restartRequired: record['restartRequired'],
+    updatedAt: new Date().toISOString(),
+  };
+  const key = `${runtimeId}\u0000${scenarioId}`;
+  acknowledgements.delete(key);
+  acknowledgements.set(key, acknowledgement);
+  while (acknowledgements.size > MAX_ACKNOWLEDGEMENTS) {
+    const oldest = acknowledgements.keys().next().value;
+    if (oldest === undefined) {
+      break;
+    }
+    acknowledgements.delete(oldest);
+  }
+  json(res, 200, { ok: true, acknowledgement });
+}
+
+async function handleValidate(req: IncomingMessage, res: ServerResponse): Promise<void> {
+  const record = await readJsonObject(req);
+  const expectedDraftRevision = requiredExpectedRevision(record, 'expectedDraftRevision');
+  json(res, 200, store.validateDraft(expectedDraftRevision));
+}
+
 function jsonDraftMutation(res: ServerResponse, body: Record<string, unknown>): void {
   json(res, 200, {
     ...body,
@@ -406,6 +507,53 @@ function serveAsset(pathname: string, res: ServerResponse): void {
   }
 }
 
+function serveDraftAsset(pathname: string, res: ServerResponse): void {
+  const relative = pathname.replace(/^\/v2\/draft\/assets\//, '');
+  try {
+    const file = store.resolveDraftAssetPath(relative);
+    sendFile(res, file);
+  } catch (error) {
+    sendError(res, error);
+  }
+}
+
+function serveRevisionAsset(revision: string, assetPath: string, res: ServerResponse): void {
+  try {
+    const file = store.resolveRevisionAssetPath(revision, assetPath);
+    sendFile(res, file);
+  } catch (error) {
+    sendError(res, error);
+  }
+}
+
+function serveReferenceImage(id: string, res: ServerResponse): void {
+  try {
+    const file = store.resolveReferenceImagePath(id);
+    sendFile(res, file);
+  } catch (error) {
+    sendError(res, error);
+  }
+}
+
+function matchRevisionPackPath(pathname: string): { revision: string } | null {
+  const match = /^\/v2\/revisions\/([^/]+)\/pack$/.exec(pathname);
+  if (!match) {
+    return null;
+  }
+  return { revision: decodePathSegment(match[1] ?? '') };
+}
+
+function matchRevisionAssetPath(pathname: string): { revision: string; assetPath: string } | null {
+  const match = /^\/v2\/revisions\/([^/]+)\/assets\/(.+)$/.exec(pathname);
+  if (!match) {
+    return null;
+  }
+  return {
+    revision: decodePathSegment(match[1] ?? ''),
+    assetPath: match[2] ?? '',
+  };
+}
+
 function sendFile(res: ServerResponse, file: string): void {
   const data = readFileSync(file);
   const type = file.endsWith('.png') ? 'image/png' : 'application/json';
@@ -449,6 +597,10 @@ function sendError(res: ServerResponse, error: unknown): void {
     json(res, 404, { error: error.message, code: error.code });
     return;
   }
+  if (error instanceof ContentIntegrityError || error instanceof RequestBodyLimitError) {
+    json(res, error.status, { error: error.message, code: error.code });
+    return;
+  }
   const status = error && typeof error === 'object' && 'status' in error && typeof error.status === 'number' ? error.status : 400;
   const message = error instanceof Error ? error.message : String(error);
   json(res, status, { error: message });
@@ -458,17 +610,39 @@ function readBody(req: IncomingMessage): Promise<string> {
   return new Promise((resolve, reject) => {
     const chunks: Buffer[] = [];
     let size = 0;
-    req.on('data', (chunk: Buffer) => {
-      size += chunk.length;
-      if (size > 16 * 1024 * 1024) {
-        reject(new Error('request body exceeds the 16777216 byte limit'));
-        req.destroy();
+    let settled = false;
+    const fail = (error: unknown): void => {
+      if (settled) {
         return;
       }
-      chunks.push(chunk);
+      settled = true;
+      req.resume();
+      reject(error);
+    };
+    req.on('data', (chunk: Buffer | string) => {
+      if (settled) {
+        return;
+      }
+      const bytes = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk);
+      size += bytes.length;
+      if (size > MAX_REQUEST_BODY_BYTES) {
+        fail(new RequestBodyLimitError());
+        return;
+      }
+      chunks.push(bytes);
     });
-    req.on('end', () => resolve(Buffer.concat(chunks).toString('utf8')));
-    req.on('error', reject);
+    req.on('end', () => {
+      if (settled) {
+        return;
+      }
+      settled = true;
+      resolve(Buffer.concat(chunks).toString('utf8'));
+    });
+    req.on('error', fail);
+    const declaredLength = declaredContentLength(req);
+    if (declaredLength !== undefined && declaredLength > MAX_REQUEST_BODY_BYTES) {
+      fail(new RequestBodyLimitError());
+    }
   });
 }
 
@@ -498,6 +672,39 @@ function requireString(value: unknown, label: string): string {
 
 function requiredExpectedRevision(record: Record<string, unknown>, field: string): string {
   return requireString(record[field], field);
+}
+
+function requireStableId(value: unknown, label: string): string {
+  const id = requireString(value, label);
+  if (!isValidContentId(id)) {
+    throw new Error(`${label} must be a bounded stable id`);
+  }
+  return id;
+}
+
+function requireRevisionValue(value: unknown): string {
+  const revision = requireString(value, 'revision');
+  if (!isValidRevision(revision)) {
+    throw new Error('revision must be a safe identifier');
+  }
+  return revision;
+}
+
+function requireHashValue(value: unknown, label: string): string {
+  const hash = requireString(value, label);
+  if (!HASH_PATTERN.test(hash)) {
+    throw new Error(`${label} must be a lowercase SHA-256 hash`);
+  }
+  return hash;
+}
+
+function declaredContentLength(req: IncomingMessage): number | undefined {
+  const value = req.headers['content-length'];
+  if (value === undefined || Array.isArray(value)) {
+    return undefined;
+  }
+  const length = Number(value);
+  return Number.isSafeInteger(length) && length >= 0 ? length : undefined;
 }
 
 function optionalExpectedRevision(record: Record<string, unknown>): string | undefined {
