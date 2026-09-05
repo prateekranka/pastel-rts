@@ -66,7 +66,11 @@ async function main(): Promise<void> {
   if (issues.length === 0) {
     try {
       rawPack = await readJsonFile(packDir, 'pack.json', MAX_PACK_JSON_BYTES);
-      if (!isRecord(rawPack) || typeof rawPack['contentHash'] !== 'string') {
+      if (!isRecord(rawPack)) {
+        throw new Error('pack.json must contain a contentHash');
+      }
+      pack = validatePackV2(rawPack);
+      if (typeof rawPack['contentHash'] !== 'string') {
         throw new Error('pack.json must contain a contentHash');
       }
       if (!/^[a-f0-9]{64}$/.test(rawPack['contentHash'])) {
@@ -76,7 +80,6 @@ async function main(): Promise<void> {
       if (rawPack['contentHash'] !== expectedHash) {
         throw new Error(`contentHash mismatch (expected ${expectedHash})`);
       }
-      pack = validatePackV2(rawPack);
     } catch (error) {
       issues.push(`pack.json: ${issueText(error)}`);
     }
