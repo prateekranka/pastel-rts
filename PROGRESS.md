@@ -4,7 +4,7 @@ M1.1 only. M2–M7 remain inactive. E1 and N1 need separate approval. No merge o
 
 ## Current gate
 
-Local functional checks and both remote CI runs pass at product commit 8a84af0. K's independent review found no confirmed product blocker after correcting the masked-screenshot mistake. Overall ENGINEERING PASS still awaits the contract-required repeated-publication leak soak, now running in isolated Luna lane Q. HUMAN DESIGN ACCEPTANCE and PHYSICAL-DEVICE VALIDATION remain pending.
+Local functional checks and both remote CI runs pass at product commit 8a84af0. K's functional review found no confirmed blocker, but the later long soak exposed unresolved renderer texture growth from 7 to 12. Overall ENGINEERING PASS is withheld. HUMAN DESIGN ACCEPTANCE and PHYSICAL-DEVICE VALIDATION remain pending.
 
 ## Verified implementation
 
@@ -29,7 +29,7 @@ Remote CI run 33978204772 at 8a84af0 passed all blocking steps: workspace checks
 
 The independent K verdict is committed at af81c3b. Its remaining native-pause rerun condition passed in the complete isolated coordinator run. K documentation landed on the coordinator branch rather than the requested review worktree; readback verified only K-prefixed documents/evidence changed. The valid receipt was preserved without history rewrite.
 
-H tested two content replacements, but that is not a sustained leak observation. Q now runs a real 20-minute soak with repeated cosmetic publication and renderer/resource measurements. It must finish before local engineering completion.
+Q completed an actual 1,210,872 ms soak with 12 successful publications and runtime acknowledgements. Rules hash and 25 entities stayed fixed. Raw renderer counts rose from 7 to 12 textures; geometries stayed at 17. S is diagnosing this growth. The only browser console error was a missing favicon 404, assigned to R for a real resource fix. Q's art-ready helper used the wrong diagnostics shape; captured unit/building asset states are ready. Raw failed attempts and the completed-with-blockers summary remain unchanged. No whole-milestone pass.
 
 An unchanged native pause timing assertion failed once while separate SwiftShader browser runs overlapped. It passed in the complete isolated rerun, without threshold or source changes. The failure evidence remains under docs/roadmap/M1.1-native-pause-failure. Desktop software-renderer results do not prove iPad timing.
 
