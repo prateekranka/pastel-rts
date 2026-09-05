@@ -1,9 +1,14 @@
 import { expect, test } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 import { REQUIRED_PERFORMANCE_REPORT_KEYS } from '../src/diagnostics/report';
+import { routeIsolatedContent } from './support/isolated-content';
 
 const VISUAL_URL =
   '/?benchmark=visual-capture&seed=1&renderer=webgl&dpr=1&zoom=70-percent';
+
+test.beforeEach(async ({ page }) => {
+  await routeIsolatedContent(page);
+});
 
 test.describe('battlefield visual regression', () => {
   test('captures a deterministic 70-percent WebGL view', async ({ page }) => {

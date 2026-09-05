@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 2,
+  "id": "neutral-cyan-beacon",
+  "displayName": "Cyan Beacon",
+  "enabled": true,
+  "factionId": "neutral",
+  "assetPath": "buildings/neutral-cyan-beacon/sprite.png",
+  "sourceWidth": 64,
+  "sourceHeight": 64,
+  "bounds": {
+    "minX": 7,
+    "minY": 4,
+    "maxX": 57,
+    "maxY": 62
+  },
+  "anchor": {
+    "x": 0.5,
+    "y": 1
+  },
+  "worldHeight": 1.8,
+  "footprint": {
+    "kind": "rect",
+    "cellsW": 2,
+    "cellsH": 2
+  },
+  "selectionFootprint": {
+    "kind": "rect",
+    "cellsW": 2,
+    "cellsH": 2
+  },
+  "tags": [
+    "original-fixture",
+    "building"
+  ]
+}

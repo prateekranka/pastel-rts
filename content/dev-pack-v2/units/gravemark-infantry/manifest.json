@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 2,
+  "id": "gravemark-infantry",
+  "displayName": "Gravemark Infantry",
+  "enabled": true,
+  "factionId": "gravemark",
+  "assetPath": "units/gravemark-stalker/sheet.png",
+  "sourceWidth": 128,
+  "sourceHeight": 256,
+  "frameWidth": 32,
+  "frameHeight": 32,
+  "margin": {
+    "x": 0,
+    "y": 0
+  },
+  "spacing": {
+    "x": 0,
+    "y": 0
+  },
+  "bounds": {
+    "minX": 4,
+    "minY": 3,
+    "maxX": 28,
+    "maxY": 31
+  },
+  "anchor": {
+    "x": 0.5,
+    "y": 1
+  },
+  "worldHeight": 1.55,
+  "selectionRadius": 0.65,
+  "collisionRadius": 0.5,
+  "animation": {
+    "directions": 4,
+    "directionOrder": [
+      "n",
+      "e",
+      "s",
+      "w"
+    ],
+    "mirrored": false,
+    "clips": {
+      "idle": {
+        "frames": {
+          "kind": "range",
+          "start": 0,
+          "end": 15
+        },
+        "fps": 8,
+        "looping": true,
+        "assetPath": "units/gravemark-stalker/sheet.png"
+      },
+      "move": {
+        "frames": {
+          "kind": "range",
+          "start": 16,
+          "end": 31
+        },
+        "fps": 12,
+        "looping": true,
+        "assetPath": "units/gravemark-stalker/sheet.png"
+      }
+    }
+  },
+  "movement": {
+    "speedSubunitsPerTick": 72,
+    "accelerationRate": 1.2,
+    "turnRateMilli": 2500,
+    "footprintCategory": "unit-1x1"
+  },
+  "tags": [
+    "infantry",
+    "original-fixture",
+    "animated"
+  ]
+}

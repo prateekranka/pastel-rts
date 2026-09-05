@@ -12,9 +12,23 @@ export type AtlasEntry = {
   rows: number;
   frameWidth: number;
   frameHeight: number;
+  placeholder: boolean;
+};
+
+export type AtlasArtState = 'loading' | 'ready' | 'missing';
+
+export type AtlasArtStatus = {
+  assetPath: string;
+  state: AtlasArtState;
+  error: string | null;
 };
 
 type AtlasKey = string;
+
+type PendingAtlasLoad = {
+  generation: number;
+  entries: Map<AtlasKey, AtlasEntry>;
+};
 
 export function spriteFrameUvRect(params: {
   frameIndex: number;
@@ -40,31 +54,90 @@ export function spriteFrameUvRect(params: {
   };
 }
 
-/** Shared sprite atlas cache — one texture per archetype asset path. */
+/** Shared sprite atlas cache with generation-safe replacement and visible art failures. */
 export class SpriteAtlasCache {
   private readonly entries = new Map<AtlasKey, AtlasEntry>();
-  private readonly packBaseUrl: string;
+  private readonly statuses = new Map<AtlasKey, AtlasArtStatus>();
+  private packBaseUrl: string;
+  private generation = 0;
+  private disposed = false;
+  private pendingLoad: PendingAtlasLoad | null = null;
 
   constructor(packBaseUrl = './content/dev-pack-v2/') {
-    this.packBaseUrl = packBaseUrl.endsWith('/') ? packBaseUrl : `${packBaseUrl}/`;
+    this.packBaseUrl = normalizeBaseUrl(packBaseUrl);
   }
 
-  async loadPack(pack: PackV2): Promise<void> {
+  async loadPack(pack: PackV2, onBeforeCommit?: () => void): Promise<void> {
+    if (this.disposed) {
+      return;
+    }
+    const generation = ++this.generation;
+    this.disposePendingLoad();
+    const pendingLoad: PendingAtlasLoad = {
+      generation,
+      entries: new Map(),
+    };
+    this.pendingLoad = pendingLoad;
+    this.statuses.clear();
     const paths = new Set<string>();
     for (const unit of pack.units) {
       if (unit.enabled) {
         paths.add(unit.assetPath);
       }
     }
-    await Promise.all([...paths].map((path) => this.ensureLoaded(path, pack.units)));
+    for (const path of paths) {
+      this.statuses.set(path, { assetPath: path, state: 'loading', error: null });
+    }
+    await Promise.all(
+      [...paths].map((path) => this.ensureLoaded(path, pack.units, generation, pendingLoad.entries)),
+    );
+    if (this.disposed || generation !== this.generation || this.pendingLoad !== pendingLoad) {
+      if (this.pendingLoad === pendingLoad) {
+        this.pendingLoad = null;
+        this.disposeEntries(pendingLoad.entries);
+      }
+      return;
+    }
+    onBeforeCommit?.();
+    if (this.disposed || generation !== this.generation || this.pendingLoad !== pendingLoad) {
+      return;
+    }
+    this.pendingLoad = null;
+    this.commitEntries(pendingLoad.entries);
+  }
+
+  async replacePack(pack: PackV2, packBaseUrl: string, onBeforeCommit?: () => void): Promise<void> {
+    if (this.disposed) {
+      return;
+    }
+    this.packBaseUrl = normalizeBaseUrl(packBaseUrl);
+    await this.loadPack(pack, onBeforeCommit);
   }
 
   getForArchetype(archetype: UnitArchetype): AtlasEntry {
     const entry = this.entries.get(archetype.assetPath);
-    if (!entry) {
-      return this.createPlaceholder(archetype);
+    if (entry) {
+      return entry;
     }
-    return entry;
+    return this.createPlaceholder(archetype, this.generation);
+  }
+
+  getArtStatus(archetypeOrPath: UnitArchetype | string): AtlasArtStatus {
+    const assetPath = typeof archetypeOrPath === 'string' ? archetypeOrPath : archetypeOrPath.assetPath;
+    return {
+      ...(this.statuses.get(assetPath) ?? {
+        assetPath,
+        state: 'missing' as const,
+        error: 'Sprite asset was not requested',
+      }),
+    };
+  }
+
+  getDiagnostics(): { assets: AtlasArtStatus[]; loadedTextures: number } {
+    return {
+      assets: [...this.statuses.values()].map((status) => ({ ...status })),
+      loadedTextures: [...this.entries.values()].filter((entry) => !entry.placeholder).length,
+    };
   }
 
   frameUv(archetype: UnitArchetype, frameIndex: number): { u: number; v: number; w: number; h: number } {
@@ -88,87 +161,177 @@ export class SpriteAtlasCache {
   }
 
   dispose(): void {
-    for (const entry of this.entries.values()) {
-      entry.texture.dispose();
-    }
+    this.disposed = true;
+    this.generation += 1;
+    this.disposePendingLoad();
+    this.disposeEntries(this.entries);
     this.entries.clear();
+    this.statuses.clear();
   }
 
-  private async ensureLoaded(assetPath: string, units: UnitArchetype[]): Promise<void> {
-    if (this.entries.has(assetPath)) {
-      return;
-    }
+  private async ensureLoaded(
+    assetPath: string,
+    units: UnitArchetype[],
+    generation: number,
+    stagedEntries: Map<AtlasKey, AtlasEntry>,
+  ): Promise<void> {
     const archetype = units.find((unit) => unit.assetPath === assetPath);
     if (!archetype) {
       return;
     }
     try {
-      const url = `${this.packBaseUrl}${assetPath}`;
-      const image = await loadImage(url);
+      const image = await loadImage(`${this.packBaseUrl}${assetPath}`);
       const texture = new CanvasTexture(image);
-      texture.colorSpace = SRGBColorSpace;
-      texture.magFilter = NearestFilter;
-      texture.minFilter = NearestFilter;
-      texture.generateMipmaps = false;
-      texture.needsUpdate = true;
-      const cols = Math.max(1, Math.floor((archetype.sourceWidth - archetype.margin.x) / (archetype.frameWidth + archetype.spacing.x)));
-      const rows = Math.max(1, Math.floor((archetype.sourceHeight - archetype.margin.y) / (archetype.frameHeight + archetype.spacing.y)));
-      this.entries.set(assetPath, {
-        texture,
-        cols,
-        rows,
-        frameWidth: archetype.frameWidth,
-        frameHeight: archetype.frameHeight,
-      });
+      configureTexture(texture);
+      if (this.disposed || generation !== this.generation) {
+        texture.dispose();
+        return;
+      }
+      const previous = stagedEntries.get(assetPath);
+      if (previous) {
+        previous.texture.dispose();
+      }
+      stagedEntries.set(assetPath, makeEntry(texture, archetype, false));
+      this.statuses.set(assetPath, { assetPath, state: 'ready', error: null });
     } catch {
-      this.entries.set(assetPath, this.createPlaceholder(archetype));
+      if (this.disposed || generation !== this.generation) {
+        return;
+      }
+      const entry = stagedEntries.get(assetPath) ?? this.createPlaceholder(archetype, generation, stagedEntries);
+      stagedEntries.set(assetPath, entry);
+      this.statuses.set(assetPath, {
+        assetPath,
+        state: 'missing',
+        error: 'Authored sprite asset failed to load',
+      });
     }
   }
 
-  private createPlaceholder(archetype: UnitArchetype): AtlasEntry {
+  private createPlaceholder(
+    archetype: UnitArchetype,
+    generation: number,
+    targetEntries: Map<AtlasKey, AtlasEntry> = this.entries,
+  ): AtlasEntry {
+    const existing = targetEntries.get(archetype.assetPath);
+    if (existing) {
+      return existing;
+    }
     const canvas = document.createElement('canvas');
-    canvas.width = archetype.sourceWidth;
-    canvas.height = archetype.sourceHeight;
+    canvas.width = Math.max(1, archetype.sourceWidth);
+    canvas.height = Math.max(1, archetype.sourceHeight);
     const ctx = canvas.getContext('2d');
     if (ctx) {
-      ctx.fillStyle = archetype.factionId === 'sunweaver' ? '#f2e6d0' : '#b9a0e0';
-      const cols = Math.max(1, Math.floor(archetype.sourceWidth / archetype.frameWidth));
-      const rows = Math.max(1, Math.floor(archetype.sourceHeight / archetype.frameHeight));
-      for (let row = 0; row < rows; row += 1) {
-        for (let col = 0; col < cols; col += 1) {
-          const x = col * archetype.frameWidth;
-          const y = row * archetype.frameHeight;
-          ctx.fillRect(x + 2, y + 2, archetype.frameWidth - 4, archetype.frameHeight - 4);
-          ctx.strokeStyle = '#333';
-          ctx.strokeRect(x + 2, y + 2, archetype.frameWidth - 4, archetype.frameHeight - 4);
+      const tile = Math.max(4, Math.floor(Math.min(archetype.frameWidth, archetype.frameHeight) / 4));
+      ctx.fillStyle = '#210d2f';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      for (let y = 0; y < canvas.height; y += tile) {
+        for (let x = 0; x < canvas.width; x += tile) {
+          if ((x / tile + y / tile) % 2 === 0) {
+            ctx.fillStyle = '#ff3b81';
+            ctx.fillRect(x, y, tile, tile);
+          }
         }
       }
+      ctx.strokeStyle = '#ffe6f1';
+      ctx.lineWidth = Math.max(2, tile / 2);
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.lineTo(canvas.width, canvas.height);
+      ctx.moveTo(canvas.width, 0);
+      ctx.lineTo(0, canvas.height);
+      ctx.stroke();
     }
     const texture = new CanvasTexture(canvas);
-    texture.colorSpace = SRGBColorSpace;
-    texture.magFilter = NearestFilter;
-    texture.minFilter = NearestFilter;
-    texture.generateMipmaps = false;
-    texture.needsUpdate = true;
-    const cols = Math.max(1, Math.floor(archetype.sourceWidth / archetype.frameWidth));
-    const rows = Math.max(1, Math.floor(archetype.sourceHeight / archetype.frameHeight));
-    const entry: AtlasEntry = {
-      texture,
-      cols,
-      rows,
-      frameWidth: archetype.frameWidth,
-      frameHeight: archetype.frameHeight,
-    };
-    this.entries.set(archetype.assetPath, entry);
+    configureTexture(texture);
+    const entry = makeEntry(texture, archetype, true);
+    if (!this.disposed && generation === this.generation) {
+      targetEntries.set(archetype.assetPath, entry);
+      const current = this.statuses.get(archetype.assetPath);
+      if (!current) {
+        this.statuses.set(archetype.assetPath, {
+          assetPath: archetype.assetPath,
+          state: 'missing',
+          error: 'Authored sprite asset is not loaded',
+        });
+      }
+    }
     return entry;
   }
+
+  private commitEntries(nextEntries: Map<AtlasKey, AtlasEntry>): void {
+    const previousEntries = new Map(this.entries);
+    this.entries.clear();
+    for (const [assetPath, entry] of nextEntries) {
+      this.entries.set(assetPath, entry);
+    }
+    const retainedTextures = new Set([...nextEntries.values()].map((entry) => entry.texture));
+    for (const entry of previousEntries.values()) {
+      if (!retainedTextures.has(entry.texture)) {
+        entry.texture.dispose();
+      }
+    }
+  }
+
+  private disposePendingLoad(): void {
+    if (!this.pendingLoad) {
+      return;
+    }
+    this.disposeEntries(this.pendingLoad.entries);
+    this.pendingLoad = null;
+  }
+
+  private disposeEntries(entries: Map<AtlasKey, AtlasEntry>): void {
+    for (const entry of entries.values()) {
+      entry.texture.dispose();
+    }
+    entries.clear();
+  }
+}
+
+function makeEntry(texture: Texture, archetype: UnitArchetype, placeholder: boolean): AtlasEntry {
+  const cols = Math.max(
+    1,
+    Math.floor((archetype.sourceWidth - archetype.margin.x) / (archetype.frameWidth + archetype.spacing.x)),
+  );
+  const rows = Math.max(
+    1,
+    Math.floor((archetype.sourceHeight - archetype.margin.y) / (archetype.frameHeight + archetype.spacing.y)),
+  );
+  return {
+    texture,
+    cols,
+    rows,
+    frameWidth: archetype.frameWidth,
+    frameHeight: archetype.frameHeight,
+    placeholder,
+  };
+}
+
+function configureTexture(texture: Texture): void {
+  texture.colorSpace = SRGBColorSpace;
+  texture.magFilter = NearestFilter;
+  texture.minFilter = NearestFilter;
+  texture.generateMipmaps = false;
+  texture.needsUpdate = true;
+}
+
+function normalizeBaseUrl(value: string): string {
+  const trimmed = value.trim();
+  if (trimmed.length === 0 || trimmed.includes('\\') || trimmed.includes('..')) {
+    return './content/dev-pack-v2/';
+  }
+  return trimmed.endsWith('/') ? trimmed : `${trimmed}/`;
 }
 
 function loadImage(url: string): Promise<HTMLImageElement | HTMLCanvasElement> {
   return new Promise((resolve, reject) => {
-    const image = new Image();
-    image.onload = () => resolve(image);
-    image.onerror = () => reject(new Error(`Failed to load ${url}`));
-    image.src = url;
+    try {
+      const image = new Image();
+      image.onload = () => resolve(image);
+      image.onerror = () => reject(new Error('sprite load failed'));
+      image.src = url;
+    } catch {
+      reject(new Error('sprite image unavailable'));
+    }
   });
 }

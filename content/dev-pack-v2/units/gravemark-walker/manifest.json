@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 2,
+  "id": "gravemark-walker",
+  "displayName": "Gravemark Walker (Proxy)",
+  "enabled": true,
+  "factionId": "gravemark",
+  "assetPath": "units/gravemark-walker-proxy/sheet.png",
+  "sourceWidth": 64,
+  "sourceHeight": 64,
+  "frameWidth": 64,
+  "frameHeight": 64,
+  "margin": {
+    "x": 0,
+    "y": 0
+  },
+  "spacing": {
+    "x": 0,
+    "y": 0
+  },
+  "bounds": {
+    "minX": 5,
+    "minY": 5,
+    "maxX": 59,
+    "maxY": 62
+  },
+  "anchor": {
+    "x": 0.5,
+    "y": 1
+  },
+  "worldHeight": 3.2,
+  "selectionRadius": 1.1,
+  "collisionRadius": 0.85,
+  "animation": {
+    "directions": 1,
+    "mirrored": false,
+    "fallbackRules": {
+      "missingDirection": "proxy-omnidirectional"
+    },
+    "clips": {
+      "idle": {
+        "frames": {
+          "kind": "indexes",
+          "indexes": [
+            0
+          ]
+        },
+        "fps": 1,
+        "looping": true,
+        "assetPath": "units/gravemark-walker-proxy/sheet.png"
+      },
+      "move": {
+        "frames": {
+          "kind": "indexes",
+          "indexes": [
+            0
+          ]
+        },
+        "fps": 1,
+        "looping": true,
+        "assetPath": "units/gravemark-walker-proxy/sheet.png"
+      }
+    }
+  },
+  "movement": {
+    "speedSubunitsPerTick": 48,
+    "accelerationRate": 0.8,
+    "turnRateMilli": 2000,
+    "footprintCategory": "unit-1x1"
+  },
+  "tags": [
+    "walker",
+    "proxy",
+    "missing-directional-frames",
+    "original-fixture"
+  ]
+}

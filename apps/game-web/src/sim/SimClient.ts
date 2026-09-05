@@ -24,12 +24,18 @@ export class SimClient {
   private lastLatencyMs = 0;
   private lastTickDurationMs = 0;
   private paused = false;
+  private pausedAtTick: number | null = null;
 
   start(seed: number, counts: SimCounts, concentrate: boolean, freezeMotion = false): void {
     this.stop();
+    this.paused = false;
+    this.pausedAtTick = null;
     this.worker = new Worker(new URL('./simWorker.ts', import.meta.url), { type: 'module' });
     this.worker.onmessage = (event: MessageEvent<SimSnapshotMessage>) => {
       if (event.data.type !== 'snapshot') {
+        return;
+      }
+      if (this.paused && this.pausedAtTick !== null && event.data.tick > this.pausedAtTick) {
         return;
       }
       const receivedAtMs = performance.now();
@@ -64,24 +70,33 @@ export class SimClient {
   }
 
   pause(): void {
+    if (this.paused) {
+      return;
+    }
     this.paused = true;
+    this.pausedAtTick = this.curr?.tick ?? 0;
     this.post({ type: 'pause' });
   }
 
   resume(): void {
+    if (!this.paused) {
+      return;
+    }
     this.paused = false;
+    this.pausedAtTick = null;
     this.post({ type: 'resume' });
   }
 
   stop(): void {
-    if (!this.worker) {
-      return;
+    if (this.worker) {
+      this.worker.postMessage({ type: 'terminate' } satisfies SimControlMessage);
+      this.worker.terminate();
+      this.worker = null;
     }
-    this.worker.postMessage({ type: 'terminate' } satisfies SimControlMessage);
-    this.worker.terminate();
-    this.worker = null;
     this.prev = null;
     this.curr = null;
+    this.paused = false;
+    this.pausedAtTick = null;
   }
 
   getSnapshotLatencyMs(): number {

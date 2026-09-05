@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 1,
+  "label": "foundry-building",
+  "stage": "building-preview",
+  "project": "foundry",
+  "testTitle": "M1.1-C Foundry authors a building footprint and launches sandbox",
+  "screenshotPath": "/home/bobbyranka/Projects/pastel-rts/docs/roadmap/M1.1-C-artifacts/foundry-foundry-building-building-preview.png",
+  "capturedAt": "2026-09-05T13:25:39.943Z",
+  "runtime": {
+    "url": "http://127.0.0.1:14374/#/building/new?id=m11c-building-1788614738608",
+    "title": "Pastel RTS Content Foundry",
+    "canvasCount": 5,
+    "canvases": [
+      {
+        "width": 240,
+        "height": 200,
+        "cssWidth": 240,
+        "cssHeight": 200
+      },
+      {
+        "width": 96,
+        "height": 96,
+        "cssWidth": 96,
+        "cssHeight": 96
+      },
+      {
+        "width": 96,
+        "height": 96,
+        "cssWidth": 96,
+        "cssHeight": 96
+      },
+      {
+        "width": 320,
+        "height": 220,
+        "cssWidth": 320,
+        "cssHeight": 220
+      },
+      {
+        "width": 320,
+        "height": 220,
+        "cssWidth": 320,
+        "cssHeight": 220
+      }
+    ],
+    "webglRenderer": null,
+    "bodyText": "V1 proxy\nLibrary\nUnit editor\nBuilding editor\nStudio\nGame\nFoundry\nContent\nContent connected\nPublished 6 · Draft 7 · Rules change: restart/retest required\nRuntime acknowledged: game-web-interaction-lab / interaction-lab-alien-fantasy / revision 6\n\nFOUNDRY / RUNTIME CONTENT\n\nBuilding Editor\n\nAuthor a building sprite, footprint, entrance, and rally point. Draft saves preserve the stable ID and retained source revisions.\n\nUndo\nRedo\n1 DRAFT\n→\n2 VALIDATE\n→\n3 PREVIEW\n→\n4 PUBLISH REVISION\n→\n5 REVERT\nSave draft\nValidate saved draft\nPreview draft\nPublish revision\nRetained revision\nSelect retained revision…\nRevision 3 · 2026-09-05T13:25:17\nRevision 4 · 2026-09-05T13:25:25\nRevision 5 · 2026-09-05T13:25:28\nRevision 6 · 2026-09-05T13:25:33\nRevert selected\n\nSave and validate affect the draft only. Publish creates a new immutable revision. Revert creates another publication from retained source content.\n\nIdentity and source\nStable ID\n\nReplacement uses the same stable ID. Published source images remain immutable.\n\nDisplay name\nFaction\nsunweaver\ngravemark\nneutral\nReplace source PNG\n\nSource dimensions: 96×96 px\n\nSandbox context\nScenario ID\nSeed\nFootprint and points\nCells W\nCells H\n\nEntrance and rally values use simulation subunits. Footprint values use map cells.\n\nEntrance X (subunits)\nEntrance Z (subunits)\nRally X (subunits)\nRally Z (subunits)\nWorld scale\nAnchor X\nAnchor Y\nWorld height (cells)\nPreview overlays\nGround grid\nFootprint\nSave draft\nTest in Sandbox\n\nManifest valid for the current draft fields.\n\nRuntime projection\n\nProjection uses the shared IsometricCamera and meaningful world units at the runtime gameplay framing.\n\nFootprint grid\nSource\nGameplay zoom · runtime default\n70-percent · runtime camera\nDraft manifest\n{\n  \"schemaVersion\": 2,\n  \"id\": \"m11c-building-1788614738608\",\n  \"displayName\": \"M1.1-C Footprint Building\",\n  \"enabled\": true,\n  \"factionId\": \"sunweaver\",\n  \"assetPath\": \"buildings/m11c-building-1788614738608/sprite.png\",\n  \"sourceWidth\": 96,\n  \"sourceHeight\": 96,\n  \"bounds\": {\n    \"minX\": 4,\n    \"minY\": 4,\n    \"maxX\": 92,\n    \"maxY\": 92\n  },\n  \"anchor\": {\n    \"x\": 0.5,\n    \"y\": 1\n  },\n  \"worldHeight\": 2.4,\n  \"footprint\": {\n    \"kind\": \"rect\",\n    \"cellsW\": 3,\n    \"cellsH\": 2\n  },\n  \"blockedCellMask\": [\n    [\n      false,\n      true,\n      true\n    ],\n    [\n      true,\n      true,\n      true\n    ]\n  ],\n  \"selectionFootprint\": {\n    \"kind\": \"rect\",\n    \"cellsW\": 3,\n    \"cellsH\": 2\n  },\n  \"entrancePoint\": {\n    \"x\": 512,\n    \"z\": 0\n  },\n  \"rallyPoint\": {\n    \"x\": 1024,\n    \"z\": 1024\n  }\n}"
+  },
+  "metadata": {
+    "id": "m11c-building-1788614738608",
+    "footprint": {
+      "kind": "rect",
+      "cellsW": 3,
+      "cellsH": 2
+    },
+    "blockedCellMask": [
+      [
+        false,
+        true,
+        true
+      ],
+      [
+        true,
+        true,
+        true
+      ]
+    ]
+  },
+  "browserDiagnostics": [
+    {
+      "kind": "console",
+      "type": "debug",
+      "text": "[vite] connecting...",
+      "location": {
+        "url": "http://127.0.0.1:14374/@vite/client",
+        "line": 788,
+        "column": 8,
+        "lineNumber": 788,
+        "columnNumber": 8
+      }
+    },
+    {
+      "kind": "console",
+      "type": "debug",
+      "text": "[vite] connected.",
+      "location": {
+        "url": "http://127.0.0.1:14374/@vite/client",
+        "line": 911,
+        "column": 14,
+        "lineNumber": 911,
+        "columnNumber": 14
+      }
+    }
+  ]
+}

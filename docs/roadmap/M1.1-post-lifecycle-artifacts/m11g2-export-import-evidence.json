@@ -1,0 +1,1372 @@
+{
+  "schemaVersion": 1,
+  "sourcePageState": {
+    "revision": "3",
+    "contentHash": "c1eea326ce929eaffaa825f732be03e8ec939d000c90521c8f6d40f442bb0995",
+    "scenarioId": "interaction-lab-alien-fantasy",
+    "seed": 42,
+    "commandCount": 0,
+    "checksumCount": 41,
+    "expectedChecksums": []
+  },
+  "userInteraction": {
+    "sentCommands": [
+      {
+        "protocolVersion": 1,
+        "commandId": "lab-1",
+        "sequence": 0,
+        "issuedAtTick": 58,
+        "executeTick": 58,
+        "playerId": "lab-local",
+        "kind": "move",
+        "payload": {
+          "kind": "move",
+          "entityIds": [
+            {
+              "index": 12,
+              "generation": 1
+            }
+          ],
+          "destination": {
+            "x": 23251,
+            "z": 18058
+          }
+        }
+      }
+    ],
+    "observedCommandResults": [
+      {
+        "type": "commandResult",
+        "commandId": "lab-1",
+        "status": "accepted",
+        "acceptedAtTick": 59
+      }
+    ],
+    "commands": [
+      {
+        "protocolVersion": 1,
+        "commandId": "lab-1",
+        "sequence": 0,
+        "issuedAtTick": 58,
+        "executeTick": 59,
+        "playerId": "lab-local",
+        "kind": "move",
+        "payload": {
+          "kind": "move",
+          "entityIds": [
+            {
+              "index": 12,
+              "generation": 1
+            }
+          ],
+          "destination": {
+            "x": 23251,
+            "z": 18058
+          }
+        }
+      }
+    ],
+    "commandResults": [
+      {
+        "type": "commandResult",
+        "commandId": "lab-1",
+        "status": "accepted",
+        "acceptedAtTick": 59
+      }
+    ],
+    "checksums": [
+      {
+        "tick": 0,
+        "hash": 2942954056
+      },
+      {
+        "tick": 1,
+        "hash": 307445841
+      },
+      {
+        "tick": 2,
+        "hash": 4085632658
+      },
+      {
+        "tick": 3,
+        "hash": 365345883
+      },
+      {
+        "tick": 4,
+        "hash": 4034616100
+      },
+      {
+        "tick": 5,
+        "hash": 1431040397
+      },
+      {
+        "tick": 6,
+        "hash": 559994894
+      },
+      {
+        "tick": 7,
+        "hash": 3207526295
+      },
+      {
+        "tick": 8,
+        "hash": 1482434288
+      },
+      {
+        "tick": 9,
+        "hash": 1956611289
+      },
+      {
+        "tick": 10,
+        "hash": 1638554330
+      },
+      {
+        "tick": 11,
+        "hash": 973154083
+      },
+      {
+        "tick": 12,
+        "hash": 735444844
+      },
+      {
+        "tick": 13,
+        "hash": 2076377781
+      },
+      {
+        "tick": 14,
+        "hash": 2675896598
+      },
+      {
+        "tick": 15,
+        "hash": 948326431
+      },
+      {
+        "tick": 16,
+        "hash": 422970840
+      },
+      {
+        "tick": 17,
+        "hash": 1926434849
+      },
+      {
+        "tick": 18,
+        "hash": 3626503842
+      },
+      {
+        "tick": 19,
+        "hash": 2486673387
+      },
+      {
+        "tick": 20,
+        "hash": 1060011188
+      },
+      {
+        "tick": 21,
+        "hash": 2555072989
+      },
+      {
+        "tick": 22,
+        "hash": 3344125086
+      },
+      {
+        "tick": 23,
+        "hash": 505211303
+      },
+      {
+        "tick": 24,
+        "hash": 1726653888
+      },
+      {
+        "tick": 25,
+        "hash": 3833713001
+      },
+      {
+        "tick": 26,
+        "hash": 1054449194
+      },
+      {
+        "tick": 27,
+        "hash": 3207717939
+      },
+      {
+        "tick": 28,
+        "hash": 3800539452
+      },
+      {
+        "tick": 29,
+        "hash": 2391192773
+      },
+      {
+        "tick": 30,
+        "hash": 2122237990
+      },
+      {
+        "tick": 31,
+        "hash": 1452387567
+      },
+      {
+        "tick": 32,
+        "hash": 4249716648
+      },
+      {
+        "tick": 33,
+        "hash": 1253622193
+      },
+      {
+        "tick": 34,
+        "hash": 1796317682
+      },
+      {
+        "tick": 35,
+        "hash": 1320128187
+      },
+      {
+        "tick": 36,
+        "hash": 1071624324
+      },
+      {
+        "tick": 37,
+        "hash": 3419600109
+      },
+      {
+        "tick": 38,
+        "hash": 398681198
+      },
+      {
+        "tick": 39,
+        "hash": 2370852983
+      },
+      {
+        "tick": 40,
+        "hash": 2642881104
+      },
+      {
+        "tick": 41,
+        "hash": 2436302265
+      },
+      {
+        "tick": 42,
+        "hash": 2745938362
+      },
+      {
+        "tick": 43,
+        "hash": 1802004995
+      },
+      {
+        "tick": 44,
+        "hash": 611102412
+      },
+      {
+        "tick": 45,
+        "hash": 1142077717
+      },
+      {
+        "tick": 46,
+        "hash": 4286157942
+      },
+      {
+        "tick": 47,
+        "hash": 2411834367
+      },
+      {
+        "tick": 48,
+        "hash": 106229432
+      },
+      {
+        "tick": 49,
+        "hash": 2230491521
+      },
+      {
+        "tick": 50,
+        "hash": 1471277442
+      },
+      {
+        "tick": 51,
+        "hash": 2152099275
+      },
+      {
+        "tick": 52,
+        "hash": 4201218964
+      },
+      {
+        "tick": 53,
+        "hash": 3509442749
+      },
+      {
+        "tick": 54,
+        "hash": 4169150590
+      },
+      {
+        "tick": 55,
+        "hash": 1819967751
+      },
+      {
+        "tick": 56,
+        "hash": 1515640224
+      },
+      {
+        "tick": 57,
+        "hash": 4000813385
+      },
+      {
+        "tick": 58,
+        "hash": 1882379914
+      },
+      {
+        "tick": 59,
+        "hash": 420443694
+      },
+      {
+        "tick": 60,
+        "hash": 2785852023
+      },
+      {
+        "tick": 61,
+        "hash": 486400520
+      },
+      {
+        "tick": 62,
+        "hash": 7522017
+      },
+      {
+        "tick": 63,
+        "hash": 1442379306
+      },
+      {
+        "tick": 64,
+        "hash": 1373171503
+      }
+    ],
+    "moveCommands": [
+      {
+        "protocolVersion": 1,
+        "commandId": "lab-1",
+        "sequence": 0,
+        "issuedAtTick": 58,
+        "executeTick": 59,
+        "playerId": "lab-local",
+        "kind": "move",
+        "payload": {
+          "kind": "move",
+          "entityIds": [
+            {
+              "index": 12,
+              "generation": 1
+            }
+          ],
+          "destination": {
+            "x": 23251,
+            "z": 18058
+          }
+        }
+      }
+    ],
+    "acceptedMoveResults": [
+      {
+        "type": "commandResult",
+        "commandId": "lab-1",
+        "status": "accepted",
+        "acceptedAtTick": 59
+      }
+    ],
+    "issuedCommands": [
+      {
+        "kind": "move",
+        "entityCount": 1
+      }
+    ],
+    "lastGestureLabel": "tap-move",
+    "before": {
+      "x": 16,
+      "z": 20
+    },
+    "after": {
+      "x": 16.308055877685547,
+      "z": 19.691944122314453
+    },
+    "movedDistance": 0.4356568001916477
+  },
+  "exportedBundle": {
+    "path": "/home/bobbyranka/Projects/pastel-rts/docs/roadmap/M1.1-post-lifecycle-artifacts/m11g2-exported-bundle.json",
+    "commandCount": 1,
+    "commandResults": [
+      {
+        "type": "commandResult",
+        "commandId": "lab-1",
+        "status": "accepted",
+        "acceptedAtTick": 59
+      }
+    ],
+    "checksums": [
+      {
+        "tick": 0,
+        "hash": 2942954056
+      },
+      {
+        "tick": 1,
+        "hash": 307445841
+      },
+      {
+        "tick": 2,
+        "hash": 4085632658
+      },
+      {
+        "tick": 3,
+        "hash": 365345883
+      },
+      {
+        "tick": 4,
+        "hash": 4034616100
+      },
+      {
+        "tick": 5,
+        "hash": 1431040397
+      },
+      {
+        "tick": 6,
+        "hash": 559994894
+      },
+      {
+        "tick": 7,
+        "hash": 3207526295
+      },
+      {
+        "tick": 8,
+        "hash": 1482434288
+      },
+      {
+        "tick": 9,
+        "hash": 1956611289
+      },
+      {
+        "tick": 10,
+        "hash": 1638554330
+      },
+      {
+        "tick": 11,
+        "hash": 973154083
+      },
+      {
+        "tick": 12,
+        "hash": 735444844
+      },
+      {
+        "tick": 13,
+        "hash": 2076377781
+      },
+      {
+        "tick": 14,
+        "hash": 2675896598
+      },
+      {
+        "tick": 15,
+        "hash": 948326431
+      },
+      {
+        "tick": 16,
+        "hash": 422970840
+      },
+      {
+        "tick": 17,
+        "hash": 1926434849
+      },
+      {
+        "tick": 18,
+        "hash": 3626503842
+      },
+      {
+        "tick": 19,
+        "hash": 2486673387
+      },
+      {
+        "tick": 20,
+        "hash": 1060011188
+      },
+      {
+        "tick": 21,
+        "hash": 2555072989
+      },
+      {
+        "tick": 22,
+        "hash": 3344125086
+      },
+      {
+        "tick": 23,
+        "hash": 505211303
+      },
+      {
+        "tick": 24,
+        "hash": 1726653888
+      },
+      {
+        "tick": 25,
+        "hash": 3833713001
+      },
+      {
+        "tick": 26,
+        "hash": 1054449194
+      },
+      {
+        "tick": 27,
+        "hash": 3207717939
+      },
+      {
+        "tick": 28,
+        "hash": 3800539452
+      },
+      {
+        "tick": 29,
+        "hash": 2391192773
+      },
+      {
+        "tick": 30,
+        "hash": 2122237990
+      },
+      {
+        "tick": 31,
+        "hash": 1452387567
+      },
+      {
+        "tick": 32,
+        "hash": 4249716648
+      },
+      {
+        "tick": 33,
+        "hash": 1253622193
+      },
+      {
+        "tick": 34,
+        "hash": 1796317682
+      },
+      {
+        "tick": 35,
+        "hash": 1320128187
+      },
+      {
+        "tick": 36,
+        "hash": 1071624324
+      },
+      {
+        "tick": 37,
+        "hash": 3419600109
+      },
+      {
+        "tick": 38,
+        "hash": 398681198
+      },
+      {
+        "tick": 39,
+        "hash": 2370852983
+      },
+      {
+        "tick": 40,
+        "hash": 2642881104
+      },
+      {
+        "tick": 41,
+        "hash": 2436302265
+      },
+      {
+        "tick": 42,
+        "hash": 2745938362
+      },
+      {
+        "tick": 43,
+        "hash": 1802004995
+      },
+      {
+        "tick": 44,
+        "hash": 611102412
+      },
+      {
+        "tick": 45,
+        "hash": 1142077717
+      },
+      {
+        "tick": 46,
+        "hash": 4286157942
+      },
+      {
+        "tick": 47,
+        "hash": 2411834367
+      },
+      {
+        "tick": 48,
+        "hash": 106229432
+      },
+      {
+        "tick": 49,
+        "hash": 2230491521
+      },
+      {
+        "tick": 50,
+        "hash": 1471277442
+      },
+      {
+        "tick": 51,
+        "hash": 2152099275
+      },
+      {
+        "tick": 52,
+        "hash": 4201218964
+      },
+      {
+        "tick": 53,
+        "hash": 3509442749
+      },
+      {
+        "tick": 54,
+        "hash": 4169150590
+      },
+      {
+        "tick": 55,
+        "hash": 1819967751
+      },
+      {
+        "tick": 56,
+        "hash": 1515640224
+      },
+      {
+        "tick": 57,
+        "hash": 4000813385
+      },
+      {
+        "tick": 58,
+        "hash": 1882379914
+      },
+      {
+        "tick": 59,
+        "hash": 420443694
+      },
+      {
+        "tick": 60,
+        "hash": 2785852023
+      },
+      {
+        "tick": 61,
+        "hash": 486400520
+      },
+      {
+        "tick": 62,
+        "hash": 7522017
+      },
+      {
+        "tick": 63,
+        "hash": 1442379306
+      },
+      {
+        "tick": 64,
+        "hash": 1373171503
+      },
+      {
+        "tick": 65,
+        "hash": 1748647848
+      },
+      {
+        "tick": 66,
+        "hash": 1284135517
+      },
+      {
+        "tick": 67,
+        "hash": 1459671158
+      },
+      {
+        "tick": 68,
+        "hash": 1321496394
+      },
+      {
+        "tick": 69,
+        "hash": 3168304579
+      },
+      {
+        "tick": 70,
+        "hash": 3801226119
+      },
+      {
+        "tick": 71,
+        "hash": 2635448274
+      },
+      {
+        "tick": 72,
+        "hash": 1927995198
+      },
+      {
+        "tick": 73,
+        "hash": 3590787681
+      },
+      {
+        "tick": 74,
+        "hash": 133083581
+      },
+      {
+        "tick": 75,
+        "hash": 608528706
+      },
+      {
+        "tick": 76,
+        "hash": 1149449054
+      },
+      {
+        "tick": 77,
+        "hash": 226750014
+      },
+      {
+        "tick": 78,
+        "hash": 2435633698
+      }
+    ],
+    "tickRange": {
+      "startTick": 0,
+      "endTick": 79
+    }
+  },
+  "freshPageReplay": {
+    "expected": [
+      {
+        "tick": 0,
+        "hash": 2942954056
+      },
+      {
+        "tick": 1,
+        "hash": 307445841
+      },
+      {
+        "tick": 2,
+        "hash": 4085632658
+      },
+      {
+        "tick": 3,
+        "hash": 365345883
+      },
+      {
+        "tick": 4,
+        "hash": 4034616100
+      },
+      {
+        "tick": 5,
+        "hash": 1431040397
+      },
+      {
+        "tick": 6,
+        "hash": 559994894
+      },
+      {
+        "tick": 7,
+        "hash": 3207526295
+      },
+      {
+        "tick": 8,
+        "hash": 1482434288
+      },
+      {
+        "tick": 9,
+        "hash": 1956611289
+      },
+      {
+        "tick": 10,
+        "hash": 1638554330
+      },
+      {
+        "tick": 11,
+        "hash": 973154083
+      },
+      {
+        "tick": 12,
+        "hash": 735444844
+      },
+      {
+        "tick": 13,
+        "hash": 2076377781
+      },
+      {
+        "tick": 14,
+        "hash": 2675896598
+      },
+      {
+        "tick": 15,
+        "hash": 948326431
+      },
+      {
+        "tick": 16,
+        "hash": 422970840
+      },
+      {
+        "tick": 17,
+        "hash": 1926434849
+      },
+      {
+        "tick": 18,
+        "hash": 3626503842
+      },
+      {
+        "tick": 19,
+        "hash": 2486673387
+      },
+      {
+        "tick": 20,
+        "hash": 1060011188
+      },
+      {
+        "tick": 21,
+        "hash": 2555072989
+      },
+      {
+        "tick": 22,
+        "hash": 3344125086
+      },
+      {
+        "tick": 23,
+        "hash": 505211303
+      },
+      {
+        "tick": 24,
+        "hash": 1726653888
+      },
+      {
+        "tick": 25,
+        "hash": 3833713001
+      },
+      {
+        "tick": 26,
+        "hash": 1054449194
+      },
+      {
+        "tick": 27,
+        "hash": 3207717939
+      },
+      {
+        "tick": 28,
+        "hash": 3800539452
+      },
+      {
+        "tick": 29,
+        "hash": 2391192773
+      },
+      {
+        "tick": 30,
+        "hash": 2122237990
+      },
+      {
+        "tick": 31,
+        "hash": 1452387567
+      },
+      {
+        "tick": 32,
+        "hash": 4249716648
+      },
+      {
+        "tick": 33,
+        "hash": 1253622193
+      },
+      {
+        "tick": 34,
+        "hash": 1796317682
+      },
+      {
+        "tick": 35,
+        "hash": 1320128187
+      },
+      {
+        "tick": 36,
+        "hash": 1071624324
+      },
+      {
+        "tick": 37,
+        "hash": 3419600109
+      },
+      {
+        "tick": 38,
+        "hash": 398681198
+      },
+      {
+        "tick": 39,
+        "hash": 2370852983
+      },
+      {
+        "tick": 40,
+        "hash": 2642881104
+      },
+      {
+        "tick": 41,
+        "hash": 2436302265
+      },
+      {
+        "tick": 42,
+        "hash": 2745938362
+      },
+      {
+        "tick": 43,
+        "hash": 1802004995
+      },
+      {
+        "tick": 44,
+        "hash": 611102412
+      },
+      {
+        "tick": 45,
+        "hash": 1142077717
+      },
+      {
+        "tick": 46,
+        "hash": 4286157942
+      },
+      {
+        "tick": 47,
+        "hash": 2411834367
+      },
+      {
+        "tick": 48,
+        "hash": 106229432
+      },
+      {
+        "tick": 49,
+        "hash": 2230491521
+      },
+      {
+        "tick": 50,
+        "hash": 1471277442
+      },
+      {
+        "tick": 51,
+        "hash": 2152099275
+      },
+      {
+        "tick": 52,
+        "hash": 4201218964
+      },
+      {
+        "tick": 53,
+        "hash": 3509442749
+      },
+      {
+        "tick": 54,
+        "hash": 4169150590
+      },
+      {
+        "tick": 55,
+        "hash": 1819967751
+      },
+      {
+        "tick": 56,
+        "hash": 1515640224
+      },
+      {
+        "tick": 57,
+        "hash": 4000813385
+      },
+      {
+        "tick": 58,
+        "hash": 1882379914
+      },
+      {
+        "tick": 59,
+        "hash": 420443694
+      },
+      {
+        "tick": 60,
+        "hash": 2785852023
+      },
+      {
+        "tick": 61,
+        "hash": 486400520
+      },
+      {
+        "tick": 62,
+        "hash": 7522017
+      },
+      {
+        "tick": 63,
+        "hash": 1442379306
+      },
+      {
+        "tick": 64,
+        "hash": 1373171503
+      },
+      {
+        "tick": 65,
+        "hash": 1748647848
+      },
+      {
+        "tick": 66,
+        "hash": 1284135517
+      },
+      {
+        "tick": 67,
+        "hash": 1459671158
+      },
+      {
+        "tick": 68,
+        "hash": 1321496394
+      },
+      {
+        "tick": 69,
+        "hash": 3168304579
+      },
+      {
+        "tick": 70,
+        "hash": 3801226119
+      },
+      {
+        "tick": 71,
+        "hash": 2635448274
+      },
+      {
+        "tick": 72,
+        "hash": 1927995198
+      },
+      {
+        "tick": 73,
+        "hash": 3590787681
+      },
+      {
+        "tick": 74,
+        "hash": 133083581
+      },
+      {
+        "tick": 75,
+        "hash": 608528706
+      },
+      {
+        "tick": 76,
+        "hash": 1149449054
+      },
+      {
+        "tick": 77,
+        "hash": 226750014
+      },
+      {
+        "tick": 78,
+        "hash": 2435633698
+      }
+    ],
+    "actual": [
+      {
+        "tick": 0,
+        "hash": 2942954056
+      },
+      {
+        "tick": 1,
+        "hash": 307445841
+      },
+      {
+        "tick": 2,
+        "hash": 4085632658
+      },
+      {
+        "tick": 3,
+        "hash": 365345883
+      },
+      {
+        "tick": 4,
+        "hash": 4034616100
+      },
+      {
+        "tick": 5,
+        "hash": 1431040397
+      },
+      {
+        "tick": 6,
+        "hash": 559994894
+      },
+      {
+        "tick": 7,
+        "hash": 3207526295
+      },
+      {
+        "tick": 8,
+        "hash": 1482434288
+      },
+      {
+        "tick": 9,
+        "hash": 1956611289
+      },
+      {
+        "tick": 10,
+        "hash": 1638554330
+      },
+      {
+        "tick": 11,
+        "hash": 973154083
+      },
+      {
+        "tick": 12,
+        "hash": 735444844
+      },
+      {
+        "tick": 13,
+        "hash": 2076377781
+      },
+      {
+        "tick": 14,
+        "hash": 2675896598
+      },
+      {
+        "tick": 15,
+        "hash": 948326431
+      },
+      {
+        "tick": 16,
+        "hash": 422970840
+      },
+      {
+        "tick": 17,
+        "hash": 1926434849
+      },
+      {
+        "tick": 18,
+        "hash": 3626503842
+      },
+      {
+        "tick": 19,
+        "hash": 2486673387
+      },
+      {
+        "tick": 20,
+        "hash": 1060011188
+      },
+      {
+        "tick": 21,
+        "hash": 2555072989
+      },
+      {
+        "tick": 22,
+        "hash": 3344125086
+      },
+      {
+        "tick": 23,
+        "hash": 505211303
+      },
+      {
+        "tick": 24,
+        "hash": 1726653888
+      },
+      {
+        "tick": 25,
+        "hash": 3833713001
+      },
+      {
+        "tick": 26,
+        "hash": 1054449194
+      },
+      {
+        "tick": 27,
+        "hash": 3207717939
+      },
+      {
+        "tick": 28,
+        "hash": 3800539452
+      },
+      {
+        "tick": 29,
+        "hash": 2391192773
+      },
+      {
+        "tick": 30,
+        "hash": 2122237990
+      },
+      {
+        "tick": 31,
+        "hash": 1452387567
+      },
+      {
+        "tick": 32,
+        "hash": 4249716648
+      },
+      {
+        "tick": 33,
+        "hash": 1253622193
+      },
+      {
+        "tick": 34,
+        "hash": 1796317682
+      },
+      {
+        "tick": 35,
+        "hash": 1320128187
+      },
+      {
+        "tick": 36,
+        "hash": 1071624324
+      },
+      {
+        "tick": 37,
+        "hash": 3419600109
+      },
+      {
+        "tick": 38,
+        "hash": 398681198
+      },
+      {
+        "tick": 39,
+        "hash": 2370852983
+      },
+      {
+        "tick": 40,
+        "hash": 2642881104
+      },
+      {
+        "tick": 41,
+        "hash": 2436302265
+      },
+      {
+        "tick": 42,
+        "hash": 2745938362
+      },
+      {
+        "tick": 43,
+        "hash": 1802004995
+      },
+      {
+        "tick": 44,
+        "hash": 611102412
+      },
+      {
+        "tick": 45,
+        "hash": 1142077717
+      },
+      {
+        "tick": 46,
+        "hash": 4286157942
+      },
+      {
+        "tick": 47,
+        "hash": 2411834367
+      },
+      {
+        "tick": 48,
+        "hash": 106229432
+      },
+      {
+        "tick": 49,
+        "hash": 2230491521
+      },
+      {
+        "tick": 50,
+        "hash": 1471277442
+      },
+      {
+        "tick": 51,
+        "hash": 2152099275
+      },
+      {
+        "tick": 52,
+        "hash": 4201218964
+      },
+      {
+        "tick": 53,
+        "hash": 3509442749
+      },
+      {
+        "tick": 54,
+        "hash": 4169150590
+      },
+      {
+        "tick": 55,
+        "hash": 1819967751
+      },
+      {
+        "tick": 56,
+        "hash": 1515640224
+      },
+      {
+        "tick": 57,
+        "hash": 4000813385
+      },
+      {
+        "tick": 58,
+        "hash": 1882379914
+      },
+      {
+        "tick": 59,
+        "hash": 420443694
+      },
+      {
+        "tick": 60,
+        "hash": 2785852023
+      },
+      {
+        "tick": 61,
+        "hash": 486400520
+      },
+      {
+        "tick": 62,
+        "hash": 7522017
+      },
+      {
+        "tick": 63,
+        "hash": 1442379306
+      },
+      {
+        "tick": 64,
+        "hash": 1373171503
+      },
+      {
+        "tick": 65,
+        "hash": 1748647848
+      },
+      {
+        "tick": 66,
+        "hash": 1284135517
+      },
+      {
+        "tick": 67,
+        "hash": 1459671158
+      },
+      {
+        "tick": 68,
+        "hash": 1321496394
+      },
+      {
+        "tick": 69,
+        "hash": 3168304579
+      },
+      {
+        "tick": 70,
+        "hash": 3801226119
+      },
+      {
+        "tick": 71,
+        "hash": 2635448274
+      },
+      {
+        "tick": 72,
+        "hash": 1927995198
+      },
+      {
+        "tick": 73,
+        "hash": 3590787681
+      },
+      {
+        "tick": 74,
+        "hash": 133083581
+      },
+      {
+        "tick": 75,
+        "hash": 608528706
+      },
+      {
+        "tick": 76,
+        "hash": 1149449054
+      },
+      {
+        "tick": 77,
+        "hash": 226750014
+      },
+      {
+        "tick": 78,
+        "hash": 2435633698
+      }
+    ],
+    "totalTicks": 79,
+    "inspectorMatched": true,
+    "exact": true,
+    "state": {
+      "revision": "3",
+      "contentHash": "c1eea326ce929eaffaa825f732be03e8ec939d000c90521c8f6d40f442bb0995",
+      "scenarioId": "interaction-lab-alien-fantasy",
+      "seed": 42
+    }
+  },
+  "screenshotPath": "/home/bobbyranka/Projects/pastel-rts/docs/roadmap/M1.1-post-lifecycle-artifacts/m11g2-fresh-page-reproduced.png",
+  "sourceBrowserErrors": [],
+  "freshBrowserErrors": []
+}

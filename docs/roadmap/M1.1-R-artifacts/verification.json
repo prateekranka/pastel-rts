@@ -1,0 +1,57 @@
+{
+  "piece": "M1.1-R",
+  "scope": "real favicon resource only",
+  "source": {
+    "html": "apps/game-web/index.html",
+    "icon": "apps/game-web/public/favicon.svg",
+    "iconBytes": 313,
+    "iconSha256": "9a694950d033c06cb73be0b97ba7cfa16521484f92b065a17935e6f0464b49c7",
+    "link": "./favicon.svg",
+    "type": "image/svg+xml",
+    "static": true,
+    "externalReferences": false
+  },
+  "dev": {
+    "command": "GAME_PORT=31373 npm run dev --workspace @pastel-rts/game-web",
+    "url": "http://127.0.0.1:31373/",
+    "faviconRequestObserved": true,
+    "faviconRequestPath": "/favicon.svg",
+    "faviconIcoRequestObserved": false,
+    "consoleMessages": 2,
+    "consoleErrors": 0,
+    "uncaughtJsErrors": 0
+  },
+  "productionPreview": {
+    "command": "PREVIEW_PORT=31375 npm run preview --workspace @pastel-rts/game-web",
+    "url": "http://127.0.0.1:31375/",
+    "faviconRequestObserved": true,
+    "faviconRequestPath": "/favicon.svg",
+    "faviconHttpStatus": 200,
+    "faviconContentType": "image/svg+xml",
+    "faviconContentLength": 313,
+    "faviconIcoRequestObserved": false,
+    "consoleMessages": 0,
+    "consoleErrors": 0,
+    "uncaughtJsErrors": 0
+  },
+  "packaging": {
+    "buildCommand": "npm run build (passed before this continuation; not rerun)",
+    "syncCommand": "npm run ios:sync-web (passed before this continuation; not rerun)",
+    "distIcon": "apps/game-web/dist/favicon.svg",
+    "iosCopyIcon": "apps/ios-shell/PastelRTS/WebGame/favicon.svg",
+    "distSha256": "9a694950d033c06cb73be0b97ba7cfa16521484f92b065a17935e6f0464b49c7",
+    "iosCopySha256": "9a694950d033c06cb73be0b97ba7cfa16521484f92b065a17935e6f0464b49c7",
+    "distIndexLink": "./favicon.svg",
+    "iosCopyIndexLink": "./favicon.svg"
+  },
+  "cleanup": {
+    "ownedPorts": [31373, 31375],
+    "portsFreeAfterShutdown": true,
+    "generatedGitkeepPreservedUnstaged": true
+  },
+  "limits": [
+    "No long soak rerun",
+    "No physical-device validation claimed",
+    "PROGRESS.md unchanged"
+  ]
+}

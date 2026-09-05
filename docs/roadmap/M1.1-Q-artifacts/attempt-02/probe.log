@@ -1,0 +1,13 @@
+M1.1-Q probe start 2026-09-05T16:58:14.707Z
+Repository: /home/bobbyranka/Projects/pastel-rts-m11-soak
+Required source: 8a84af0
+Ports: game=30373 foundry=30374 content=30387
+Target URL: http://127.0.0.1:30373/?mode=interaction-lab&content=studio&scenario=interaction-lab-alien-fantasy&seed=42&renderer=webgl&dpr=1&zoom=70-percent
+Owned studio wrapper PID 4081575
+foundry ready: http://127.0.0.1:30374/
+game ready: http://127.0.0.1:30373/
+content ready: http://127.0.0.1:30387/health
+Initial publication revision 3; draft 3; entity fixture 25
+FATAL: Timed out waiting for all live unit and building art statuses to be ready
+BLOCKER: Probe terminated before its planned completion path
+M1.1-Q probe end 2026-09-05T16:58:54.706Z blockers=1 fatal=yes
