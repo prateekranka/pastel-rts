@@ -1,11 +1,20 @@
+import { cpSync, mkdtempSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { defineConfig, devices } from '@playwright/test';
 
-const foundryPackDir = process.env['PLAYWRIGHT_CONTENT_PACK_DIR'] ?? process.env['CONTENT_PACK_DIR'] ?? '/tmp/pastel-foundry-e2e';
+const defaultFixturePackDir = join(process.cwd(), 'content/dev-pack-v2');
+const generatedPackDirEnv = 'PLAYWRIGHT_GENERATED_CONTENT_PACK_DIR';
 const gamePort = Number(process.env['PLAYWRIGHT_GAME_PORT'] ?? 4173);
 const foundryPort = Number(process.env['PLAYWRIGHT_FOUNDRY_PORT'] ?? 4174);
 const contentPort = Number(process.env['PLAYWRIGHT_CONTENT_PORT'] ?? process.env['CONTENT_PORT'] ?? 8787);
 const serverMode = process.env['PLAYWRIGHT_SERVER_MODE'] === 'dev' ? 'dev' : 'preview';
 const skipContentServer = process.env['PLAYWRIGHT_SKIP_CONTENT_SERVER'] === '1';
+const configuredPackDir = process.env['PLAYWRIGHT_CONTENT_PACK_DIR'] ?? process.env['CONTENT_PACK_DIR'];
+const inheritedGeneratedPackDir = skipContentServer ? undefined : process.env[generatedPackDirEnv];
+const foundryPackDir = configuredPackDir
+  ?? inheritedGeneratedPackDir
+  ?? (skipContentServer ? undefined : createDisposablePack(defaultFixturePackDir));
 const chromiumPath = process.env['PLAYWRIGHT_CHROMIUM_PATH'];
 const configuredGameOrigin = process.env['PLAYWRIGHT_GAME_WEB_ORIGIN'];
 const gameOrigin = configuredGameOrigin ?? `http://127.0.0.1:${String(gamePort)}`;
@@ -15,8 +24,20 @@ const ignoreDefaultArgs = configuredIgnoreDefaultArgs
   ? configuredIgnoreDefaultArgs.split(',').map((value) => value.trim()).filter((value) => value.length > 0)
   : undefined;
 
-process.env['CONTENT_PACK_DIR'] = foundryPackDir;
+if (configuredPackDir === undefined && inheritedGeneratedPackDir === undefined && foundryPackDir !== undefined) {
+  process.env[generatedPackDirEnv] = foundryPackDir;
+  process.stdout.write(`[playwright] created disposable content pack: ${foundryPackDir}\n`);
+}
+if (foundryPackDir !== undefined) {
+  process.env['CONTENT_PACK_DIR'] = foundryPackDir;
+}
 process.env['CONTENT_PORT'] = String(contentPort);
+
+function createDisposablePack(sourceDir: string): string {
+  const targetDir = mkdtempSync(join(tmpdir(), 'pastel-foundry-e2e-'));
+  cpSync(sourceDir, targetDir, { recursive: true });
+  return targetDir;
+}
 
 function shellQuote(value: string): string {
   return `'${value.replaceAll("'", "'\\''")}'`;
@@ -37,7 +58,7 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: Boolean(process.env['CI']),
   retries: process.env['CI'] ? 2 : 0,
-  workers: process.env['CI'] ? 1 : undefined,
+  workers: process.env['CI'] || !skipContentServer ? 1 : undefined,
   reporter: process.env['CI'] ? [['github'], ['html', { open: 'never' }]] : [['list']],
   timeout: 60_000,
   expect: {
@@ -86,7 +107,7 @@ export default defineConfig({
     ...(skipContentServer
       ? []
       : [{
-          command: `mkdir -p ${shellQuote(foundryPackDir)} && CONTENT_PACK_DIR=${shellQuote(foundryPackDir)} CONTENT_PORT=${String(contentPort)} npm run start --workspace @pastel-rts/content-server`,
+          command: 'npm run start --workspace @pastel-rts/content-server',
           url: `http://127.0.0.1:${String(contentPort)}/health`,
           reuseExistingServer: false,
           timeout: 60_000,
