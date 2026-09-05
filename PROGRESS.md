@@ -4,7 +4,7 @@ M1.1 only. M2–M7 remain inactive. E1 and N1 need separate approval. No merge o
 
 ## Current gate
 
-Local functional checks pass. Overall ENGINEERING PASS remains pending current CI and the final independent review receipt. HUMAN DESIGN ACCEPTANCE and PHYSICAL-DEVICE VALIDATION remain pending.
+Local functional checks and both remote CI runs pass at product commit 8a84af0. K's independent review found no confirmed product blocker after correcting the masked-screenshot mistake. Overall ENGINEERING PASS still awaits the contract-required repeated-publication leak soak, now running in isolated Luna lane Q. HUMAN DESIGN ACCEPTANCE and PHYSICAL-DEVICE VALIDATION remain pending.
 
 ## Verified implementation
 
@@ -25,9 +25,11 @@ Evidence directories: docs/roadmap/M1.1-final-isolated-artifacts, M1.1-final-off
 
 ## Remaining engineering work
 
-Remote CI run 33975185566 at 9a17c16 failed because it ran the full developer-workbench suite against production preview. The compiled Foundry origin was 5173, while the harness expected 4173; developer-only controls differed from the framing baseline; studio lifecycle tests were skipped by mode. Luna lane M owns the narrow workflow correction: full developer-mode suite plus a separate real offline-preview check. No test or security gate may be removed.
+Remote CI run 33978204772 at 8a84af0 passed all blocking steps: workspace checks, builds, 32 developer browser tests, the separate production-offline test, and iOS simulator compilation. Run 33978202051 also passed. Receipts are in docs/roadmap/M1.1-release-ci.json and M1.1-release-ci.log. M corrected the test-mode routing; T fixed the actual platform-font wrapping difference with two font-stack declarations. No thresholds or functional assertions were weakened.
 
-The independent K reviewer initially mistook Playwright's deliberate magenta diagnostics mask for a render defect. The real unmasked screenshot has the teal diagnostics panel. K is checking this provenance and writing the final independent verdict. Human design acceptance is not delegated.
+The independent K verdict is committed at af81c3b. Its remaining native-pause rerun condition passed in the complete isolated coordinator run. K documentation landed on the coordinator branch rather than the requested review worktree; readback verified only K-prefixed documents/evidence changed. The valid receipt was preserved without history rewrite.
+
+H tested two content replacements, but that is not a sustained leak observation. Q now runs a real 20-minute soak with repeated cosmetic publication and renderer/resource measurements. It must finish before local engineering completion.
 
 An unchanged native pause timing assertion failed once while separate SwiftShader browser runs overlapped. It passed in the complete isolated rerun, without threshold or source changes. The failure evidence remains under docs/roadmap/M1.1-native-pause-failure. Desktop software-renderer results do not prove iPad timing.
 
@@ -39,11 +41,12 @@ Draft milestone PR: https://github.com/prateekranka/pastel-rts/pull/4
 Base remains the unmerged M1 prerequisite PR #3. No existing PR was merged.
 
 Built web archive:
-/home/bobbyranka/Projects/pastel-rts/artifacts/m1.1/pastel-rts-m1.1-d23642d-web.tar.gz
+/home/bobbyranka/Projects/pastel-rts/artifacts/m1.1/pastel-rts-m1.1-8a84af0-web.tar.gz
+SHA-256: e1b5062c63941b830ced8e94e166eee535171327eee9fdde09b3b4a4d4f82065
 This contains built game and Foundry static files. Studio editing still needs the source content server. It is not an iOS binary.
 
 Walkthrough: docs/roadmap/M1.1-WALKTHROUGH.md.
 
-Existing macOS CI has compiled the simulator target. Linux cannot provide an Xcode simulator launch or physical iPad validation. Final native CI status still needs exact-current-run confirmation. No physical performance, human design pass, or whole-milestone completion is claimed.
+macOS CI compiled the simulator target at the current product commit 8a84af0. This is not a simulator launch or physical iPad report. No physical performance, human design pass, or whole-milestone completion is claimed.
 
 All user work, retained lane worktrees and remaining uncommitted evidence stay in place. No later milestone or optional experiment was started.
