@@ -14,6 +14,7 @@ Current validation:
 - Last complete root test run: schema 40, simulation 19, navigation 21, content server 18, game web 76 passed. Foundry is verified separately until lane F wires it into root test.
 - F is integrated at 34fbbb3. Correctly seeded coordinator Foundry/API browser run at 853df6a passed all 9 tests. An earlier empty-pack invocation was invalid for fixture-dependent assertions; correction is in docs/roadmap/M1.1-recovery-evidence.md.
 - Provider recovery was confirmed by actual Luna smoke session 20260905_185350_ad6f16. Existing G/H/I sessions resumed with explicit approved pins after confirming no duplicate workers or owned listeners. No profile or credential changes.
+- Studio I integrated at 4136c5b. Coordinator started combined studio on 25373/25374/25387 with a disposable fixture. All three HTTP endpoints returned200; SIGINT produced exit0 and all owned ports were freed. Duplicate-port invocation failed explicitly with exit1. Walkthrough exists at docs/roadmap/M1.1-WALKTHROUGH.md; bundle section awaits G.
 - Whole runtime/browser gate and actual UI bug reproduction remain pending; no whole-milestone pass.
 - Existing macOS CI run 33965323173 compiled iOS Simulator successfully at 6308242772c224b20e9a813dd2398c6fa6828b23. Web browser step failed, so overall CI is not passing. Native compile is not simulator launch or physical iPad proof.
 - Linux timing is not iPad/GPU performance proof. An unchanged desktop timing test failed once and passed on rerun; its threshold was not relaxed.
