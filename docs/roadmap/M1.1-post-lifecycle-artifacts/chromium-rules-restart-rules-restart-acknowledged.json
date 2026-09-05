@@ -1,0 +1,2165 @@
+{
+  "schemaVersion": 1,
+  "label": "rules-restart",
+  "stage": "rules-restart-acknowledged",
+  "project": "chromium",
+  "testTitle": "M1.1-H rules revision requires explicit restart and exact acknowledgement",
+  "screenshotPath": "/home/bobbyranka/Projects/pastel-rts/docs/roadmap/M1.1-post-lifecycle-artifacts/chromium-rules-restart-rules-restart-acknowledged.png",
+  "capturedAt": "2026-09-05T18:23:28.282Z",
+  "runtime": {
+    "url": "http://127.0.0.1:14373/?mode=interaction-lab&scenario=interaction-lab-alien-fantasy&seed=42&renderer=webgl&dpr=1&zoom=70-percent&content=studio",
+    "title": "Pastel RTS — Milestone 0",
+    "canvasCount": 2,
+    "canvases": [
+      {
+        "width": 1280,
+        "height": 800,
+        "cssWidth": 1280,
+        "cssHeight": 800
+      },
+      {
+        "width": 160,
+        "height": 160,
+        "cssWidth": 130,
+        "cssHeight": 130
+      }
+    ],
+    "webglRenderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+    "bodyText": "0\nFormation: none\nFormation: line\nFormation: box\nSelect\nStop\ncontent studio  revision 6\nhash 3d385b2a…cb78  rules e361bfd0…7791\nscenario interaction-lab-alien-fantasy  seed 42\nPending revision restarted and installed\nlab-skirmish\ninteraction-lab-alien-fantasy\nm11-fixture-gallery\nLoad scenario\nApply seed\nSunweaver Infantry\nSunweaver Scout H Cosmetic B\nSunweaver Walker (Proxy)\nSpawn\nSunweaver Sanctum\nPlace\nNav debug\nReset match\nExport save\nImport save\nReplay check\nExport bug bundle\nReproduce bug bundle\nExport a JSON-only bug bundle. On a fresh lab page, choose the file with Reproduce bug bundle. The check uses the same scenario, seed, commands, and checksum sequence.\nSelect revision\nRestart pending\nAcknowledge\nDiagnostics\nCollapse\nFPS 15.0  avg 11.6  1% low 4.0\nframe 66.70ms  avg 86.00ms  p95 155.04ms  p99 233.68ms\nsim 1.00ms  nav-debug 0.00ms  snapshot latency 1058.90ms\ndraw calls 24  tris 4852  textures 7  geometries 17\nchunks 9  units 25  entities 25\nrenderer webgl (webgl) requested webgl\ninit error: none\nDPR cap 1  effective 1.00\nviewport 1280×800  buffer 1280×800\nelapsed 4.3s  soak idle\ncontent revision 6  phase ready\ncontent manifest 5ffe7ada8ca8fdf5c723359367d312f658c1026ccf2cd6d7e600c486e6dfe274\ncontent visual e7a18eac5ad52463e9f7290634e4e0e8dc229dc127eed3a83bde69518629147e\ncontent rules e361bfd0a782c8e4c383b83f9a4c2f552d6a38e5e010b606875b36edc3997791\ncontent assets /dev-content/v2/revisions/6/assets/\ncontent error: none\nRenderer\nWebGL\nWebGPU\nBenchmark\nidle-base\nnormal-midgame\ndense-battle\ncamera-pan-stress\nmaximum-population\n2x-stress\n20-minute-soak\nvisual-capture\nDPR\n1\n1.25\n1.5\nnative\nTouch debug\nHaptic\nDownload report\nStart 20-min soak"
+  },
+  "metadata": {
+    "before": {
+      "content": {
+        "identity": {
+          "source": "studio",
+          "packId": "dev-pack-v2",
+          "revision": "5",
+          "contentHash": "d9df16703b859f2799c63019920ac15e3336eda0133e641e00a3ba78d529424b",
+          "manifestHash": "3c4b2b79eb30103fbef99cfec0457c28c4d2df5db89765044093a77da2222a10",
+          "visualContentHash": "e7a18eac5ad52463e9f7290634e4e0e8dc229dc127eed3a83bde69518629147e",
+          "simulationRulesHash": "c39e7796863a923af79d1acb847a7d614e3bec219723091732ec388a729e4018"
+        },
+        "assetBaseUrl": "/dev-content/v2/revisions/5/assets/"
+      },
+      "status": {
+        "phase": "ready",
+        "source": "studio",
+        "selectedRevision": null,
+        "activeRevision": "5",
+        "activeContentHash": "d9df16703b859f2799c63019920ac15e3336eda0133e641e00a3ba78d529424b",
+        "activeManifestHash": "3c4b2b79eb30103fbef99cfec0457c28c4d2df5db89765044093a77da2222a10",
+        "activeVisualContentHash": "e7a18eac5ad52463e9f7290634e4e0e8dc229dc127eed3a83bde69518629147e",
+        "activeSimulationRulesHash": "c39e7796863a923af79d1acb847a7d614e3bec219723091732ec388a729e4018",
+        "activeAssetBaseUrl": "/dev-content/v2/revisions/5/assets/",
+        "pendingRevision": null,
+        "pendingContentHash": null,
+        "pendingVisualContentHash": null,
+        "pendingSimulationRulesHash": null,
+        "availableRevision": null,
+        "error": null,
+        "reconnectAttempt": 0
+      },
+      "diagnostics": {
+        "content": {
+          "source": "studio",
+          "packId": "dev-pack-v2",
+          "revision": "5",
+          "contentHash": "d9df16703b859f2799c63019920ac15e3336eda0133e641e00a3ba78d529424b",
+          "manifestHash": "3c4b2b79eb30103fbef99cfec0457c28c4d2df5db89765044093a77da2222a10",
+          "visualContentHash": "e7a18eac5ad52463e9f7290634e4e0e8dc229dc127eed3a83bde69518629147e",
+          "simulationRulesHash": "c39e7796863a923af79d1acb847a7d614e3bec219723091732ec388a729e4018"
+        },
+        "scenarioId": "interaction-lab-alien-fantasy",
+        "seed": 42,
+        "tick": 2,
+        "entityCount": 25,
+        "commandCount": 0,
+        "checksumCount": 2,
+        "missingUnitAssets": 0,
+        "missingBuildingAssets": 0,
+        "error": null
+      },
+      "commands": [],
+      "results": [
+        {
+          "type": "commandResult",
+          "commandId": "scenario-building-gravemark-bastion-130",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 0,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-building-neutral-cyan-beacon-80",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 1,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-building-sunweaver-sanctum-18",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 2,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-gravemark-infantry-49152",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 3,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-gravemark-infantry-50176",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 4,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-gravemark-infantry-51200",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 5,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-gravemark-infantry-52224",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 6,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-gravemark-infantry-53248",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 7,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-gravemark-infantry-54272",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 8,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-gravemark-infantry-55296",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 9,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-gravemark-infantry-56320",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 10,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-gravemark-walker-57344",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 11,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-sunweaver-infantry-16384",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 12,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-sunweaver-infantry-17408",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 13,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-sunweaver-infantry-18432",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 14,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-sunweaver-infantry-19456",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 15,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-sunweaver-infantry-20480",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 16,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-sunweaver-infantry-21504",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 17,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-sunweaver-infantry-22528",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 18,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-sunweaver-infantry-23552",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 19,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-sunweaver-infantry-24576",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 20,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-sunweaver-infantry-25600",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 21,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-sunweaver-infantry-26624",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 22,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-sunweaver-infantry-27648",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 23,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-sunweaver-walker-28672",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 24,
+            "generation": 1
+          }
+        }
+      ]
+    },
+    "pending": {
+      "content": {
+        "identity": {
+          "source": "studio",
+          "packId": "dev-pack-v2",
+          "revision": "5",
+          "contentHash": "d9df16703b859f2799c63019920ac15e3336eda0133e641e00a3ba78d529424b",
+          "manifestHash": "3c4b2b79eb30103fbef99cfec0457c28c4d2df5db89765044093a77da2222a10",
+          "visualContentHash": "e7a18eac5ad52463e9f7290634e4e0e8dc229dc127eed3a83bde69518629147e",
+          "simulationRulesHash": "c39e7796863a923af79d1acb847a7d614e3bec219723091732ec388a729e4018"
+        },
+        "assetBaseUrl": "/dev-content/v2/revisions/5/assets/"
+      },
+      "status": {
+        "phase": "restart-required",
+        "source": "studio",
+        "selectedRevision": null,
+        "activeRevision": "5",
+        "activeContentHash": "d9df16703b859f2799c63019920ac15e3336eda0133e641e00a3ba78d529424b",
+        "activeManifestHash": "3c4b2b79eb30103fbef99cfec0457c28c4d2df5db89765044093a77da2222a10",
+        "activeVisualContentHash": "e7a18eac5ad52463e9f7290634e4e0e8dc229dc127eed3a83bde69518629147e",
+        "activeSimulationRulesHash": "c39e7796863a923af79d1acb847a7d614e3bec219723091732ec388a729e4018",
+        "activeAssetBaseUrl": "/dev-content/v2/revisions/5/assets/",
+        "pendingRevision": "6",
+        "pendingContentHash": "3d385b2a55a5ad8684efe99cfade477cfe36651336bbca5ed41a348eec48cb78",
+        "pendingVisualContentHash": "e7a18eac5ad52463e9f7290634e4e0e8dc229dc127eed3a83bde69518629147e",
+        "pendingSimulationRulesHash": "e361bfd0a782c8e4c383b83f9a4c2f552d6a38e5e010b606875b36edc3997791",
+        "availableRevision": "6",
+        "error": null,
+        "reconnectAttempt": 0
+      },
+      "diagnostics": {
+        "content": {
+          "source": "studio",
+          "packId": "dev-pack-v2",
+          "revision": "5",
+          "contentHash": "d9df16703b859f2799c63019920ac15e3336eda0133e641e00a3ba78d529424b",
+          "manifestHash": "3c4b2b79eb30103fbef99cfec0457c28c4d2df5db89765044093a77da2222a10",
+          "visualContentHash": "e7a18eac5ad52463e9f7290634e4e0e8dc229dc127eed3a83bde69518629147e",
+          "simulationRulesHash": "c39e7796863a923af79d1acb847a7d614e3bec219723091732ec388a729e4018"
+        },
+        "scenarioId": "interaction-lab-alien-fantasy",
+        "seed": 42,
+        "tick": 23,
+        "entityCount": 25,
+        "commandCount": 0,
+        "checksumCount": 23,
+        "missingUnitAssets": 0,
+        "missingBuildingAssets": 0,
+        "error": null
+      },
+      "commands": [],
+      "results": [
+        {
+          "type": "commandResult",
+          "commandId": "scenario-building-gravemark-bastion-130",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 0,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-building-neutral-cyan-beacon-80",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 1,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-building-sunweaver-sanctum-18",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 2,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-gravemark-infantry-49152",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 3,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-gravemark-infantry-50176",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 4,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-gravemark-infantry-51200",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 5,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-gravemark-infantry-52224",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 6,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-gravemark-infantry-53248",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 7,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-gravemark-infantry-54272",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 8,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-gravemark-infantry-55296",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 9,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-gravemark-infantry-56320",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 10,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-gravemark-walker-57344",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 11,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-sunweaver-infantry-16384",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 12,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-sunweaver-infantry-17408",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 13,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-sunweaver-infantry-18432",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 14,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-sunweaver-infantry-19456",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 15,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-sunweaver-infantry-20480",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 16,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-sunweaver-infantry-21504",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 17,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-sunweaver-infantry-22528",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 18,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-sunweaver-infantry-23552",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 19,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-sunweaver-infantry-24576",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 20,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-sunweaver-infantry-25600",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 21,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-sunweaver-infantry-26624",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 22,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-sunweaver-infantry-27648",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 23,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-sunweaver-walker-28672",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 24,
+            "generation": 1
+          }
+        }
+      ]
+    },
+    "after": {
+      "content": {
+        "identity": {
+          "source": "studio",
+          "packId": "dev-pack-v2",
+          "revision": "6",
+          "contentHash": "3d385b2a55a5ad8684efe99cfade477cfe36651336bbca5ed41a348eec48cb78",
+          "manifestHash": "5ffe7ada8ca8fdf5c723359367d312f658c1026ccf2cd6d7e600c486e6dfe274",
+          "visualContentHash": "e7a18eac5ad52463e9f7290634e4e0e8dc229dc127eed3a83bde69518629147e",
+          "simulationRulesHash": "e361bfd0a782c8e4c383b83f9a4c2f552d6a38e5e010b606875b36edc3997791"
+        },
+        "assetBaseUrl": "/dev-content/v2/revisions/6/assets/"
+      },
+      "status": {
+        "phase": "ready",
+        "source": "studio",
+        "selectedRevision": null,
+        "activeRevision": "6",
+        "activeContentHash": "3d385b2a55a5ad8684efe99cfade477cfe36651336bbca5ed41a348eec48cb78",
+        "activeManifestHash": "5ffe7ada8ca8fdf5c723359367d312f658c1026ccf2cd6d7e600c486e6dfe274",
+        "activeVisualContentHash": "e7a18eac5ad52463e9f7290634e4e0e8dc229dc127eed3a83bde69518629147e",
+        "activeSimulationRulesHash": "e361bfd0a782c8e4c383b83f9a4c2f552d6a38e5e010b606875b36edc3997791",
+        "activeAssetBaseUrl": "/dev-content/v2/revisions/6/assets/",
+        "pendingRevision": null,
+        "pendingContentHash": null,
+        "pendingVisualContentHash": null,
+        "pendingSimulationRulesHash": null,
+        "availableRevision": null,
+        "error": null,
+        "reconnectAttempt": 0
+      },
+      "diagnostics": {
+        "content": {
+          "source": "studio",
+          "packId": "dev-pack-v2",
+          "revision": "6",
+          "contentHash": "3d385b2a55a5ad8684efe99cfade477cfe36651336bbca5ed41a348eec48cb78",
+          "manifestHash": "5ffe7ada8ca8fdf5c723359367d312f658c1026ccf2cd6d7e600c486e6dfe274",
+          "visualContentHash": "e7a18eac5ad52463e9f7290634e4e0e8dc229dc127eed3a83bde69518629147e",
+          "simulationRulesHash": "e361bfd0a782c8e4c383b83f9a4c2f552d6a38e5e010b606875b36edc3997791"
+        },
+        "scenarioId": "interaction-lab-alien-fantasy",
+        "seed": 42,
+        "tick": 7,
+        "entityCount": 25,
+        "commandCount": 0,
+        "checksumCount": 7,
+        "missingUnitAssets": 0,
+        "missingBuildingAssets": 0,
+        "error": null
+      },
+      "commands": [],
+      "results": [
+        {
+          "type": "commandResult",
+          "commandId": "scenario-building-gravemark-bastion-130",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 0,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-building-neutral-cyan-beacon-80",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 1,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-building-sunweaver-sanctum-18",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 2,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-gravemark-infantry-49152",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 3,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-gravemark-infantry-50176",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 4,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-gravemark-infantry-51200",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 5,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-gravemark-infantry-52224",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 6,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-gravemark-infantry-53248",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 7,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-gravemark-infantry-54272",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 8,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-gravemark-infantry-55296",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 9,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-gravemark-infantry-56320",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 10,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-gravemark-walker-57344",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 11,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-sunweaver-infantry-16384",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 12,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-sunweaver-infantry-17408",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 13,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-sunweaver-infantry-18432",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 14,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-sunweaver-infantry-19456",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 15,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-sunweaver-infantry-20480",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 16,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-sunweaver-infantry-21504",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 17,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-sunweaver-infantry-22528",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 18,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-sunweaver-infantry-23552",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 19,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-sunweaver-infantry-24576",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 20,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-sunweaver-infantry-25600",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 21,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-sunweaver-infantry-26624",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 22,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-sunweaver-infantry-27648",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 23,
+            "generation": 1
+          }
+        },
+        {
+          "type": "commandResult",
+          "commandId": "scenario-unit-sunweaver-walker-28672",
+          "status": "accepted",
+          "acceptedAtTick": 0,
+          "spawnedId": {
+            "index": 24,
+            "generation": 1
+          }
+        }
+      ]
+    },
+    "publication": {
+      "ok": true,
+      "revision": "6",
+      "metadata": {
+        "schemaVersion": 1,
+        "revision": "6",
+        "packId": "dev-pack-v2",
+        "manifestPath": ".content-publication/revisions/6/pack.json",
+        "manifestHash": "5ffe7ada8ca8fdf5c723359367d312f658c1026ccf2cd6d7e600c486e6dfe274",
+        "visualContentHash": "e7a18eac5ad52463e9f7290634e4e0e8dc229dc127eed3a83bde69518629147e",
+        "simulationRulesHash": "e361bfd0a782c8e4c383b83f9a4c2f552d6a38e5e010b606875b36edc3997791",
+        "restartRequired": true,
+        "assets": [
+          {
+            "kind": "data",
+            "assetPath": "maps/interaction-lab-alien-fantasy.json",
+            "storagePath": ".content-publication/revisions/6/assets/maps/interaction-lab-alien-fantasy.json",
+            "sha256": "8a09566d0c8379912395e2f187e9de2c7df5e559594368bf5a0947cd45d567dc",
+            "byteLength": 169
+          },
+          {
+            "kind": "data",
+            "assetPath": "maps/lab-grid.json",
+            "storagePath": ".content-publication/revisions/6/assets/maps/lab-grid.json",
+            "sha256": "0ed06af57e7db77b66c9f737e5c08924650cc3ff80290e39f5f06cadae26a715",
+            "byteLength": 127
+          },
+          {
+            "kind": "data",
+            "assetPath": "maps/m11-fixture-gallery.json",
+            "storagePath": ".content-publication/revisions/6/assets/maps/m11-fixture-gallery.json",
+            "sha256": "20a71971555721dc99a1ffc8b0987fa59cb261f6ab59c65593b3496ecb265f1a",
+            "byteLength": 152
+          },
+          {
+            "kind": "data",
+            "assetPath": "scenarios/interaction-lab-alien-fantasy.json",
+            "storagePath": ".content-publication/revisions/6/assets/scenarios/interaction-lab-alien-fantasy.json",
+            "sha256": "538f1787c424a2e5d9b421185713ffe3002681ebdc3488c9d98fbe4f669df112",
+            "byteLength": 2966
+          },
+          {
+            "kind": "data",
+            "assetPath": "scenarios/lab-skirmish.json",
+            "storagePath": ".content-publication/revisions/6/assets/scenarios/lab-skirmish.json",
+            "sha256": "bacab5818f3d0375ea6bc3592698fa266274657ed05b224e12d4af67a1021e63",
+            "byteLength": 533
+          },
+          {
+            "kind": "data",
+            "assetPath": "scenarios/m11-fixture-gallery.json",
+            "storagePath": ".content-publication/revisions/6/assets/scenarios/m11-fixture-gallery.json",
+            "sha256": "91aad835d4bd6a446240a589ee413b2f6bfab93300dee916d051a79599a39824",
+            "byteLength": 1018
+          },
+          {
+            "kind": "runtime",
+            "assetPath": "buildings/gravemark-bastion/sprite.png",
+            "storagePath": ".content-publication/revisions/6/assets/buildings/gravemark-bastion/sprite.png",
+            "sha256": "9fd2fb079c825a9bd32a7f69a87899b5a19cae94142ab555dd0bbf2d021ba0cd",
+            "byteLength": 452,
+            "width": 96,
+            "height": 96
+          },
+          {
+            "kind": "runtime",
+            "assetPath": "buildings/neutral-cyan-beacon/sprite.png",
+            "storagePath": ".content-publication/revisions/6/assets/buildings/neutral-cyan-beacon/sprite.png",
+            "sha256": "79f51fcaee66fe865230e1bee210a3f8100e2118ae3c863bcbcc7d3a4121a151",
+            "byteLength": 348,
+            "width": 64,
+            "height": 64
+          },
+          {
+            "kind": "runtime",
+            "assetPath": "buildings/sunweaver-sanctum/sprite.png",
+            "storagePath": ".content-publication/revisions/6/assets/buildings/sunweaver-sanctum/sprite.png",
+            "sha256": "3b2c1b253c1ec159e21d59073d986e23b2050869ac4c48146850b441e9def28e",
+            "byteLength": 742,
+            "width": 128,
+            "height": 128
+          },
+          {
+            "kind": "runtime",
+            "assetPath": "units/gravemark-stalker/sheet.png",
+            "storagePath": ".content-publication/revisions/6/assets/units/gravemark-stalker/sheet.png",
+            "sha256": "9ad9d1c80ecba6e287ed4801bc9c8937a2a1930f00f849d311581aac6c156683",
+            "byteLength": 1728,
+            "width": 128,
+            "height": 256
+          },
+          {
+            "kind": "runtime",
+            "assetPath": "units/gravemark-walker-proxy/sheet.png",
+            "storagePath": ".content-publication/revisions/6/assets/units/gravemark-walker-proxy/sheet.png",
+            "sha256": "2ffbf2d536c9c8aeb1cf9175c38b6c1f60e3a0804e358367fddc7f3471705944",
+            "byteLength": 359,
+            "width": 64,
+            "height": 64
+          },
+          {
+            "kind": "runtime",
+            "assetPath": "units/sunweaver-scout/sheet.png",
+            "storagePath": ".content-publication/revisions/6/assets/units/sunweaver-scout/sheet.png",
+            "sha256": "a45428e676c023c7a68859662e5cfe4eb5b1177e8e42134dc0b31652f0cffd29",
+            "byteLength": 1844,
+            "width": 128,
+            "height": 256
+          },
+          {
+            "kind": "runtime",
+            "assetPath": "units/sunweaver-walker-proxy/sheet.png",
+            "storagePath": ".content-publication/revisions/6/assets/units/sunweaver-walker-proxy/sheet.png",
+            "sha256": "b28db8306360dad8e6af9db774296e83cd44e57c826228ff17fd38a0507ec7fb",
+            "byteLength": 357,
+            "width": 64,
+            "height": 64
+          }
+        ],
+        "createdAt": "2026-09-05T18:23:24.556Z",
+        "legacyManifestPath": ".content-publication/revisions/6/pack-v1.json",
+        "parentRevision": "5"
+      },
+      "pack": {
+        "schemaVersion": 2,
+        "id": "dev-pack-v2",
+        "revision": "6",
+        "factions": [
+          {
+            "id": "sunweaver",
+            "displayName": "Sunweaver"
+          },
+          {
+            "id": "gravemark",
+            "displayName": "Gravemark"
+          },
+          {
+            "id": "neutral",
+            "displayName": "Neutral"
+          }
+        ],
+        "units": [
+          {
+            "schemaVersion": 2,
+            "id": "gravemark-infantry",
+            "displayName": "Gravemark Infantry",
+            "enabled": true,
+            "factionId": "gravemark",
+            "assetPath": "units/gravemark-stalker/sheet.png",
+            "sourceWidth": 128,
+            "sourceHeight": 256,
+            "frameWidth": 32,
+            "frameHeight": 32,
+            "margin": {
+              "x": 0,
+              "y": 0
+            },
+            "spacing": {
+              "x": 0,
+              "y": 0
+            },
+            "bounds": {
+              "minX": 4,
+              "minY": 3,
+              "maxX": 28,
+              "maxY": 31
+            },
+            "anchor": {
+              "x": 0.5,
+              "y": 1
+            },
+            "worldHeight": 1.55,
+            "selectionRadius": 0.65,
+            "collisionRadius": 0.5,
+            "animation": {
+              "clips": {
+                "idle": {
+                  "frames": {
+                    "kind": "range",
+                    "start": 0,
+                    "end": 15
+                  },
+                  "fps": 8,
+                  "looping": true,
+                  "assetPath": "units/gravemark-stalker/sheet.png"
+                },
+                "move": {
+                  "frames": {
+                    "kind": "range",
+                    "start": 16,
+                    "end": 31
+                  },
+                  "fps": 12,
+                  "looping": true,
+                  "assetPath": "units/gravemark-stalker/sheet.png"
+                }
+              },
+              "directions": 4,
+              "directionOrder": [
+                "n",
+                "e",
+                "s",
+                "w"
+              ],
+              "mirrored": false
+            },
+            "movement": {
+              "speedSubunitsPerTick": 72,
+              "accelerationRate": 1.2,
+              "turnRateMilli": 2500,
+              "footprintCategory": "unit-1x1"
+            },
+            "tags": [
+              "infantry",
+              "original-fixture",
+              "animated"
+            ]
+          },
+          {
+            "schemaVersion": 2,
+            "id": "gravemark-stalker",
+            "displayName": "Gravemark Stalker",
+            "enabled": true,
+            "factionId": "gravemark",
+            "assetPath": "units/gravemark-stalker/sheet.png",
+            "sourceWidth": 128,
+            "sourceHeight": 256,
+            "frameWidth": 32,
+            "frameHeight": 32,
+            "margin": {
+              "x": 0,
+              "y": 0
+            },
+            "spacing": {
+              "x": 0,
+              "y": 0
+            },
+            "bounds": {
+              "minX": 4,
+              "minY": 3,
+              "maxX": 28,
+              "maxY": 31
+            },
+            "anchor": {
+              "x": 0.5,
+              "y": 1
+            },
+            "worldHeight": 1.55,
+            "selectionRadius": 0.65,
+            "collisionRadius": 0.5,
+            "animation": {
+              "clips": {
+                "idle": {
+                  "frames": {
+                    "kind": "range",
+                    "start": 0,
+                    "end": 15
+                  },
+                  "fps": 8,
+                  "looping": true,
+                  "assetPath": "units/gravemark-stalker/sheet.png"
+                },
+                "move": {
+                  "frames": {
+                    "kind": "range",
+                    "start": 16,
+                    "end": 31
+                  },
+                  "fps": 12,
+                  "looping": true,
+                  "assetPath": "units/gravemark-stalker/sheet.png"
+                }
+              },
+              "directions": 4,
+              "directionOrder": [
+                "n",
+                "e",
+                "s",
+                "w"
+              ],
+              "mirrored": false
+            },
+            "movement": {
+              "speedSubunitsPerTick": 72,
+              "accelerationRate": 1.2,
+              "turnRateMilli": 2500,
+              "footprintCategory": "unit-1x1"
+            },
+            "tags": [
+              "infantry",
+              "stalker",
+              "original-fixture",
+              "animated"
+            ]
+          },
+          {
+            "schemaVersion": 2,
+            "id": "gravemark-walker",
+            "displayName": "Gravemark Walker (Proxy)",
+            "enabled": true,
+            "factionId": "gravemark",
+            "assetPath": "units/gravemark-walker-proxy/sheet.png",
+            "sourceWidth": 64,
+            "sourceHeight": 64,
+            "frameWidth": 64,
+            "frameHeight": 64,
+            "margin": {
+              "x": 0,
+              "y": 0
+            },
+            "spacing": {
+              "x": 0,
+              "y": 0
+            },
+            "bounds": {
+              "minX": 5,
+              "minY": 5,
+              "maxX": 59,
+              "maxY": 62
+            },
+            "anchor": {
+              "x": 0.5,
+              "y": 1
+            },
+            "worldHeight": 3.2,
+            "selectionRadius": 1.1,
+            "collisionRadius": 0.85,
+            "animation": {
+              "clips": {
+                "idle": {
+                  "frames": {
+                    "kind": "indexes",
+                    "indexes": [
+                      0
+                    ]
+                  },
+                  "fps": 1,
+                  "looping": true,
+                  "assetPath": "units/gravemark-walker-proxy/sheet.png"
+                },
+                "move": {
+                  "frames": {
+                    "kind": "indexes",
+                    "indexes": [
+                      0
+                    ]
+                  },
+                  "fps": 1,
+                  "looping": true,
+                  "assetPath": "units/gravemark-walker-proxy/sheet.png"
+                }
+              },
+              "directions": 1,
+              "mirrored": false,
+              "fallbackRules": {
+                "missingDirection": "proxy-omnidirectional"
+              }
+            },
+            "movement": {
+              "speedSubunitsPerTick": 48,
+              "accelerationRate": 0.8,
+              "turnRateMilli": 2000,
+              "footprintCategory": "unit-1x1"
+            },
+            "tags": [
+              "walker",
+              "proxy",
+              "missing-directional-frames",
+              "original-fixture"
+            ]
+          },
+          {
+            "schemaVersion": 2,
+            "id": "sunweaver-infantry",
+            "displayName": "Sunweaver Infantry",
+            "enabled": true,
+            "factionId": "sunweaver",
+            "assetPath": "units/sunweaver-scout/sheet.png",
+            "sourceWidth": 128,
+            "sourceHeight": 256,
+            "frameWidth": 32,
+            "frameHeight": 32,
+            "margin": {
+              "x": 0,
+              "y": 0
+            },
+            "spacing": {
+              "x": 0,
+              "y": 0
+            },
+            "bounds": {
+              "minX": 4,
+              "minY": 3,
+              "maxX": 28,
+              "maxY": 31
+            },
+            "anchor": {
+              "x": 0.5,
+              "y": 1
+            },
+            "worldHeight": 1.5,
+            "selectionRadius": 0.6,
+            "collisionRadius": 0.42,
+            "animation": {
+              "clips": {
+                "idle": {
+                  "frames": {
+                    "kind": "range",
+                    "start": 0,
+                    "end": 15
+                  },
+                  "fps": 8,
+                  "looping": true,
+                  "assetPath": "units/sunweaver-scout/sheet.png"
+                },
+                "move": {
+                  "frames": {
+                    "kind": "range",
+                    "start": 16,
+                    "end": 31
+                  },
+                  "fps": 12,
+                  "looping": true,
+                  "assetPath": "units/sunweaver-scout/sheet.png"
+                }
+              },
+              "directions": 4,
+              "directionOrder": [
+                "n",
+                "e",
+                "s",
+                "w"
+              ],
+              "mirrored": false
+            },
+            "movement": {
+              "speedSubunitsPerTick": 64,
+              "accelerationRate": 1,
+              "turnRateMilli": 3000,
+              "footprintCategory": "unit-1x1"
+            },
+            "tags": [
+              "infantry",
+              "original-fixture",
+              "animated"
+            ]
+          },
+          {
+            "schemaVersion": 2,
+            "id": "sunweaver-scout",
+            "displayName": "Sunweaver Scout H Cosmetic B",
+            "enabled": true,
+            "factionId": "sunweaver",
+            "assetPath": "units/sunweaver-scout/sheet.png",
+            "sourceWidth": 128,
+            "sourceHeight": 256,
+            "frameWidth": 32,
+            "frameHeight": 32,
+            "margin": {
+              "x": 0,
+              "y": 0
+            },
+            "spacing": {
+              "x": 0,
+              "y": 0
+            },
+            "bounds": {
+              "minX": 4,
+              "minY": 3,
+              "maxX": 28,
+              "maxY": 31
+            },
+            "anchor": {
+              "x": 0.5,
+              "y": 1
+            },
+            "worldHeight": 1.5,
+            "selectionRadius": 0.6,
+            "collisionRadius": 0.42,
+            "animation": {
+              "clips": {
+                "idle": {
+                  "frames": {
+                    "kind": "range",
+                    "start": 0,
+                    "end": 15
+                  },
+                  "fps": 8,
+                  "looping": true,
+                  "assetPath": "units/sunweaver-scout/sheet.png"
+                },
+                "move": {
+                  "frames": {
+                    "kind": "range",
+                    "start": 16,
+                    "end": 31
+                  },
+                  "fps": 12,
+                  "looping": true,
+                  "assetPath": "units/sunweaver-scout/sheet.png"
+                }
+              },
+              "directions": 4,
+              "directionOrder": [
+                "n",
+                "e",
+                "s",
+                "w"
+              ],
+              "mirrored": false
+            },
+            "movement": {
+              "speedSubunitsPerTick": 65,
+              "accelerationRate": 1,
+              "turnRateMilli": 3000,
+              "footprintCategory": "unit-1x1"
+            },
+            "tags": [
+              "infantry",
+              "scout",
+              "original-fixture",
+              "animated"
+            ]
+          },
+          {
+            "schemaVersion": 2,
+            "id": "sunweaver-walker",
+            "displayName": "Sunweaver Walker (Proxy)",
+            "enabled": true,
+            "factionId": "sunweaver",
+            "assetPath": "units/sunweaver-walker-proxy/sheet.png",
+            "sourceWidth": 64,
+            "sourceHeight": 64,
+            "frameWidth": 64,
+            "frameHeight": 64,
+            "margin": {
+              "x": 0,
+              "y": 0
+            },
+            "spacing": {
+              "x": 0,
+              "y": 0
+            },
+            "bounds": {
+              "minX": 5,
+              "minY": 5,
+              "maxX": 59,
+              "maxY": 62
+            },
+            "anchor": {
+              "x": 0.5,
+              "y": 1
+            },
+            "worldHeight": 3.2,
+            "selectionRadius": 1.1,
+            "collisionRadius": 0.85,
+            "animation": {
+              "clips": {
+                "idle": {
+                  "frames": {
+                    "kind": "indexes",
+                    "indexes": [
+                      0
+                    ]
+                  },
+                  "fps": 1,
+                  "looping": true,
+                  "assetPath": "units/sunweaver-walker-proxy/sheet.png"
+                },
+                "move": {
+                  "frames": {
+                    "kind": "indexes",
+                    "indexes": [
+                      0
+                    ]
+                  },
+                  "fps": 1,
+                  "looping": true,
+                  "assetPath": "units/sunweaver-walker-proxy/sheet.png"
+                }
+              },
+              "directions": 1,
+              "mirrored": false,
+              "fallbackRules": {
+                "missingDirection": "proxy-omnidirectional"
+              }
+            },
+            "movement": {
+              "speedSubunitsPerTick": 48,
+              "accelerationRate": 0.8,
+              "turnRateMilli": 2000,
+              "footprintCategory": "unit-1x1"
+            },
+            "tags": [
+              "walker",
+              "proxy",
+              "missing-directional-frames",
+              "original-fixture"
+            ]
+          }
+        ],
+        "buildings": [
+          {
+            "schemaVersion": 2,
+            "id": "gravemark-bastion",
+            "displayName": "Gravemark Bastion",
+            "enabled": true,
+            "factionId": "gravemark",
+            "assetPath": "buildings/gravemark-bastion/sprite.png",
+            "sourceWidth": 96,
+            "sourceHeight": 96,
+            "bounds": {
+              "minX": 6,
+              "minY": 10,
+              "maxX": 90,
+              "maxY": 94
+            },
+            "anchor": {
+              "x": 0.5,
+              "y": 1
+            },
+            "worldHeight": 2.4,
+            "footprint": {
+              "kind": "rect",
+              "cellsW": 2,
+              "cellsH": 2
+            },
+            "selectionFootprint": {
+              "kind": "rect",
+              "cellsW": 2,
+              "cellsH": 2
+            },
+            "tags": [
+              "original-fixture",
+              "building"
+            ]
+          },
+          {
+            "schemaVersion": 2,
+            "id": "neutral-cyan-beacon",
+            "displayName": "Cyan Beacon",
+            "enabled": true,
+            "factionId": "neutral",
+            "assetPath": "buildings/neutral-cyan-beacon/sprite.png",
+            "sourceWidth": 64,
+            "sourceHeight": 64,
+            "bounds": {
+              "minX": 7,
+              "minY": 4,
+              "maxX": 57,
+              "maxY": 62
+            },
+            "anchor": {
+              "x": 0.5,
+              "y": 1
+            },
+            "worldHeight": 1.8,
+            "footprint": {
+              "kind": "rect",
+              "cellsW": 2,
+              "cellsH": 2
+            },
+            "selectionFootprint": {
+              "kind": "rect",
+              "cellsW": 2,
+              "cellsH": 2
+            },
+            "tags": [
+              "original-fixture",
+              "building"
+            ]
+          },
+          {
+            "schemaVersion": 2,
+            "id": "sunweaver-sanctum",
+            "displayName": "Sunweaver Sanctum",
+            "enabled": true,
+            "factionId": "sunweaver",
+            "assetPath": "buildings/sunweaver-sanctum/sprite.png",
+            "sourceWidth": 128,
+            "sourceHeight": 128,
+            "bounds": {
+              "minX": 8,
+              "minY": 14,
+              "maxX": 120,
+              "maxY": 122
+            },
+            "anchor": {
+              "x": 0.5,
+              "y": 1
+            },
+            "worldHeight": 3.2,
+            "footprint": {
+              "kind": "rect",
+              "cellsW": 3,
+              "cellsH": 3
+            },
+            "selectionFootprint": {
+              "kind": "rect",
+              "cellsW": 3,
+              "cellsH": 3
+            },
+            "tags": [
+              "original-fixture",
+              "building"
+            ]
+          }
+        ],
+        "maps": [
+          {
+            "id": "lab-grid",
+            "path": "maps/lab-grid.json"
+          },
+          {
+            "id": "interaction-lab-alien-fantasy",
+            "path": "maps/interaction-lab-alien-fantasy.json"
+          },
+          {
+            "id": "m11-fixture-gallery",
+            "path": "maps/m11-fixture-gallery.json"
+          }
+        ],
+        "scenarios": [
+          {
+            "id": "lab-skirmish",
+            "path": "scenarios/lab-skirmish.json",
+            "mapId": "lab-grid"
+          },
+          {
+            "id": "interaction-lab-alien-fantasy",
+            "path": "scenarios/interaction-lab-alien-fantasy.json",
+            "mapId": "interaction-lab-alien-fantasy"
+          },
+          {
+            "id": "m11-fixture-gallery",
+            "path": "scenarios/m11-fixture-gallery.json",
+            "mapId": "m11-fixture-gallery"
+          }
+        ],
+        "contentHash": "3d385b2a55a5ad8684efe99cfade477cfe36651336bbca5ed41a348eec48cb78"
+      },
+      "publication": {
+        "currentRevision": "6",
+        "draftRevision": "6",
+        "current": {
+          "schemaVersion": 1,
+          "revision": "6",
+          "packId": "dev-pack-v2",
+          "manifestPath": ".content-publication/revisions/6/pack.json",
+          "manifestHash": "5ffe7ada8ca8fdf5c723359367d312f658c1026ccf2cd6d7e600c486e6dfe274",
+          "visualContentHash": "e7a18eac5ad52463e9f7290634e4e0e8dc229dc127eed3a83bde69518629147e",
+          "simulationRulesHash": "e361bfd0a782c8e4c383b83f9a4c2f552d6a38e5e010b606875b36edc3997791",
+          "restartRequired": true,
+          "assets": [
+            {
+              "kind": "data",
+              "assetPath": "maps/interaction-lab-alien-fantasy.json",
+              "storagePath": ".content-publication/revisions/6/assets/maps/interaction-lab-alien-fantasy.json",
+              "sha256": "8a09566d0c8379912395e2f187e9de2c7df5e559594368bf5a0947cd45d567dc",
+              "byteLength": 169
+            },
+            {
+              "kind": "data",
+              "assetPath": "maps/lab-grid.json",
+              "storagePath": ".content-publication/revisions/6/assets/maps/lab-grid.json",
+              "sha256": "0ed06af57e7db77b66c9f737e5c08924650cc3ff80290e39f5f06cadae26a715",
+              "byteLength": 127
+            },
+            {
+              "kind": "data",
+              "assetPath": "maps/m11-fixture-gallery.json",
+              "storagePath": ".content-publication/revisions/6/assets/maps/m11-fixture-gallery.json",
+              "sha256": "20a71971555721dc99a1ffc8b0987fa59cb261f6ab59c65593b3496ecb265f1a",
+              "byteLength": 152
+            },
+            {
+              "kind": "data",
+              "assetPath": "scenarios/interaction-lab-alien-fantasy.json",
+              "storagePath": ".content-publication/revisions/6/assets/scenarios/interaction-lab-alien-fantasy.json",
+              "sha256": "538f1787c424a2e5d9b421185713ffe3002681ebdc3488c9d98fbe4f669df112",
+              "byteLength": 2966
+            },
+            {
+              "kind": "data",
+              "assetPath": "scenarios/lab-skirmish.json",
+              "storagePath": ".content-publication/revisions/6/assets/scenarios/lab-skirmish.json",
+              "sha256": "bacab5818f3d0375ea6bc3592698fa266274657ed05b224e12d4af67a1021e63",
+              "byteLength": 533
+            },
+            {
+              "kind": "data",
+              "assetPath": "scenarios/m11-fixture-gallery.json",
+              "storagePath": ".content-publication/revisions/6/assets/scenarios/m11-fixture-gallery.json",
+              "sha256": "91aad835d4bd6a446240a589ee413b2f6bfab93300dee916d051a79599a39824",
+              "byteLength": 1018
+            },
+            {
+              "kind": "runtime",
+              "assetPath": "buildings/gravemark-bastion/sprite.png",
+              "storagePath": ".content-publication/revisions/6/assets/buildings/gravemark-bastion/sprite.png",
+              "sha256": "9fd2fb079c825a9bd32a7f69a87899b5a19cae94142ab555dd0bbf2d021ba0cd",
+              "byteLength": 452,
+              "width": 96,
+              "height": 96
+            },
+            {
+              "kind": "runtime",
+              "assetPath": "buildings/neutral-cyan-beacon/sprite.png",
+              "storagePath": ".content-publication/revisions/6/assets/buildings/neutral-cyan-beacon/sprite.png",
+              "sha256": "79f51fcaee66fe865230e1bee210a3f8100e2118ae3c863bcbcc7d3a4121a151",
+              "byteLength": 348,
+              "width": 64,
+              "height": 64
+            },
+            {
+              "kind": "runtime",
+              "assetPath": "buildings/sunweaver-sanctum/sprite.png",
+              "storagePath": ".content-publication/revisions/6/assets/buildings/sunweaver-sanctum/sprite.png",
+              "sha256": "3b2c1b253c1ec159e21d59073d986e23b2050869ac4c48146850b441e9def28e",
+              "byteLength": 742,
+              "width": 128,
+              "height": 128
+            },
+            {
+              "kind": "runtime",
+              "assetPath": "units/gravemark-stalker/sheet.png",
+              "storagePath": ".content-publication/revisions/6/assets/units/gravemark-stalker/sheet.png",
+              "sha256": "9ad9d1c80ecba6e287ed4801bc9c8937a2a1930f00f849d311581aac6c156683",
+              "byteLength": 1728,
+              "width": 128,
+              "height": 256
+            },
+            {
+              "kind": "runtime",
+              "assetPath": "units/gravemark-walker-proxy/sheet.png",
+              "storagePath": ".content-publication/revisions/6/assets/units/gravemark-walker-proxy/sheet.png",
+              "sha256": "2ffbf2d536c9c8aeb1cf9175c38b6c1f60e3a0804e358367fddc7f3471705944",
+              "byteLength": 359,
+              "width": 64,
+              "height": 64
+            },
+            {
+              "kind": "runtime",
+              "assetPath": "units/sunweaver-scout/sheet.png",
+              "storagePath": ".content-publication/revisions/6/assets/units/sunweaver-scout/sheet.png",
+              "sha256": "a45428e676c023c7a68859662e5cfe4eb5b1177e8e42134dc0b31652f0cffd29",
+              "byteLength": 1844,
+              "width": 128,
+              "height": 256
+            },
+            {
+              "kind": "runtime",
+              "assetPath": "units/sunweaver-walker-proxy/sheet.png",
+              "storagePath": ".content-publication/revisions/6/assets/units/sunweaver-walker-proxy/sheet.png",
+              "sha256": "b28db8306360dad8e6af9db774296e83cd44e57c826228ff17fd38a0507ec7fb",
+              "byteLength": 357,
+              "width": 64,
+              "height": 64
+            }
+          ],
+          "createdAt": "2026-09-05T18:23:24.556Z",
+          "legacyManifestPath": ".content-publication/revisions/6/pack-v1.json",
+          "parentRevision": "5"
+        }
+      }
+    },
+    "acknowledgement": {
+      "runtimeId": "game-web-interaction-lab",
+      "scenarioId": "interaction-lab-alien-fantasy",
+      "revision": "6",
+      "simulationRulesHash": "e361bfd0a782c8e4c383b83f9a4c2f552d6a38e5e010b606875b36edc3997791",
+      "restartRequired": true,
+      "updatedAt": "2026-09-05T18:23:27.106Z"
+    },
+    "browserRequests": [
+      "http://127.0.0.1:14373/?mode=interaction-lab&scenario=interaction-lab-alien-fantasy&seed=42&renderer=webgl&dpr=1&zoom=70-percent&content=studio",
+      "http://127.0.0.1:14373/@vite/client",
+      "http://127.0.0.1:14373/src/main.ts",
+      "http://127.0.0.1:14373/src/app/GameApp.ts",
+      "http://127.0.0.1:14373/src/runtime/config.ts",
+      "http://127.0.0.1:14373/src/styles.css",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/node_modules/vite/dist/client/env.mjs",
+      "http://127.0.0.1:14373/node_modules/.vite/deps/three.js?v=22c54caf",
+      "http://127.0.0.1:14373/src/config/constants.ts",
+      "http://127.0.0.1:14373/src/config/palette.ts",
+      "http://127.0.0.1:14373/src/bridge/NativeBridge.ts",
+      "http://127.0.0.1:14373/src/camera/IsometricCamera.ts",
+      "http://127.0.0.1:14373/src/diagnostics/FrameTracker.ts",
+      "http://127.0.0.1:14373/src/diagnostics/Hud.ts",
+      "http://127.0.0.1:14373/src/diagnostics/SoakController.ts",
+      "http://127.0.0.1:14373/src/entities/EntityRenderer.ts",
+      "http://127.0.0.1:14373/src/content/PublishedContentClient.ts",
+      "http://127.0.0.1:14373/src/input/PointerCameraControls.ts",
+      "http://127.0.0.1:14373/src/input/TouchDebugOverlay.ts",
+      "http://127.0.0.1:14373/src/renderer/adapter.ts",
+      "http://127.0.0.1:14373/src/runtime/CameraDirector.ts",
+      "http://127.0.0.1:14373/src/sim/SimClient.ts",
+      "http://127.0.0.1:14373/src/sim/types.ts",
+      "http://127.0.0.1:14373/src/world/LandmarkSystem.ts",
+      "http://127.0.0.1:14373/src/world/TerrainSystem.ts",
+      "http://127.0.0.1:14373/src/world/chunks.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/index.ts",
+      "http://127.0.0.1:14373/src/sandbox/createInteractionLab.ts",
+      "http://127.0.0.1:14373/src/bridge/messages.ts",
+      "http://127.0.0.1:14373/src/diagnostics/stats.ts",
+      "http://127.0.0.1:14373/src/input/gestureConstants.ts",
+      "http://127.0.0.1:14373/src/diagnostics/report.ts",
+      "http://127.0.0.1:14373/src/entities/atlas.ts",
+      "http://127.0.0.1:14373/node_modules/.vite/deps/chunk-PIWFDN4B.js?v=22c54caf",
+      "http://127.0.0.1:14373/src/util/seededRng.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/unitManifest.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/pngBounds.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/validation.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/coords.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/ids.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/animation.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/pack.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/commands.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/map.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/scenario.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/contentHash.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/publication.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/navigation/src/index.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/simulation/src/index.ts",
+      "http://127.0.0.1:14373/src/app/MatchRuntime.ts",
+      "http://127.0.0.1:14373/src/input/CommandClient.ts",
+      "http://127.0.0.1:14373/src/input/InteractionController.ts",
+      "http://127.0.0.1:14373/src/selection/SelectionController.ts",
+      "http://127.0.0.1:14373/src/selection/HitTestService.ts",
+      "http://127.0.0.1:14373/src/ui/MatchHud.ts",
+      "http://127.0.0.1:14373/src/ui/Minimap.ts",
+      "http://127.0.0.1:14373/src/ui/touchTargets.ts",
+      "http://127.0.0.1:14373/src/buildings/BuildingRenderSystem.ts",
+      "http://127.0.0.1:14373/src/buildings/placementValidation.ts",
+      "http://127.0.0.1:14373/src/qa/DebugOverlayState.ts",
+      "http://127.0.0.1:14373/src/qa/bugBundle.ts",
+      "http://127.0.0.1:14373/src/qa/deterministicSeeds.ts",
+      "http://127.0.0.1:14373/src/sandbox/EntityRegistry.ts",
+      "http://127.0.0.1:14373/src/sandbox/InteractionFeedback.ts",
+      "http://127.0.0.1:14373/src/sandbox/NavigationDebugRenderer.ts",
+      "http://127.0.0.1:14373/src/sandbox/ScenarioController.ts",
+      "http://127.0.0.1:14373/src/sandbox/UnitRenderSystem.ts",
+      "http://127.0.0.1:14373/src/sandbox/placement/BuildingPlacementController.ts",
+      "http://127.0.0.1:14373/src/sandbox/replay/CommandRecorder.ts",
+      "http://127.0.0.1:14373/src/sandbox/palettes/SpawnPalette.ts",
+      "http://127.0.0.1:14373/src/sandbox/mapPresets.ts",
+      "http://127.0.0.1:14373/src/sandbox/snapshot.ts",
+      "http://127.0.0.1:14373/src/sandbox/types.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/sha256.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/navigation/src/grid.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/navigation/src/navigationService.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/navigation/src/pathfinder.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/navigation/src/formation.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/navigation/src/separation.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/navigation/src/types.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/simulation/src/constants.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/simulation/src/entityPool.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/simulation/src/checksum.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/simulation/src/commandQueue.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/simulation/src/commandHandler.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/simulation/src/navStub.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/simulation/src/simulation.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/simulation/src/replay.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/simulation/src/testFixtures.ts",
+      "http://127.0.0.1:14373/src/content/spriteUv.ts",
+      "http://127.0.0.1:14373/src/sandbox/animation/animationResolver.ts",
+      "http://127.0.0.1:14373/src/sandbox/animation/spriteAtlas.ts",
+      "http://127.0.0.1:14373/src/sandbox/animation/direction.ts",
+      "http://127.0.0.1:14373/dev-content/v2/publication",
+      "http://127.0.0.1:14373/favicon.svg",
+      "http://127.0.0.1:14373/dev-content/v2/revisions/5",
+      "http://127.0.0.1:14373/dev-content/v2/revisions/5/pack",
+      "http://127.0.0.1:14373/dev-content/v2/revisions/5/assets/scenarios/interaction-lab-alien-fantasy.json",
+      "http://127.0.0.1:14373/dev-content/v2/revisions/5/assets/units/gravemark-stalker/sheet.png",
+      "http://127.0.0.1:14373/dev-content/v2/revisions/5/assets/units/gravemark-walker-proxy/sheet.png",
+      "http://127.0.0.1:14373/dev-content/v2/revisions/5/assets/units/sunweaver-scout/sheet.png",
+      "http://127.0.0.1:14373/dev-content/v2/revisions/5/assets/units/sunweaver-walker-proxy/sheet.png",
+      "http://127.0.0.1:14373/dev-content/v2/revisions/5/assets/buildings/gravemark-bastion/sprite.png",
+      "http://127.0.0.1:14373/dev-content/v2/revisions/5/assets/buildings/neutral-cyan-beacon/sprite.png",
+      "http://127.0.0.1:14373/dev-content/v2/revisions/5/assets/buildings/sunweaver-sanctum/sprite.png",
+      "http://127.0.0.1:14373/dev-content/events",
+      "http://127.0.0.1:14373/dev-content/v2/revisions/5/assets/maps/interaction-lab-alien-fantasy.json",
+      "http://127.0.0.1:14373/src/app/matchWorker.ts?worker_file&type=module",
+      "http://127.0.0.1:14373/dev-content/v2/acknowledgements",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/node_modules/vite/dist/client/env.mjs",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/navigation/src/index.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/simulation/src/index.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/navigation/src/grid.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/navigation/src/navigationService.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/navigation/src/pathfinder.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/navigation/src/formation.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/navigation/src/separation.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/navigation/src/types.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/simulation/src/constants.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/simulation/src/entityPool.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/simulation/src/checksum.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/simulation/src/commandQueue.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/simulation/src/commandHandler.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/simulation/src/navStub.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/simulation/src/simulation.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/simulation/src/replay.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/simulation/src/testFixtures.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/index.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/unitManifest.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/pngBounds.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/validation.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/coords.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/ids.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/animation.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/pack.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/commands.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/map.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/scenario.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/contentHash.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/publication.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/sha256.ts",
+      "http://127.0.0.1:14373/dev-content/v2/publication",
+      "http://127.0.0.1:14373/dev-content/v2/revisions/6",
+      "http://127.0.0.1:14373/dev-content/v2/revisions/6/pack",
+      "http://127.0.0.1:14373/dev-content/v2/revisions/6/assets/scenarios/interaction-lab-alien-fantasy.json",
+      "http://127.0.0.1:14373/dev-content/v2/revisions/6/assets/maps/interaction-lab-alien-fantasy.json",
+      "http://127.0.0.1:14373/dev-content/v2/revisions/6/assets/units/gravemark-stalker/sheet.png",
+      "http://127.0.0.1:14373/dev-content/v2/revisions/6/assets/units/gravemark-walker-proxy/sheet.png",
+      "http://127.0.0.1:14373/dev-content/v2/revisions/6/assets/units/sunweaver-scout/sheet.png",
+      "http://127.0.0.1:14373/dev-content/v2/revisions/6/assets/units/sunweaver-walker-proxy/sheet.png",
+      "http://127.0.0.1:14373/dev-content/v2/revisions/6/assets/buildings/gravemark-bastion/sprite.png",
+      "http://127.0.0.1:14373/dev-content/v2/revisions/6/assets/buildings/neutral-cyan-beacon/sprite.png",
+      "http://127.0.0.1:14373/dev-content/v2/revisions/6/assets/buildings/sunweaver-sanctum/sprite.png",
+      "http://127.0.0.1:14373/dev-content/v2/acknowledgements"
+    ],
+    "resourceEntries": [
+      "http://127.0.0.1:14373/@vite/client",
+      "http://127.0.0.1:14373/src/main.ts",
+      "http://127.0.0.1:14373/src/app/GameApp.ts",
+      "http://127.0.0.1:14373/src/runtime/config.ts",
+      "http://127.0.0.1:14373/src/styles.css",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/node_modules/vite/dist/client/env.mjs",
+      "http://127.0.0.1:14373/node_modules/.vite/deps/three.js?v=22c54caf",
+      "http://127.0.0.1:14373/src/config/constants.ts",
+      "http://127.0.0.1:14373/src/config/palette.ts",
+      "http://127.0.0.1:14373/src/bridge/NativeBridge.ts",
+      "http://127.0.0.1:14373/src/camera/IsometricCamera.ts",
+      "http://127.0.0.1:14373/src/diagnostics/FrameTracker.ts",
+      "http://127.0.0.1:14373/src/diagnostics/Hud.ts",
+      "http://127.0.0.1:14373/src/diagnostics/SoakController.ts",
+      "http://127.0.0.1:14373/src/entities/EntityRenderer.ts",
+      "http://127.0.0.1:14373/src/content/PublishedContentClient.ts",
+      "http://127.0.0.1:14373/src/input/PointerCameraControls.ts",
+      "http://127.0.0.1:14373/src/input/TouchDebugOverlay.ts",
+      "http://127.0.0.1:14373/src/renderer/adapter.ts",
+      "http://127.0.0.1:14373/src/runtime/CameraDirector.ts",
+      "http://127.0.0.1:14373/src/sim/SimClient.ts",
+      "http://127.0.0.1:14373/src/sim/types.ts",
+      "http://127.0.0.1:14373/src/world/LandmarkSystem.ts",
+      "http://127.0.0.1:14373/src/world/TerrainSystem.ts",
+      "http://127.0.0.1:14373/src/world/chunks.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/index.ts",
+      "http://127.0.0.1:14373/src/sandbox/createInteractionLab.ts",
+      "http://127.0.0.1:14373/src/bridge/messages.ts",
+      "http://127.0.0.1:14373/src/diagnostics/stats.ts",
+      "http://127.0.0.1:14373/src/input/gestureConstants.ts",
+      "http://127.0.0.1:14373/src/diagnostics/report.ts",
+      "http://127.0.0.1:14373/src/entities/atlas.ts",
+      "http://127.0.0.1:14373/node_modules/.vite/deps/chunk-PIWFDN4B.js?v=22c54caf",
+      "http://127.0.0.1:14373/src/util/seededRng.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/unitManifest.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/pngBounds.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/validation.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/coords.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/ids.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/animation.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/pack.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/commands.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/map.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/scenario.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/contentHash.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/publication.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/navigation/src/index.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/simulation/src/index.ts",
+      "http://127.0.0.1:14373/src/app/MatchRuntime.ts",
+      "http://127.0.0.1:14373/src/input/CommandClient.ts",
+      "http://127.0.0.1:14373/src/input/InteractionController.ts",
+      "http://127.0.0.1:14373/src/selection/SelectionController.ts",
+      "http://127.0.0.1:14373/src/selection/HitTestService.ts",
+      "http://127.0.0.1:14373/src/ui/MatchHud.ts",
+      "http://127.0.0.1:14373/src/ui/Minimap.ts",
+      "http://127.0.0.1:14373/src/ui/touchTargets.ts",
+      "http://127.0.0.1:14373/src/buildings/BuildingRenderSystem.ts",
+      "http://127.0.0.1:14373/src/buildings/placementValidation.ts",
+      "http://127.0.0.1:14373/src/qa/DebugOverlayState.ts",
+      "http://127.0.0.1:14373/src/qa/bugBundle.ts",
+      "http://127.0.0.1:14373/src/qa/deterministicSeeds.ts",
+      "http://127.0.0.1:14373/src/sandbox/EntityRegistry.ts",
+      "http://127.0.0.1:14373/src/sandbox/InteractionFeedback.ts",
+      "http://127.0.0.1:14373/src/sandbox/NavigationDebugRenderer.ts",
+      "http://127.0.0.1:14373/src/sandbox/ScenarioController.ts",
+      "http://127.0.0.1:14373/src/sandbox/UnitRenderSystem.ts",
+      "http://127.0.0.1:14373/src/sandbox/placement/BuildingPlacementController.ts",
+      "http://127.0.0.1:14373/src/sandbox/replay/CommandRecorder.ts",
+      "http://127.0.0.1:14373/src/sandbox/palettes/SpawnPalette.ts",
+      "http://127.0.0.1:14373/src/sandbox/mapPresets.ts",
+      "http://127.0.0.1:14373/src/sandbox/snapshot.ts",
+      "http://127.0.0.1:14373/src/sandbox/types.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/sha256.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/navigation/src/grid.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/navigation/src/navigationService.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/navigation/src/pathfinder.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/navigation/src/formation.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/navigation/src/separation.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/navigation/src/types.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/simulation/src/constants.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/simulation/src/entityPool.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/simulation/src/checksum.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/simulation/src/commandQueue.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/simulation/src/commandHandler.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/simulation/src/navStub.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/simulation/src/simulation.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/simulation/src/replay.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/simulation/src/testFixtures.ts",
+      "http://127.0.0.1:14373/src/content/spriteUv.ts",
+      "http://127.0.0.1:14373/src/sandbox/animation/animationResolver.ts",
+      "http://127.0.0.1:14373/src/sandbox/animation/spriteAtlas.ts",
+      "http://127.0.0.1:14373/src/sandbox/animation/direction.ts",
+      "http://127.0.0.1:14373/dev-content/v2/publication",
+      "http://127.0.0.1:14373/favicon.svg",
+      "http://127.0.0.1:14373/dev-content/v2/revisions/5",
+      "http://127.0.0.1:14373/dev-content/v2/revisions/5/pack",
+      "http://127.0.0.1:14373/dev-content/v2/revisions/5/assets/scenarios/interaction-lab-alien-fantasy.json",
+      "http://127.0.0.1:14373/dev-content/v2/revisions/5/assets/units/gravemark-stalker/sheet.png",
+      "http://127.0.0.1:14373/dev-content/v2/revisions/5/assets/units/gravemark-walker-proxy/sheet.png",
+      "http://127.0.0.1:14373/dev-content/v2/revisions/5/assets/units/sunweaver-scout/sheet.png",
+      "http://127.0.0.1:14373/dev-content/v2/revisions/5/assets/units/sunweaver-walker-proxy/sheet.png",
+      "http://127.0.0.1:14373/dev-content/v2/revisions/5/assets/buildings/gravemark-bastion/sprite.png",
+      "http://127.0.0.1:14373/dev-content/v2/revisions/5/assets/buildings/neutral-cyan-beacon/sprite.png",
+      "http://127.0.0.1:14373/dev-content/v2/revisions/5/assets/buildings/sunweaver-sanctum/sprite.png",
+      "http://127.0.0.1:14373/dev-content/v2/revisions/5/assets/maps/interaction-lab-alien-fantasy.json",
+      "http://127.0.0.1:14373/dev-content/v2/acknowledgements",
+      "http://127.0.0.1:14373/src/app/matchWorker.ts?worker_file&type=module",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/node_modules/vite/dist/client/env.mjs",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/navigation/src/index.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/simulation/src/index.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/navigation/src/grid.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/navigation/src/navigationService.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/navigation/src/pathfinder.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/navigation/src/formation.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/navigation/src/separation.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/navigation/src/types.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/simulation/src/constants.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/simulation/src/entityPool.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/simulation/src/checksum.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/simulation/src/commandQueue.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/simulation/src/commandHandler.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/simulation/src/navStub.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/simulation/src/simulation.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/simulation/src/replay.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/simulation/src/testFixtures.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/index.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/unitManifest.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/pngBounds.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/validation.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/coords.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/ids.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/animation.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/pack.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/commands.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/map.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/scenario.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/contentHash.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/publication.ts",
+      "http://127.0.0.1:14373/@fs/home/bobbyranka/Projects/pastel-rts/packages/content-schema/src/sha256.ts",
+      "http://127.0.0.1:14373/dev-content/v2/publication",
+      "http://127.0.0.1:14373/dev-content/v2/revisions/6",
+      "http://127.0.0.1:14373/dev-content/v2/revisions/6/pack",
+      "http://127.0.0.1:14373/dev-content/v2/revisions/6/assets/scenarios/interaction-lab-alien-fantasy.json",
+      "http://127.0.0.1:14373/dev-content/v2/revisions/6/assets/maps/interaction-lab-alien-fantasy.json",
+      "http://127.0.0.1:14373/dev-content/v2/revisions/6/assets/units/gravemark-stalker/sheet.png",
+      "http://127.0.0.1:14373/dev-content/v2/revisions/6/assets/units/gravemark-walker-proxy/sheet.png",
+      "http://127.0.0.1:14373/dev-content/v2/revisions/6/assets/units/sunweaver-scout/sheet.png",
+      "http://127.0.0.1:14373/dev-content/v2/revisions/6/assets/units/sunweaver-walker-proxy/sheet.png",
+      "http://127.0.0.1:14373/dev-content/v2/revisions/6/assets/buildings/gravemark-bastion/sprite.png",
+      "http://127.0.0.1:14373/dev-content/v2/revisions/6/assets/buildings/neutral-cyan-beacon/sprite.png",
+      "http://127.0.0.1:14373/dev-content/v2/revisions/6/assets/buildings/sunweaver-sanctum/sprite.png",
+      "http://127.0.0.1:14373/dev-content/v2/acknowledgements"
+    ],
+    "performance": [
+      {
+        "name": "http://127.0.0.1:14373/?mode=interaction-lab&scenario=interaction-lab-alien-fantasy&seed=42&renderer=webgl&dpr=1&zoom=70-percent&content=studio",
+        "entryType": "navigation",
+        "startTime": 0,
+        "duration": 744.7999999523163
+      }
+    ]
+  },
+  "browserDiagnostics": [
+    {
+      "kind": "console",
+      "type": "debug",
+      "text": "[vite] connecting...",
+      "location": {
+        "url": "http://127.0.0.1:14373/@vite/client",
+        "line": 788,
+        "column": 8,
+        "lineNumber": 788,
+        "columnNumber": 8
+      }
+    },
+    {
+      "kind": "console",
+      "type": "debug",
+      "text": "[vite] connected.",
+      "location": {
+        "url": "http://127.0.0.1:14373/@vite/client",
+        "line": 911,
+        "column": 14,
+        "lineNumber": 911,
+        "columnNumber": 14
+      }
+    }
+  ]
+}

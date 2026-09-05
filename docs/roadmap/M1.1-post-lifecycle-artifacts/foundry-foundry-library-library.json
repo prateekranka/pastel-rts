@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "label": "foundry-library",
+  "stage": "library",
+  "project": "foundry",
+  "testTitle": "M1.1-C Foundry library reads the isolated published pack",
+  "screenshotPath": "/home/bobbyranka/Projects/pastel-rts/docs/roadmap/M1.1-post-lifecycle-artifacts/foundry-foundry-library-library.png",
+  "capturedAt": "2026-09-05T18:23:54.593Z",
+  "runtime": {
+    "url": "http://127.0.0.1:14374/#/library",
+    "title": "Pastel RTS Content Foundry",
+    "canvasCount": 0,
+    "canvases": [],
+    "webglRenderer": null,
+    "bodyText": "V1 proxy\nLibrary\nUnit editor\nBuilding editor\nStudio\nGame\nFoundry\nContent\nContent connected\nPublished 12 · Draft 13 · Rules change: restart/retest required\nRuntime acknowledged: game-web-interaction-lab / interaction-lab-alien-fantasy / revision 12\nContent Library\n\nSearch draft content by stable ID, name, faction, type, or tag. Runtime art and reference art are separate.\n\nSearch\nType\nAll\nUnits\nBuildings\nShow disabled\nNew unit\nNew building\nRefresh\n\n13 runtime entries loaded.\n\nDraft revision 13 · Published revision 12 · 13 runtime entries\nKIND\tSTABLE ID\tNAME\tFACTION\tENABLED\tACTIONS\nbuilding\te2e-bastion-1788632621503\tE2E Bastion\tgravemark\tyes\tEditDuplicateDisableSandboxRemove\nunit\te2e-scout-1788632621503\tE2E Scout\tsunweaver\tyes\tEditDuplicateDisableSandboxRemove\nbuilding\tgravemark-bastion\tGravemark Bastion\tgravemark\tyes\tEditDuplicateDisableSandboxRemove\nunit\tgravemark-infantry\tGravemark Infantry\tgravemark\tyes\tEditDuplicateDisableSandboxRemove\nunit\tgravemark-stalker\tGravemark Stalker\tgravemark\tyes\tEditDuplicateDisableSandboxRemove\nunit\tgravemark-walker\tGravemark Walker (Proxy)\tgravemark\tyes\tEditDuplicateDisableSandboxRemove\nbuilding\tm11c-building-1788632628978\tM1.1-C Footprint Building\tsunweaver\tyes\tEditDuplicateDisableSandboxRemove\nunit\tm11c-unit-1788632623786\tM1.1-C Sheet Unit\tsunweaver\tyes\tEditDuplicateDisableSandboxRemove\nbuilding\tneutral-cyan-beacon\tCyan Beacon\tneutral\tyes\tEditDuplicateDisableSandboxRemove\nunit\tsunweaver-infantry\tSunweaver Infantry\tsunweaver\tyes\tEditDuplicateDisableSandboxRemove\nbuilding\tsunweaver-sanctum\tSunweaver Sanctum\tsunweaver\tyes\tEditDuplicateDisableSandboxRemove\nunit\tsunweaver-scout\tSunweaver Scout H Pinned Event 1788632612764\tsunweaver\tyes\tEditDuplicateDisableSandboxRemove\nunit\tsunweaver-walker\tSunweaver Walker (Proxy)\tsunweaver\tyes\tEditDuplicateDisableSandboxRemove\nReference attachments\n\nReference art is review material only. It never enters PackV2 or the game runtime.\n\nReference PNG\nAttach reference\nNo reference attachments."
+  },
+  "metadata": {
+    "rows": 13,
+    "status": "13 runtime entries loaded."
+  },
+  "browserDiagnostics": [
+    {
+      "kind": "console",
+      "type": "debug",
+      "text": "[vite] connecting...",
+      "location": {
+        "url": "http://127.0.0.1:14374/@vite/client",
+        "line": 788,
+        "column": 8,
+        "lineNumber": 788,
+        "columnNumber": 8
+      }
+    },
+    {
+      "kind": "console",
+      "type": "debug",
+      "text": "[vite] connected.",
+      "location": {
+        "url": "http://127.0.0.1:14374/@vite/client",
+        "line": 911,
+        "column": 14,
+        "lineNumber": 911,
+        "columnNumber": 14
+      }
+    }
+  ]
+}
