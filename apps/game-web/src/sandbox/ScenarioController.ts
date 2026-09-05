@@ -129,13 +129,21 @@ export class ScenarioController {
     this.commandLog.push(clone(envelope));
   }
 
-  /** Store only results for user commands. Scenario bootstrap results are implicit inputs. */
+  /**
+   * Store only results for user commands. Scenario bootstrap results are implicit inputs.
+   * The worker can receive a command after the main-thread tick used in its envelope.
+   * For replay, the accepted worker tick is the effective execution tick.
+   */
   recordCommandResult(result: CommandResult): void {
-    if (!this.commandLog.some((entry) => entry.commandId === result.commandId)) {
+    const command = this.commandLog.find((entry) => entry.commandId === result.commandId);
+    if (!command) {
       return;
     }
     if (this.commandResults.some((entry) => entry.commandId === result.commandId)) {
       return;
+    }
+    if (result.status === 'accepted' && result.acceptedAtTick !== undefined) {
+      command.executeTick = result.acceptedAtTick;
     }
     this.commandResults.push(clone(result));
   }
