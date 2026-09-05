@@ -2,7 +2,12 @@ import type { AnimationDef, UnitAnimationDef } from './animation';
 import { validateAnimationDef, countSpriteSheetFrames } from './animation';
 import { computeContentHash, createInitialRevision as createInitialRevisionHelper, normalizeRevision } from './contentHash';
 import type { PixelBounds, UnitAnchor, UnitManifest, UnitFaction } from './unitManifest';
-import { UNIT_MANIFEST_SCHEMA_VERSION, validateUnitManifest } from './unitManifest';
+import {
+  MAX_IMAGE_DIMENSION,
+  MAX_IMAGE_PIXELS,
+  UNIT_MANIFEST_SCHEMA_VERSION,
+  validateUnitManifest,
+} from './unitManifest';
 import {
   isRecord,
   isValidContentId,
@@ -176,6 +181,7 @@ export function validateUnitArchetype(value: unknown): UnitArchetype {
   const assetPath = resolveAssetPath(value);
   const sourceWidth = requirePositiveInt(value['sourceWidth'], 'sourceWidth');
   const sourceHeight = requirePositiveInt(value['sourceHeight'], 'sourceHeight');
+  assertImageDimensions(sourceWidth, sourceHeight);
   const frameWidth = requirePositiveInt(value['frameWidth'], 'frameWidth');
   const frameHeight = requirePositiveInt(value['frameHeight'], 'frameHeight');
   const margin = parseVec2(value['margin'], 'margin', 0);
@@ -248,6 +254,7 @@ export function validateBuildingArchetype(value: unknown): BuildingArchetype {
   const assetPath = resolveAssetPath(value);
   const sourceWidth = requirePositiveInt(value['sourceWidth'], 'sourceWidth');
   const sourceHeight = requirePositiveInt(value['sourceHeight'], 'sourceHeight');
+  assertImageDimensions(sourceWidth, sourceHeight);
   const bounds = parseBounds(value['bounds'], sourceWidth, sourceHeight);
   const anchor = parseAnchor(value['anchor']);
   const worldHeight = requirePositiveNumber(value['worldHeight'], 'worldHeight');
@@ -721,6 +728,12 @@ function parseOptionalScenarioReferences(value: unknown): ScenarioReference[] | 
     }
     return scenario;
   });
+}
+
+function assertImageDimensions(width: number, height: number): void {
+  if (width > MAX_IMAGE_DIMENSION || height > MAX_IMAGE_DIMENSION || width * height > MAX_IMAGE_PIXELS) {
+    throw new Error('image dimensions exceed limits');
+  }
 }
 
 export { computeContentHash, bumpRevision, createInitialRevision, normalizeRevision } from './contentHash';

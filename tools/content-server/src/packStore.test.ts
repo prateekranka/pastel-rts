@@ -58,6 +58,28 @@ const validBuildingArchetype = {
   footprint: { kind: 'rect' as const, cellsW: 2, cellsH: 2 },
 };
 
+function pngWithText(text: string): string {
+  const source = Buffer.from(TINY_PNG_BASE64, 'base64');
+  const data = Buffer.from(`note\0${text}`, 'latin1');
+  const chunk = Buffer.alloc(12 + data.length);
+  chunk.writeUInt32BE(data.length, 0);
+  chunk.write('tEXt', 4, 'ascii');
+  data.copy(chunk, 8);
+  chunk.writeUInt32BE(crc32(Buffer.concat([Buffer.from('tEXt', 'ascii'), data])), 8 + data.length);
+  return Buffer.concat([source.subarray(0, source.length - 12), chunk, source.subarray(source.length - 12)]).toString('base64');
+}
+
+function crc32(data: Buffer): number {
+  let crc = 0xffffffff;
+  for (const byte of data) {
+    crc ^= byte;
+    for (let bit = 0; bit < 8; bit += 1) {
+      crc = (crc >>> 1) ^ (crc & 1 ? 0xedb88320 : 0);
+    }
+  }
+  return (crc ^ 0xffffffff) >>> 0;
+}
+
 let tempDir: string;
 let store: PackStore;
 
@@ -179,6 +201,102 @@ describe('PackStore v2 operations', () => {
     };
     expect(rewritten.schemaVersion).toBe(2);
     expect(rewritten.buildings.some((building) => building.id === 'test-bastion')).toBe(true);
+  });
+
+  it('rejects stale draft mutations after another save', () => {
+    const before = store.getPublicationStatus();
+    store.createUnitArchetype(validUnitArchetype, TINY_PNG_BASE64, before.draftRevision);
+    const after = store.getPublicationStatus();
+    expect(after.draftRevision).not.toBe(before.draftRevision);
+    expect(() => store.createBuildingArchetype(validBuildingArchetype, TINY_PNG_BASE64, before.draftRevision)).toThrow(
+      /stale draft revision/i,
+    );
+    expect(store.getPublicationStatus().draftRevision).toBe(after.draftRevision);
+  });
+
+  it('keeps published source bytes immutable across replacement, revert, and restart', () => {
+    const initial = store.getPublicationStatus();
+    store.createUnitArchetype(validUnitArchetype, TINY_PNG_BASE64, initial.draftRevision);
+    const firstPublication = store.publish(initial.currentRevision);
+    const firstRevision = firstPublication.metadata.revision;
+    expect(() => store.publish(initial.currentRevision)).toThrow(/stale publication revision/i);
+    const firstAsset = firstPublication.metadata.assets.find((asset) => asset.assetPath === 'units/test-scout/sheet.png');
+    expect(firstAsset).toBeDefined();
+    const firstBytes = readFileSync(join(tempDir, firstAsset!.storagePath));
+
+    const draftAfterFirstPublish = store.getPublicationStatus();
+    store.updateUnitArchetype(
+      'test-scout',
+      { ...validUnitArchetype, displayName: 'Replacement Scout' },
+      pngWithText('replacement'),
+      draftAfterFirstPublish.draftRevision,
+    );
+    expect(store.readPublishedPackV2().units[0]?.displayName).toBe('Test Scout');
+
+    const secondPublication = store.publish(firstRevision);
+    expect(secondPublication.metadata.revision).not.toBe(firstRevision);
+    const secondAsset = secondPublication.metadata.assets.find((asset) => asset.assetPath === 'units/test-scout/sheet.png');
+    expect(secondAsset).toBeDefined();
+    expect(readFileSync(join(tempDir, firstAsset!.storagePath))).toEqual(firstBytes);
+    expect(readFileSync(join(tempDir, secondAsset!.storagePath))).not.toEqual(firstBytes);
+
+    const reverted = store.revert(firstRevision, secondPublication.metadata.revision);
+    expect(reverted.metadata.sourceRevision).toBe(firstRevision);
+    expect(reverted.pack.units[0]?.displayName).toBe('Test Scout');
+    expect(store.readPublishedPackV2().units[0]?.displayName).toBe('Test Scout');
+    expect(readFileSync(join(tempDir, firstAsset!.storagePath))).toEqual(firstBytes);
+
+    const restarted = new PackStore({ packDir: tempDir });
+    expect(restarted.getPublicationStatus().currentRevision).toBe(reverted.metadata.revision);
+    expect(restarted.readPublishedPackV2().units[0]?.displayName).toBe('Test Scout');
+  });
+
+  it('keeps reference attachments outside runtime publication assets', () => {
+    const reference = store.createReferenceAttachment({ id: 'concept-scout', displayName: 'Concept Scout' }, TINY_PNG_BASE64);
+    expect(reference.assetPath).toMatch(/^references\/concept-scout\/[a-f0-9]{64}\.png$/);
+    expect(store.listReferenceAttachments()).toEqual([reference]);
+    expect(store.getPublicationStatus().current.assets).toEqual([]);
+    expect(existsSync(join(tempDir, reference.storagePath))).toBe(true);
+    store.deleteReferenceAttachment(reference.id);
+    expect(store.listReferenceAttachments()).toEqual([]);
+    expect(existsSync(join(tempDir, reference.storagePath))).toBe(true);
+  });
+
+  it('leaves the last good publication readable when validation fails', () => {
+    const initial = store.getPublicationStatus();
+    store.createUnitArchetype(validUnitArchetype, TINY_PNG_BASE64, initial.draftRevision);
+    const published = store.publish(initial.currentRevision);
+    const badScenario = {
+      schemaVersion: 1,
+      id: 'bad-scenario',
+      displayName: 'Bad Scenario',
+      mapId: 'lab-grid',
+      units: [{ archetypeId: 'missing-unit', position: { x: 1024, z: 1024 } }],
+      buildings: [],
+    };
+    writeFileSync(join(tempDir, 'scenarios/bad-scenario.json'), JSON.stringify(badScenario));
+    const draft = store.readPackV2();
+    const badDraft = { ...draft, scenarios: [{ id: 'bad-scenario', path: 'scenarios/bad-scenario.json' }] };
+    writeFileSync(store.draftPackPath, `${JSON.stringify(badDraft, null, 2)}\n`);
+    writeFileSync(store.v2IndexPath, `${JSON.stringify(badDraft, null, 2)}\n`);
+
+    expect(() => store.publish(published.metadata.revision)).toThrow(/missing unit/i);
+    expect(store.getPublicationStatus().currentRevision).toBe(published.metadata.revision);
+    expect(store.readPublishedPackV2().units[0]?.id).toBe('test-scout');
+  });
+
+  it('rejects corrupt PNGs, oversize manifests, and encoded traversal', () => {
+    const corrupt = Buffer.from(TINY_PNG_BASE64, 'base64');
+    corrupt[corrupt.length - 1] = (corrupt[corrupt.length - 1] ?? 0) ^ 1;
+    expect(() => store.createUnitArchetype(validUnitArchetype, corrupt.toString('base64'))).toThrow(/PNG|corrupt|CRC/i);
+    expect(() =>
+      store.createUnitArchetype(
+        { ...validUnitArchetype, sourceWidth: 4097, bounds: { minX: 4, minY: 4, maxX: 4096, maxY: 28 } },
+        TINY_PNG_BASE64,
+      ),
+    ).toThrow(/image dimensions/i);
+    expect(() => sanitizeRelativePath('units/a/%2e%2e/secret.png')).toThrow(/invalid path/i);
+    expect(() => sanitizeRelativePath('units/a/../secret.png')).toThrow(/invalid path/i);
   });
 });
 
