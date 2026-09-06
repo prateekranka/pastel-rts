@@ -478,5 +478,6 @@ beyond plan review.
 - [x] Tab structure implemented
 - [x] Studio web view implemented
 - [x] Login + Keychain implemented
-- [ ] Acceptance criteria passed on simulator
+- [ ] Acceptance criteria passed on dedicated iPad A16 simulator
+- [x] GitHub Actions iOS Simulator Debug compile passed (`20b0096`)
 - [ ] Build 2 uploaded and assigned (app-dev + Mac)

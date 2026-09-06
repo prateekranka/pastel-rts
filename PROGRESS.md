@@ -54,7 +54,9 @@ Implementation baseline (release plan HEAD before R4 source): `c38b2356132522591
 - `git diff 6e4d580..HEAD -- packages/simulation packages/navigation` is empty.
 - Live unauthenticated `https://pastel.contenthelper.in/` returned HTTP 401 with `WWW-Authenticate: Basic realm="Pastel RTS Hosted Studio"`. The native username constant is the documented non-secret value `studio`. The password was not read, printed, or committed.
 - A disposable WKWebView spike was not executed here: this agent is Linux and does not host the dedicated iPad A16 simulator. Spike-only code was not added. The native shell follows the planned challenge contract (`previousFailureCount`, exact protection space, `URLCredential.Persistence.none`, store-after-launcher-main-frame-2xx).
-- `CURRENT_PROJECT_VERSION` is `2` for TestFlight build `0.0.1 (2)`. Debug/Release compile, simulator acceptance, signed archive, IPA upload, and tester assignment were not performed on this Linux agent and remain Mac/ASC steps.
+- `CURRENT_PROJECT_VERSION` is `2` for TestFlight build `0.0.1 (2)`.
+- GitHub Actions CI passed on `20b0096`: web typecheck/test/build/Playwright and iOS Simulator Debug compile. Push run: https://github.com/prateekranka/pastel-rts/actions/runs/34036944202 PR run: https://github.com/prateekranka/pastel-rts/actions/runs/34036955857
+- Dedicated iPad A16 simulator acceptance, Release archive, IPA upload, and tester assignment were not performed on this Linux agent and remain Mac/ASC steps.
 
 ## Build and records
 
