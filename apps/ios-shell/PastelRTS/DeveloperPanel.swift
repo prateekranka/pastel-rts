@@ -33,6 +33,14 @@ struct DeveloperPanel: View {
                         }
                     }
                 }
+                Section("Tools") {
+                    Link("Open hosted studio", destination: URL(string: "https://pastel.contenthelper.in/")!)
+                        .font(.title3)
+                        .frame(maxWidth: .infinity, minHeight: 56, alignment: .leading)
+                    Link("Open browser playtest", destination: URL(string: "https://pastel.contenthelper.in/game/?mode=interaction-lab")!)
+                        .font(.title3)
+                        .frame(maxWidth: .infinity, minHeight: 56, alignment: .leading)
+                }
                 if let report = config.lastPerformanceReportJSON {
                     Section("Last performance report") {
                         Text(report).font(.system(.footnote, design: .monospaced))
