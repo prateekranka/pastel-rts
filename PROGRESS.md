@@ -57,6 +57,7 @@ Implementation baseline (release plan HEAD before R4 source): `c38b2356132522591
 - `CURRENT_PROJECT_VERSION` is `2` for TestFlight build `0.0.1 (2)`.
 - GitHub Actions CI passed on `20b0096`: web typecheck/test/build/Playwright and iOS Simulator Debug compile. Push run: https://github.com/prateekranka/pastel-rts/actions/runs/34036944202 PR run: https://github.com/prateekranka/pastel-rts/actions/runs/34036955857
 - Dedicated iPad A16 simulator acceptance, Release archive, IPA upload, and tester assignment were not performed on this Linux agent and remain Mac/ASC steps.
+- The WKWebView Basic-auth spike remains open until the dedicated simulator run. Live HTTP 401/realm was confirmed.
 
 ## Build and records
 

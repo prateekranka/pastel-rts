@@ -74,6 +74,10 @@ struct StudioView: View {
                 session.retry()
             }
             .buttonStyle(.borderedProminent)
+            Button("Log Out", role: .destructive) {
+                password = ""
+                session.logOut()
+            }
         }
         .padding(32)
     }

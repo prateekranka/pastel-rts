@@ -108,8 +108,8 @@ struct StudioWebView: UIViewRepresentable {
             promptCompletion = nil
             alertCompletion?()
             alertCompletion = nil
-            if let presenter = Self.topPresenter(from: webView), presenter.presentedViewController is UIAlertController {
-                presenter.dismiss(animated: false)
+            if let alert = Self.topPresenter(from: webView) as? UIAlertController {
+                alert.dismiss(animated: false)
             }
             webView.stopLoading()
             webView.navigationDelegate = nil
@@ -132,9 +132,20 @@ struct StudioWebView: UIViewRepresentable {
             }
             if navigationAction.targetFrame == nil {
                 if StudioOrigin.isAllowed(url) {
+                    if session.restrictsMainFrameToLauncher && !StudioOrigin.isLauncherURL(url) {
+                        decisionHandler(.cancel, preferences)
+                        return
+                    }
                     webView.load(navigationAction.request)
                 }
                 decisionHandler(.cancel, preferences)
+                return
+            }
+            if navigationAction.targetFrame?.isMainFrame == true,
+               session.restrictsMainFrameToLauncher,
+               !StudioOrigin.isLauncherURL(url) {
+                decisionHandler(.cancel, preferences)
+                session.handleDisallowedLauncherNavigation()
                 return
             }
             if StudioOrigin.isAllowed(url) {
@@ -154,7 +165,10 @@ struct StudioWebView: UIViewRepresentable {
                 return
             }
             if navigationResponse.isForMainFrame, let http = navigationResponse.response as? HTTPURLResponse {
-                session.handleMainFrameHTTP(url: url, statusCode: http.statusCode)
+                if !session.handleMainFrameHTTP(url: url, statusCode: http.statusCode) {
+                    decisionHandler(.cancel)
+                    return
+                }
             }
             decisionHandler(.allow)
         }
@@ -206,6 +220,9 @@ struct StudioWebView: UIViewRepresentable {
             windowFeatures: WKWindowFeatures
         ) -> WKWebView? {
             if let url = navigationAction.request.url, StudioOrigin.isAllowed(url) {
+                if session.restrictsMainFrameToLauncher && !StudioOrigin.isLauncherURL(url) {
+                    return nil
+                }
                 webView.load(navigationAction.request)
             }
             return nil

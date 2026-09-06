@@ -74,8 +74,15 @@ final class StudioSession: ObservableObject {
     }
 
     func logOut() {
+        guard StudioKeychainStore.delete() else {
+            if phase == .loadError {
+                loadErrorMessage = StudioUserMessage.keychainLogout
+            } else {
+                saveNotice = StudioUserMessage.keychainLogout
+            }
+            return
+        }
         clearSecrets()
-        StudioKeychainStore.delete()
         loginError = nil
         loadErrorMessage = nil
         saveNotice = nil
@@ -91,6 +98,10 @@ final class StudioSession: ObservableObject {
         } else {
             phase = .signedOut
         }
+    }
+
+    var restrictsMainFrameToLauncher: Bool {
+        launcherNavigationInFlight
     }
 
     func passwordForExpectedChallenge() -> String? {
@@ -126,26 +137,47 @@ final class StudioSession: ObservableObject {
         destroyWebSession()
     }
 
-    func handleMainFrameHTTP(url: URL, statusCode: Int) {
-        guard (200...299).contains(statusCode) else { return }
-        guard StudioOrigin.isLauncherURL(url) else { return }
-        let wasLauncherLoad = launcherNavigationInFlight
-        if wasLauncherLoad {
+    /// Returns whether the web view should commit the response.
+    func handleMainFrameHTTP(url: URL, statusCode: Int) -> Bool {
+        if launcherNavigationInFlight {
+            if (300...399).contains(statusCode) || !StudioOrigin.isLauncherURL(url) {
+                failCurrentLoad(message: StudioUserMessage.unreachable)
+                return false
+            }
+            if !(200...299).contains(statusCode) {
+                if statusCode == 401 && rejectionHandledForSession {
+                    return false
+                }
+                failCurrentLoad(message: StudioUserMessage.unreachable)
+                return false
+            }
             launcherNavigationInFlight = false
+            guard offeredCredentialForLauncher, let candidate = candidatePassword, !didCommitCandidate else {
+                return true
+            }
+            if StudioKeychainStore.save(candidate) {
+                saveNotice = nil
+            } else {
+                saveNotice = StudioUserMessage.keychainSave
+            }
+            storedPassword = candidate
+            candidatePassword = nil
+            didCommitCandidate = true
+            offeredCredentialForLauncher = false
+            phase = .authenticated
+            loginError = nil
+            return true
         }
-        guard wasLauncherLoad, offeredCredentialForLauncher else { return }
-        guard let candidate = candidatePassword, !didCommitCandidate else { return }
-        if StudioKeychainStore.save(candidate) {
-            saveNotice = nil
-        } else {
-            saveNotice = StudioUserMessage.keychainSave
+        if (500...599).contains(statusCode) {
+            failCurrentLoad(message: StudioUserMessage.unreachable)
+            return false
         }
-        storedPassword = candidate
-        candidatePassword = nil
-        didCommitCandidate = true
-        offeredCredentialForLauncher = false
-        phase = .authenticated
-        loginError = nil
+        return true
+    }
+
+    func handleDisallowedLauncherNavigation() {
+        guard launcherNavigationInFlight, !rejectionHandledForSession else { return }
+        failCurrentLoad(message: StudioUserMessage.unreachable)
     }
 
     func handleNavigationFailure(_ error: Error, isProcessTermination: Bool = false) {
@@ -156,23 +188,7 @@ final class StudioSession: ObservableObject {
         if !isProcessTermination && nsError.domain == NSURLErrorDomain && nsError.code == NSURLErrorCancelled {
             return
         }
-        guard launcherNavigationInFlight || isProcessTermination else {
-            return
-        }
-        let hadUnverifiedCandidate = candidatePassword != nil && !didCommitCandidate
-        if hadUnverifiedCandidate {
-            candidatePassword = nil
-            offeredCredentialForLauncher = false
-            launcherNavigationInFlight = false
-            loginError = sanitizedFailure(nsError)
-            loadErrorMessage = nil
-            phase = .signedOut
-            destroyWebSession()
-            return
-        }
-        loadErrorMessage = sanitizedFailure(nsError)
-        phase = .loadError
-        destroyWebSession()
+        failCurrentLoad(message: sanitizedFailure(nsError))
     }
 
     func updateControlState(canGoBack: Bool, canGoForward: Bool, isLoading: Bool) {
@@ -205,6 +221,24 @@ final class StudioSession: ObservableObject {
         canGoBack = false
         canGoForward = false
         isLoading = false
+    }
+
+    private func failCurrentLoad(message: String) {
+        guard phase == .authenticating || phase == .authenticated else { return }
+        let hadUnverifiedCandidate = candidatePassword != nil && !didCommitCandidate
+        if hadUnverifiedCandidate {
+            candidatePassword = nil
+            offeredCredentialForLauncher = false
+            launcherNavigationInFlight = false
+            loginError = message
+            loadErrorMessage = nil
+            phase = .signedOut
+            destroyWebSession()
+            return
+        }
+        loadErrorMessage = message
+        phase = .loadError
+        destroyWebSession()
     }
 
     private func clearSecrets() {

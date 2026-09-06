@@ -46,4 +46,5 @@ enum StudioUserMessage {
     static let timeout = "Studio took too long to respond. Try again."
     static let keychainSave = "Studio signed in, but this device could not remember the password."
     static let keychainRead = "Studio could not read a saved password on this device."
+    static let keychainLogout = "Studio could not forget the saved password on this device."
 }

@@ -474,7 +474,7 @@ beyond plan review.
 - [x] Plan written (this document)
 - [x] Owning game-development review completed; plan amended only
 - [x] Explicit user approval to implement
-- [x] Spike: live gateway 401/realm verified; WKWebView challenge deferred to Mac simulator
+- [ ] Spike: WKWebView Basic-auth challenge verified on simulator (live HTTP 401/realm confirmed; platform challenge deferred)
 - [x] Tab structure implemented
 - [x] Studio web view implemented
 - [x] Login + Keychain implemented
