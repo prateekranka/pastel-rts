@@ -97,6 +97,8 @@ Deliver:
 - Basic authentication with constant-time password verification from environment configuration.
 - Traversal-safe static file resolution, no directory listings, no credential logging, and streamed SSE/request bodies.
 - Health route suitable for service readback.
+- Launcher and app-entry HTML at `/`, `/game/`, `/game/index.html`, `/foundry/`, and `/foundry/index.html` must use `Cache-Control: no-store`. This prevents a saved iPad tab from keeping an old entry bundle map after a release.
+- Versioned JavaScript, CSS, and art assets can use private bounded caching. Authentication remains mandatory for every asset.
 
 ## Acceptance evidence
 

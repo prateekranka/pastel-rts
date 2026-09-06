@@ -196,7 +196,8 @@ function serveStatic(res, root, relativePath, isAppRoot) {
     return;
   }
   res.setHeader('content-type', MIME[extname(target).toLowerCase()] ?? 'application/octet-stream');
-  res.setHeader('cache-control', relativePath === 'index.html' ? 'no-store' : 'private, max-age=3600');
+  const isAppEntry = isAppRoot || relativePath === 'index.html';
+  res.setHeader('cache-control', isAppEntry ? 'no-store' : 'private, max-age=3600');
   streamFile(res, target);
 }
 
