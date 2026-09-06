@@ -30,7 +30,8 @@ Product commit: `6e4d580`. Native release-shell fixes are at `ff400e3` (`R1.4` a
 - Validated IPA: `/Users/prateekranka/Builds/PastelRTS/export-0.0.1-1-ff400e3/PastelRTS.ipa`.
 - IPA SHA-256: `b58e3a9e9002527bf9bf6f0a9a08cf1df7c10d125519e9ed88c59f7634cc4a95`.
 - IPA identity: `com.pastelrts.app`, version `0.0.1`, build `1`, iPad-only, team `4JRB53LG5C`, `get-task-allow = false`. Signature, provisioning profile, all 34 release files, executable UUID, and dSYM passed independent payload validation.
-- TestFlight upload is **blocked**, not complete. Apple has no Pastel app record. The required `eshabhoon@gmail.com` web session is not authenticated and has no stored password. The exact requested tester address `prateek. ranka@gmail.com` is malformed; no tester was added.
+- TestFlight delivery is **available for internal testing**. ASC app `6809144687` (`Pastel RTS`, SKU `PASTELRTS-IOS-2026`) accepted the IPA as build `0.0.1 (1)`, build ID `ca177474-8146-4d8e-9463-6606bba56160`. The build is `VALID`, `usesNonExemptEncryption = false`, and `READY_FOR_BETA_TESTING`; it expires 2026-12-05.
+- Internal group `Pastel RTS Internal Testers` contains `prateek.ranka@gmail.com`. The build is assigned directly to that tester. Invitation ID `d1d81f76-53ba-4d55-bec2-d5cafeb5c080` was created. ASC still reports the tester state as `NOT_INVITED` until the tester accepts the invitation.
 - The physical iPad remains unavailable to `devicectl`. Physical touch and target-device frame-time validation remain pending.
 
 ## Build and records
@@ -49,6 +50,6 @@ The original M1.1 web archive contains web builds, not a native iOS binary. The 
 
 ## Remaining decision
 
-Retain this build for the M1.1 human walkthrough and physical iPad check. Simulator native behavior and one touch-selection path pass. Human design acceptance, physical-device behavior, broader touch coverage, and target-device performance remain open. TestFlight completion also requires an Esha web login, app-record creation, upload processing, and tester assignment. No later milestone starts automatically.
+Retain this build for the M1.1 human walkthrough and physical iPad check. Simulator native behavior and one touch-selection path pass. Human design acceptance, physical-device behavior, broader touch coverage, target-device performance, and tester invitation acceptance remain open. ASC TestFlight delivery and tester assignment are complete. No later milestone starts automatically.
 
 Numbered input documents and simulation/navigation source remain unchanged from their recorded baselines. Loose artifacts and logs remain in place; the working tree is not claimed clean. The early capture-name reuse and other evidence limits are documented in the gate record.

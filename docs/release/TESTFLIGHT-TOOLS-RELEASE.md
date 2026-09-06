@@ -126,7 +126,7 @@ Deliver:
 - Archive with Apple Distribution signing for team `4JRB53LG5C`.
 - Export and validate the IPA.
 - Upload to the existing or newly created `Pastel RTS` App Store Connect record.
-- Wait for Apple processing. Require a valid processed build before assigning it to an internal TestFlight group.
+- Wait for Apple processing. Require a valid processed build before assigning it to an internal TestFlight tester or group.
 - Confirm Bobby’s available App Store Connect tester account can install the build.
 
 ## Current release evidence — 2026-09-06
@@ -144,12 +144,17 @@ Passed:
 - IPA SHA-256: `b58e3a9e9002527bf9bf6f0a9a08cf1df7c10d125519e9ed88c59f7634cc4a95`.
 - IPA validation proves a valid signature, bundle `com.pastelrts.app`, version `0.0.1`, build `1`, iPad-only family, team `4JRB53LG5C`, `get-task-allow = false`, all 34 release files, and matching app/archive/dSYM UUID `15366426-8BE1-3F53-B678-69B7CC76C6A9`.
 
+## Current delivery — 2026-09-06
+
+- ASC app record: `6809144687`, name `Pastel RTS`, bundle `com.pastelrts.app`, SKU `PASTELRTS-IOS-2026`.
+- IPA upload: build `0.0.1 (1)`, ASC build ID `ca177474-8146-4d8e-9463-6606bba56160`, SHA-256 `b58e3a9e9002527bf9bf6f0a9a08cf1df7c10d125519e9ed88c59f7634cc4a95`.
+- ASC processing: `VALID`; `usesNonExemptEncryption=false`; `internalBuildState=READY_FOR_BETA_TESTING`; expiry `2026-12-05`.
+- Internal group `Pastel RTS Internal Testers` contains tester `prateek.ranka@gmail.com`. The build is assigned directly to that tester. Invitation ID `d1d81f76-53ba-4d55-bec2-d5cafeb5c080` was created. ASC still reports tester state `NOT_INVITED` until the tester accepts the invitation.
+
 Open:
 
-- Apple has no Pastel app record. The required `eshabhoon@gmail.com` `asc web` session is unauthenticated and has no stored password. App creation and upload cannot proceed until that account completes a secure local password and 2FA prompt.
-- The exact requested tester address `prateek. ranka@gmail.com` is malformed and does not identify an App Store Connect user. No tester was added.
-- The physical iPad is unavailable to `devicectl`. Physical-device touch and frame-time checks remain pending.
+- The tester must accept the TestFlight invitation before installation. The physical iPad is unavailable to `devicectl`; physical-device touch and frame-time checks remain pending.
 
 ## Completion boundary
 
-A successful upload command is not completion. Completion requires a processed TestFlight build assigned to a tester group, live authenticated tool URLs exercised in a browser, and truthful updates to `PROGRESS.md`. Physical iPad gameplay and frame-time validation remain pending until Bobby opens the build on the actual device and returns the device report.
+A successful ASC delivery requires a processed TestFlight build assigned to an internal tester or group, live authenticated tool URLs exercised in a browser, and truthful updates to `PROGRESS.md`. ASC delivery and tester assignment are complete for build `0.0.1 (1)`. Physical iPad gameplay and frame-time validation remain pending until Bobby opens the build on the actual device and returns the device report.
