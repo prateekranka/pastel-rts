@@ -8,7 +8,7 @@ Stop at M1.1. M2–M7 remain inactive. E1 and N1 need separate approval. No merg
 
 ## Verified result
 
-Product commit: `6e4d580`. Later commits contain evidence and documentation only.
+Product commit: `6e4d580`. Native release-shell fixes are at `ff400e3` (`R1.4` and `R1.5`). These fixes only select the locked Interaction Lab route and give successful bundled `pastel://` fetches HTTP status `200`. Simulation and navigation remain unchanged.
 
 - Root typecheck, lint, workspace tests, game/Foundry builds, iOS web sync and copied-pack validation pass.
 - Integrated developer browser suite: 32 passed with zero retries. The production-only case passed separately with the content server stopped.
@@ -17,6 +17,21 @@ Product commit: `6e4d580`. Later commits contain evidence and documentation only
 - The original long soak found texture growth. S repaired disposal ordering. Independent V review found no confirmed blocker in the public lifetime path.
 - Q2 ran for 1,205,967 ms with 12 successful publications and acknowledgements. All 1,199 resource samples stayed at 7 textures, 17 geometries and 24 draw calls. No missing art or browser/runtime errors were observed.
 - Task workers and owned validation servers are stopped. Unrelated services remain untouched.
+
+## TestFlight release candidate
+
+- Authenticated hosted access is live at `https://pastel.contenthelper.in`. The launcher, browser playtest, Foundry routes, and content health route passed. Unauthenticated requests return `401`.
+- All 37 checked hosted responses matched the current local release bytes. Entry HTML is `no-store`. A Chromium iPad-viewport pass reached the game and Unit Editor with zero page, console, or request errors.
+- The exact Release build from commit `ff400e3eec04b9293a39e75021d19f30f6782b84` compiled and ran on the dedicated iPad A16 simulator `46C781B1-AEC3-4B64-A9DE-D1A087715FA5`.
+- Native readback showed content source `bundle`, revision `3`, scenario `interaction-lab-alien-fantasy`, requested and actual seed `42`, and no init or content error.
+- Maestro entered selection mode and selected one `sunweaver-infantry`. Army Rail changed from `0` to `1`.
+- A fresh Grok 4.6 XHigh critic returned **PASS-WITH-POLISH**. The single visible gap is workbench chrome density over the battlefield. It is not an M1.1 TestFlight blocker.
+- Signed archive: `/Users/prateekranka/Builds/PastelRTS/PastelRTS-0.0.1-1-ff400e3.xcarchive`.
+- Validated IPA: `/Users/prateekranka/Builds/PastelRTS/export-0.0.1-1-ff400e3/PastelRTS.ipa`.
+- IPA SHA-256: `b58e3a9e9002527bf9bf6f0a9a08cf1df7c10d125519e9ed88c59f7634cc4a95`.
+- IPA identity: `com.pastelrts.app`, version `0.0.1`, build `1`, iPad-only, team `4JRB53LG5C`, `get-task-allow = false`. Signature, provisioning profile, all 34 release files, executable UUID, and dSYM passed independent payload validation.
+- TestFlight upload is **blocked**, not complete. Apple has no Pastel app record. The required `eshabhoon@gmail.com` web session is not authenticated and has no stored password. The exact requested tester address `prateek. ranka@gmail.com` is malformed; no tester was added.
+- The physical iPad remains unavailable to `devicectl`. Physical touch and target-device frame-time validation remain pending.
 
 ## Build and records
 
@@ -30,10 +45,10 @@ Walkthrough: `docs/roadmap/M1.1-WALKTHROUGH.md`.
 Raw long-run result: `docs/roadmap/M1.1-Q2-artifacts/summary.json`.
 PR: https://github.com/prateekranka/pastel-rts/pull/4
 
-The archive contains web builds, not a native iOS binary. Foundry authoring uses the source content server. Simulator compilation is not a device run. Linux SwiftShader timings are not iPad performance evidence.
+The original M1.1 web archive contains web builds, not a native iOS binary. The separate signed TestFlight release candidate is listed above. Foundry authoring uses the dedicated hosted content service. A simulator run is not a physical-device run. Linux SwiftShader and simulator timings are not iPad performance evidence.
 
 ## Remaining decision
 
-Retain this build for the M1.1 human walkthrough and physical iPad check. Human design, native/device behavior, touch and target-device performance remain open. No later milestone starts automatically.
+Retain this build for the M1.1 human walkthrough and physical iPad check. Simulator native behavior and one touch-selection path pass. Human design acceptance, physical-device behavior, broader touch coverage, and target-device performance remain open. TestFlight completion also requires an Esha web login, app-record creation, upload processing, and tester assignment. No later milestone starts automatically.
 
 Numbered input documents and simulation/navigation source remain unchanged from their recorded baselines. Loose artifacts and logs remain in place; the working tree is not claimed clean. The early capture-name reuse and other evidence limits are documented in the gate record.

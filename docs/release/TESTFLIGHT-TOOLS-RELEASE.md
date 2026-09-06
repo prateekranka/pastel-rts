@@ -83,6 +83,10 @@ Deliver:
 - `ITSAppUsesNonExemptEncryption = false`.
 - Two clear touch targets in the Developer sheet: **Open hosted studio** and **Open browser playtest**.
 - Keep the bundled source selected in Release.
+- The bundled Release start URL must open the Milestone 1 Interaction Lab, not the default Milestone 0 benchmark. It must set `mode=interaction-lab`, `content=bundle`, `scenario=interaction-lab-alien-fantasy`, `seed=42`, and the selected renderer.
+- The Debug Vite URL must use the same lab identity while it preserves its local host.
+- This is an offline launch-configuration change only. Simulation, navigation, authored content, save state, input semantics, and web rendering stay untouched.
+- Every successful bundled `pastel://` resource response must use an HTTP-style response with status `200`, correct MIME type, and content length. A plain `URLResponse` produces fetch status `0` in WKWebView and prevents Interaction Lab from loading Pack v2.
 
 ### R2 — Authenticated hosted studio gateway
 
@@ -124,6 +128,27 @@ Deliver:
 - Upload to the existing or newly created `Pastel RTS` App Store Connect record.
 - Wait for Apple processing. Require a valid processed build before assigning it to an internal TestFlight group.
 - Confirm Bobby’s available App Store Connect tester account can install the build.
+
+## Current release evidence — 2026-09-06
+
+Passed:
+
+- Release source commit: `ff400e3eec04b9293a39e75021d19f30f6782b84`.
+- `npm run typecheck`, `npm run lint`, and all 199 existing tests pass. The diff from `6e4d580` leaves `packages/simulation` and `packages/navigation` unchanged.
+- Authenticated `https://pastel.contenthelper.in` launcher, game, Foundry, and content routes pass. The checked entry pages are `no-store`; 37 checked responses match local release bytes; the iPad-viewport browser pass has zero page, console, or request errors.
+- The iPad A16 Release simulator loads bundled revision `3`, scenario `interaction-lab-alien-fantasy`, and requested and actual seed `42`. No init or content error appears.
+- Maestro selected one `sunweaver-infantry`; Army Rail changed from `0` to `1`.
+- Fresh Grok 4.6 XHigh verdict: **PASS-WITH-POLISH**. The named non-blocking gap is workbench chrome density over the battlefield.
+- Signed archive: `/Users/prateekranka/Builds/PastelRTS/PastelRTS-0.0.1-1-ff400e3.xcarchive`.
+- Validated IPA: `/Users/prateekranka/Builds/PastelRTS/export-0.0.1-1-ff400e3/PastelRTS.ipa`.
+- IPA SHA-256: `b58e3a9e9002527bf9bf6f0a9a08cf1df7c10d125519e9ed88c59f7634cc4a95`.
+- IPA validation proves a valid signature, bundle `com.pastelrts.app`, version `0.0.1`, build `1`, iPad-only family, team `4JRB53LG5C`, `get-task-allow = false`, all 34 release files, and matching app/archive/dSYM UUID `15366426-8BE1-3F53-B678-69B7CC76C6A9`.
+
+Open:
+
+- Apple has no Pastel app record. The required `eshabhoon@gmail.com` `asc web` session is unauthenticated and has no stored password. App creation and upload cannot proceed until that account completes a secure local password and 2FA prompt.
+- The exact requested tester address `prateek. ranka@gmail.com` is malformed and does not identify an App Store Connect user. No tester was added.
+- The physical iPad is unavailable to `devicectl`. Physical-device touch and frame-time checks remain pending.
 
 ## Completion boundary
 
