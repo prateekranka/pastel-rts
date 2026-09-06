@@ -196,7 +196,7 @@ function serveStatic(res, root, relativePath, isAppRoot) {
     return;
   }
   res.setHeader('content-type', MIME[extname(target).toLowerCase()] ?? 'application/octet-stream');
-  res.setHeader('cache-control', relativePath === 'index.html' ? 'no-store' : 'public, max-age=3600');
+  res.setHeader('cache-control', relativePath === 'index.html' ? 'no-store' : 'private, max-age=3600');
   streamFile(res, target);
 }
 
@@ -211,6 +211,7 @@ function proxyContent(req, res, path, search) {
     for (const [name, value] of Object.entries(response.headers)) {
       if (value !== undefined && !HOP_BY_HOP.has(name)) res.setHeader(name, value);
     }
+    res.setHeader('cache-control', 'no-store');
     response.pipe(res);
   });
   upstream.on('error', () => {
@@ -236,7 +237,7 @@ function sendJson(res, status, body) {
 function sendText(res, status, body) { res.setHeader('content-type', 'text/plain; charset=utf-8'); sendBody(res, status, body); }
 function sendBody(res, status, body) { res.statusCode = status; if (res.req?.method === 'HEAD') res.end(); else res.end(body); }
 function streamFile(res, path) { if (res.req?.method === 'HEAD') res.end(); else createReadStream(path).pipe(res); }
-function redirect(res, location) { res.statusCode = 301; res.setHeader('location', location); res.end(); }
+function redirect(res, location) { res.statusCode = 301; res.setHeader('location', location); res.setHeader('cache-control', 'no-store'); res.end(); }
 function isFile(path) { try { return statSync(path).isFile(); } catch { return false; } }
 function isDirectory(path) { try { return statSync(path).isDirectory(); } catch { return false; } }
 function safeExternalUrl(value) { try { return ['http:', 'https:'].includes(new URL(value).protocol); } catch { return false; } }
