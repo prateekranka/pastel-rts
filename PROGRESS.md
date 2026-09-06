@@ -66,6 +66,7 @@ Implementation baseline (release plan HEAD before R4 source): `c38b2356132522591
 - Allowed source for this follow-up: `apps/game-web/src/app/PauseGate.ts`, `PauseGate.test.ts`, `GameApp.ts`, and one case in `apps/game-web/e2e/battlefield.spec.ts`. Plan native-only scope is explicitly amended in `docs/release/STUDIO-IN-APP-PLAN.md`.
 - Dedicated iPad / Mac runs must `npm run build && npm run ios:sync-web` before simulator acceptance so the bundled `WebGame` includes PauseGate. That copy is gitignored.
 - Local verification on this follow-up: typecheck, lint, 207 unit tests (prior 199 plus 8 `PauseGate` tests), production build, and Chromium battlefield e2e including `background visibility resume does not clear a native pause`. Tick stayed frozen across a visibility resume while native pause remained held.
+- GitHub Actions CI passed on `205f85f`: web typecheck/test/build/Playwright and iOS Simulator Debug compile. Push run: https://github.com/prateekranka/pastel-rts/actions/runs/34044206711 PR run: https://github.com/prateekranka/pastel-rts/actions/runs/34044209782
 - WKWebView Basic-auth spike and dedicated iPad A16 acceptance remain open on this Linux agent. Chromium e2e covers the pause-ownership sequence; it is not a WKWebView reproduction. Do not claim those gates passed.
 - The password was not read, printed, or committed.
 

@@ -530,5 +530,6 @@ beyond plan review.
       Release, auth flows, Foundry tools, tab/background lifecycle including
       Studio-selected pause held across visibility resume in WKWebView, both
       landscapes, twenty-switch memory — all remain OPEN; do not mark passed)
-- [x] GitHub Actions iOS Simulator Debug compile passed (`20b0096`)
+- [x] GitHub Actions iOS Simulator Debug compile passed (`20b0096`;
+      pause-ownership follow-up `205f85f`)
 - [ ] Build 2 uploaded and assigned (app-dev + Mac)
