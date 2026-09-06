@@ -74,6 +74,33 @@ Pack v2 (units, buildings, animation sheets): Foundry also writes `content/dev-p
 CONTENT_PACK_DIR=content/dev-pack-v2 npm run dev:content
 ```
 
+## Authenticated hosted studio gateway
+
+The production gateway is a dependency-free Node 22 process. It binds to
+`127.0.0.1` and serves the built game and Foundry apps. It also proxies the
+loopback content service without exposing that service directly.
+
+```bash
+STUDIO_USERNAME=studio \
+STUDIO_PASSWORD='use-a-secret-from-your-service-manager' \
+npm run start:hosted-studio
+```
+
+Required environment variables are `STUDIO_USERNAME` and `STUDIO_PASSWORD`.
+The password is required at startup and is never logged or returned. Optional
+non-secret variables are:
+
+| Variable | Default |
+| --- | --- |
+| `GATEWAY_PORT` | `8788` |
+| `CONTENT_SERVER_ORIGIN` | `http://127.0.0.1:8787` |
+| `GAME_DIST_PATH` | `apps/game-web/dist` |
+| `FOUNDRY_DIST_PATH` | `apps/foundry/dist` |
+| `STUDIO_EXTERNAL_URL` | empty (no extra link) |
+
+All requests require HTTP Basic authentication. The authenticated routes are
+`/`, `/game/`, `/foundry/`, `/dev-content/`, and `/healthz`.
+
 ## Tests, lint, production build
 
 ```bash

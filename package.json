@@ -18,6 +18,7 @@
     "dev:foundry": "npm run dev --workspace @pastel-rts/foundry",
     "dev:content": "npm run start --workspace @pastel-rts/content-server",
     "dev:studio": "node scripts/dev-studio.mjs",
+    "start:hosted-studio": "node scripts/hosted-studio-gateway.mjs",
     "fixture:generate": "node scripts/generate-fixture-pack.mjs",
     "content:validate": "tsx scripts/validate-content-pack.ts",
     "qa:scenario": "tsx scripts/qa-scenario.ts",
