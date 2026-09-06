@@ -105,8 +105,13 @@ The app shows two tabs: **Game** and **Studio**.
 
 ### Non-goals
 
-- No change to Foundry, the game runtime, content packs, or the gateway.
+- No change to Foundry, content packs, or the gateway.
 - No change to simulation, navigation, input, rendering, or replay formats.
+- **Exception (reviewed plan amendment):** pause-reason ownership in
+  `apps/game-web` (`PauseGate` + `GameApp` pause/resume) is in scope. Native
+  scene/tab activity and page-visibility must not share one Boolean. Simulation,
+  navigation, Foundry, content packs, gateway, and the native↔JS message types
+  stay unchanged.
 - No shared native bridge, URL scheme handler, web configuration, or mutable
   state between Game and Studio.
 - No new gameplay features (M2–M7 stay inactive).
@@ -128,7 +133,10 @@ The app shows two tabs: **Game** and **Studio**.
 4. Switching to Studio pauses the bundled simulation through the existing
    native pause contract. Returning to Game resumes it without a tick or clock
    jump. App inactive/background state must not resume Game while Studio remains
-   selected.
+   selected. Game stays paused while Studio is selected even if a
+   page-visibility hidden/visible cycle occurs; a visibility resume must not
+   clear a native/Studio pause. Independent pause reasons (`native` and
+   `background`) are required.
 5. With no Keychain item, selecting Studio shows the login form and makes no
    web request. A password is never included in a URL, log, error, pasteboard,
    UserDefaults, source file, or generated project.
@@ -168,10 +176,20 @@ The app shows two tabs: **Game** and **Studio**.
     view, delegates, and observers before a new session is created.
 16. `git diff 6e4d580..HEAD -- packages/simulation packages/navigation` stays
     empty. The feature delta from the recorded implementation baseline changes
-    source only under `apps/ios-shell/**` and changes release documentation only
-    under `docs/release/**` plus the required factual `PROGRESS.md` update.
-17. No new test files are added. Existing checks and direct simulator/runtime
-    checks provide the evidence.
+    source under `apps/ios-shell/**`, the following game-web pause-ownership
+    files, and release documentation only under `docs/release/**` plus the
+    required factual `PROGRESS.md` update:
+    - `apps/game-web/src/app/PauseGate.ts`
+    - `apps/game-web/src/app/PauseGate.test.ts`
+    - `apps/game-web/src/app/GameApp.ts`
+    - `apps/game-web/e2e/battlefield.spec.ts` (one additional pause-ownership
+      case)
+    - regenerated bundled web under `apps/ios-shell/PastelRTS/WebGame/**` after
+      `ios:sync-web`
+    Simulation and navigation packages remain empty vs `6e4d580`.
+17. No new test files are added except `apps/game-web/src/app/PauseGate.test.ts`,
+    allowed specifically for pause-reason ownership. Existing checks and direct
+    simulator/runtime checks provide the remaining evidence.
 
 ## 4. Design
 
@@ -195,7 +213,11 @@ Keep the Game web view alive so switching tabs does not reset the match. Its
 effective activity is `scenePhase == .active && selectedTab == .game`. Send the
 existing native pause/resume message only when that value changes. This avoids
 an unconditional scene-active resume while Studio is selected. Do not change
-the JavaScript bridge or simulation.
+bridge message types or simulation/navigation. The JS runtime MUST track
+independent pause reasons so a visibility resume cannot override a native Studio
+pause. Native still drives pause/resume from
+`scenePhase == .active && selectedTab == .game` and still sends only on that
+combined-activity change.
 
 The app is iPad-only, full-screen, and landscape-only in `project.yml`. iPad
 Split View is therefore not a supported state for this milestone. Verify both
@@ -310,16 +332,23 @@ Recorded implementation baseline: `c38b23561325225913ca3841ff0ddeb721c27568`.
 2. **R4.1 — tab lifecycle**: add the selection-bound tabs, lazy Studio gate, and
    effective Game pause/resume behavior. Prove no Studio request before
    selection and no Game clock jump before continuing.
-3. **R4.2 — isolated browser**: add the Studio web configuration, exact-origin
+3. **R4.1b — pause-reason ownership (reviewed plan amendment; leaves native-only
+   scope)**: in `apps/game-web`, add `PauseGate` with independent `native` and
+   `background` pause reasons; update `GameApp` pause/resume so simulation
+   pauses on the first pause and resumes only on the last resume. Regenerate
+   bundled web via `ios:sync-web`. Native shell still uses combined scene+tab
+   activity; this piece is required because `GameApp` previously collapsed
+   native pause and `document.visibilitychange` into one Boolean.
+4. **R4.2 — isolated browser**: add the Studio web configuration, exact-origin
    navigation policy, controls, same-view new-window handling, JavaScript
    dialogs, and error/retry state. Do not add authentication persistence yet.
-4. **R4.3 — authentication state**: add the in-memory candidate flow, scoped
+5. **R4.3 — authentication state**: add the in-memory candidate flow, scoped
    challenge handling, Keychain store/read/delete, stale-credential recovery,
    fresh-session retry, and Log Out.
-5. **R4.4 — integrated tool pass**: exercise every launcher surface, Foundry
+6. **R4.4 — integrated tool pass**: exercise every launcher surface, Foundry
    connection, same-view sandbox launch, one reversible draft change, both
    landscape orientations, offline Game, and relaunch/logout flows.
-6. **R4.5 — release candidate**: run all existing repository checks, generate
+7. **R4.5 — release candidate**: run all existing repository checks, generate
    the Xcode project, compile Debug and Release, inspect the complete scope diff,
    update `PROGRESS.md` and this status section with facts, and only then hand
    off build 2 delivery.
@@ -334,13 +363,16 @@ are separate authorized actions; they are not implied by a local pass.
       the allowed source and documentation paths.
 - [ ] `git diff 6e4d580..HEAD -- packages/simulation packages/navigation` is
       empty. Existing typecheck, lint, tests, build, `ios:sync-web`, and copied
-      Pack v2 validation pass without adding test files.
+      Pack v2 validation pass. The only allowed new test file is
+      `PauseGate.test.ts` for pause-reason ownership.
 - [ ] Generate the Xcode project from `project.yml`; Debug and Release compile.
 - [ ] Fresh simulator state: Game is selected, the bundled lab loads, Army Rail
       selection works, save/load and replay checks pass, and no Studio request
       occurs.
 - [ ] Game pause/resume is verified by tick/time readback while switching tabs
-      and backgrounding/foregrounding on each selected tab.
+      and backgrounding/foregrounding on each selected tab. With Studio
+      selected, background then foreground the app: native pause must remain
+      held across the page-visibility resume (Game must not advance).
 - [ ] No-credential, wrong-candidate, correct-candidate, relaunch, stale-stored,
       logout, timeout, tunnel-down, and retry transitions each pass without an
       auth loop or secret-bearing output.
@@ -423,8 +455,10 @@ R4.5 passes.
    connection, dialogs, sandbox launch, and one reversible write.
 5. **Hidden Game keeps advancing**: TabView visibility is not a simulation
    lifecycle signal, and the current scene-active path resumes Game
-   unconditionally. Mitigation: drive the existing pause/resume bridge from the
-   combined scene and tab state; verify tick/time readback and CPU behavior.
+   unconditionally. Mitigation: combined native scene+tab activity PLUS
+   independent JS pause reasons (`native` vs `background`). Native-only combined
+   activity is not sufficient because `GameApp` previously collapsed both into
+   one Boolean; verify tick/time readback and CPU behavior.
 6. **Eager remote load**: SwiftUI may construct an unselected tab. Mitigation:
    explicit `hasOpenedStudio` gating; prove zero Studio requests before user
    selection and before Sign In when no credential exists.
@@ -461,6 +495,11 @@ R4.5 passes.
 5. Tunnel failure, timeout, both landscape orientations, tab-bar layout, and
    auth retry are in scope. Split View is truthfully not applicable under the
    existing iPad full-screen release setting.
+6. **Pause-reason ownership (Astra review of PR #5):** independent pause reasons
+   are required because a page-visibility resume could clear a Studio-tab native
+   pause while `GameApp` used one Boolean. This required a reviewed plan
+   amendment expanding source scope to `apps/game-web` (`PauseGate`,
+   `GameApp`).
 
 If the user later gives explicit implementation approval, follow section 5 in
 order and stop at the acceptance criteria. A failed authentication spike or a
@@ -474,10 +513,22 @@ beyond plan review.
 - [x] Plan written (this document)
 - [x] Owning game-development review completed; plan amended only
 - [x] Explicit user approval to implement
-- [ ] Spike: WKWebView Basic-auth challenge verified on simulator (live HTTP 401/realm confirmed; platform challenge deferred)
+- [ ] Spike: WKWebView Basic-auth challenge verified on dedicated iPad A16
+      simulator (R4.0 still required). Live HTTP 401/realm was previously
+      confirmed; that is not spike completion. This Linux agent cannot run the
+      dedicated simulator.
 - [x] Tab structure implemented
 - [x] Studio web view implemented
 - [x] Login + Keychain implemented
-- [ ] Acceptance criteria passed on dedicated iPad A16 simulator
+- [x] Pause-reason ownership plan amendment recorded (game-web `PauseGate` +
+      `GameApp`; native-only scope explicitly expanded)
+- [x] Pause-reason ownership implemented (`PauseGate` + `GameApp`;
+      `PauseGate.test.ts`; battlefield e2e for native pause held across a
+      visibility resume). WKWebView reproduction of that sequence remains part
+      of the open A16 acceptance gate.
+- [ ] Acceptance criteria passed on dedicated iPad A16 simulator (Debug +
+      Release, auth flows, Foundry tools, tab/background lifecycle including
+      Studio-selected pause held across visibility resume in WKWebView, both
+      landscapes, twenty-switch memory — all remain OPEN; do not mark passed)
 - [x] GitHub Actions iOS Simulator Debug compile passed (`20b0096`)
 - [ ] Build 2 uploaded and assigned (app-dev + Mac)

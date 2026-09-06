@@ -59,6 +59,15 @@ Implementation baseline (release plan HEAD before R4 source): `c38b2356132522591
 - Dedicated iPad A16 simulator acceptance, Release archive, IPA upload, and tester assignment were not performed on this Linux agent and remain Mac/ASC steps.
 - The WKWebView Basic-auth spike remains open until the dedicated simulator run. Live HTTP 401/realm was confirmed.
 
+### R4 follow-up — pause-reason ownership (Astra review, 2026-09-06)
+
+- Astra review of PR #5 at `566d99a` requested independent pause reasons; a background visibility resume could clear a Studio-tab native pause.
+- Correction: `PauseGate` in game-web with `native` and `background` reasons; `GameApp` pause/resume only actually pause/resume the sim on the first pause / last resume. Native shell still uses combined scene+tab activity and does not change message types.
+- Allowed source for this follow-up: `apps/game-web/src/app/PauseGate.ts`, `PauseGate.test.ts`, `GameApp.ts`, and one case in `apps/game-web/e2e/battlefield.spec.ts`. Plan native-only scope is explicitly amended in `docs/release/STUDIO-IN-APP-PLAN.md`.
+- Dedicated iPad / Mac runs must `npm run build && npm run ios:sync-web` before simulator acceptance so the bundled `WebGame` includes PauseGate. That copy is gitignored.
+- WKWebView Basic-auth spike and dedicated iPad A16 acceptance remain open on this Linux agent. Chromium e2e covers the pause-ownership sequence; it is not a WKWebView reproduction. Do not claim those gates passed.
+- The password was not read, printed, or committed.
+
 ## Build and records
 
 Build:

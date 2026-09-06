@@ -44,6 +44,7 @@ import {
   type InteractionLabHapticReason,
 } from '../sandbox/createInteractionLab';
 import type { HapticReason } from '../bridge/messages';
+import { PauseGate, type PauseReason } from './PauseGate';
 
 export class GameApp {
   private adapter: RendererAdapter | null = null;
@@ -58,7 +59,7 @@ export class GameApp {
   private interpolated = new Float32Array(totalEntities(STRESS_COUNTS) * SNAPSHOT_STRIDE);
   private animationFrame = 0;
   private disposed = false;
-  private paused = false;
+  private readonly pauseGate = new PauseGate();
   private pauseStartedAt = 0;
   private pausedDuration = 0;
   private lastFrameAt = 0;
@@ -152,7 +153,7 @@ export class GameApp {
       const dt = isResumeFrame ? 16.6 : Math.max(0.01, time - this.lastFrameAt);
       this.lastFrameAt = time;
       const renderTime = time - this.pausedDuration;
-      if (!this.paused) {
+      if (!this.pauseGate.isPaused()) {
         this.director.update(dt, this.iso);
         if (this.lab) {
           this.lab.tick();
@@ -185,23 +186,21 @@ export class GameApp {
     this.controls?.setEnabled(!def.autoPan && !def.freezeAnimation);
   }
 
-  pause(reason: 'background' | 'native' = 'native'): void {
-    if (this.paused) {
+  pause(reason: PauseReason = 'native'): void {
+    if (this.pauseGate.pause(reason) !== 'paused') {
       return;
     }
-    this.paused = true;
     this.pauseStartedAt = performance.now();
     this.sim.pause();
     this.lab?.runtime.pause();
     this.soak?.recordPause(reason === 'background' ? 'background' : 'pause');
   }
 
-  resume(reason: 'background' | 'native' = 'native'): void {
-    if (!this.paused) {
+  resume(reason: PauseReason = 'native'): void {
+    if (this.pauseGate.resume(reason) !== 'resumed') {
       return;
     }
     this.pausedDuration += performance.now() - this.pauseStartedAt;
-    this.paused = false;
     this.lastFrameAt = 0;
     this.sim.resume();
     this.lab?.runtime.resume();
@@ -277,7 +276,11 @@ export class GameApp {
   }
 
   isPaused(): boolean {
-    return this.paused;
+    return this.pauseGate.isPaused();
+  }
+
+  hasPauseReason(reason: PauseReason): boolean {
+    return this.pauseGate.has(reason);
   }
 
   isAutoCameraEnabled(): boolean {
