@@ -77,6 +77,7 @@ Allowed paths:
 Deliver:
 
 - Team and App Store export settings.
+- The generated `PastelRTS` Release target must resolve `TARGETED_DEVICE_FAMILY = 2`; a project-level setting that the generated target overrides with `1,2` does not satisfy the iPad-only contract.
 - Opaque App Store icon resources based on the existing cube mark.
 - `ITSAppUsesNonExemptEncryption = false`.
 - Two clear touch targets in the Developer sheet: **Open hosted studio** and **Open browser playtest**.
