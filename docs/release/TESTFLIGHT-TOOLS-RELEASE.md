@@ -149,7 +149,7 @@ Passed:
 - ASC app record: `6809144687`, name `Pastel RTS`, bundle `com.pastelrts.app`, SKU `PASTELRTS-IOS-2026`.
 - IPA upload: build `0.0.1 (1)`, ASC build ID `ca177474-8146-4d8e-9463-6606bba56160`, SHA-256 `b58e3a9e9002527bf9bf6f0a9a08cf1df7c10d125519e9ed88c59f7634cc4a95`.
 - ASC processing: `VALID`; `usesNonExemptEncryption=false`; `internalBuildState=READY_FOR_BETA_TESTING`; expiry `2026-12-05`.
-- Internal group `Pastel RTS Internal Testers` contains tester `prateek.ranka@gmail.com`. The build is assigned directly to that tester. Invitation ID `d1d81f76-53ba-4d55-bec2-d5cafeb5c080` was created. ASC still reports tester state `NOT_INVITED` until the tester accepts the invitation.
+- Internal group `Pastel RTS Internal Testers` contains tester `prateek.ranka@gmail.com`. The build is assigned directly to that tester. The invitation was resent as `cab33f99-fef9-40b8-a5ab-1cf976234775`; ASC now reports tester state `INVITED`. Acceptance remains pending.
 
 Open:
 
