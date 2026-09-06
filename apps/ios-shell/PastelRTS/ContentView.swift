@@ -2,7 +2,6 @@ import SwiftUI
 
 struct ContentView: View {
     @EnvironmentObject var config: DeveloperConfig
-    @Environment(\.scenePhase) private var scenePhase
     @State private var loading = true
     @State private var errorMessage: String?
     @State private var showDeveloper = false
@@ -11,7 +10,7 @@ struct ContentView: View {
         ZStack {
             Color(red: 0.08, green: 0.21, blue: 0.23).ignoresSafeArea()
             GameWebView(config: config, loading: $loading, errorMessage: $errorMessage)
-                .ignoresSafeArea()
+                .ignoresSafeArea(edges: [.top, .leading, .trailing])
             if loading {
                 VStack(spacing: 12) {
                     ProgressView()
@@ -59,12 +58,5 @@ struct ContentView: View {
             DeveloperPanel()
                 .environmentObject(config)
         }
-        .onChange(of: scenePhase) { _, phase in
-            NotificationCenter.default.post(name: .pastelScenePhase, object: phase)
-        }
     }
-}
-
-extension Notification.Name {
-    static let pastelScenePhase = Notification.Name("pastelScenePhase")
 }

@@ -6,7 +6,7 @@ struct PastelRTSApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            RootView()
                 .environmentObject(config)
                 .statusBarHidden(true)
         }

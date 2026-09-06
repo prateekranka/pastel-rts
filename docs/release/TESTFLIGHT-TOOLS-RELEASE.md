@@ -12,9 +12,9 @@ Deliver the verified M1.1 iPad build through TestFlight. Give Bobby tap-ready ac
 
 ## Release surfaces
 
-1. **TestFlight app:** iPad-only SwiftUI/WKWebView shell. The game runtime and Pack v2 stay bundled and work without a network connection.
+1. **TestFlight app:** iPad-only SwiftUI/WKWebView shell with Game and Studio tabs. The game runtime and Pack v2 stay bundled and work without a network connection. Studio loads `https://pastel.contenthelper.in` only after the user opens that tab and signs in.
 2. **Hosted studio:** `https://pastel.contenthelper.in/` provides a touch-friendly launcher, the bundled game, the Foundry library, unit editor, building editor, and content-service status.
-3. **Native tool links:** the existing Developer sheet contains explicit links that open the hosted studio and browser playtest in Safari.
+3. **Native tool links:** the existing Developer sheet still contains explicit links that open the hosted studio and browser playtest in Safari. Build 2 also keeps those tools inside the Studio tab.
 
 ## Security and persistence
 

@@ -46,6 +46,16 @@ Bobby directed: include the hosted studio as part of the Pastel RTS app so all g
 
 Implementation scope owner: game-dev profile (bottymcbotface) on this repository, native shell (`apps/ios-shell/**`) plus release docs only.
 
+## R4 in-app Studio implementation — 2026-09-06
+
+Implementation baseline (release plan HEAD before R4 source): `c38b23561325225913ca3841ff0ddeb721c27568`.
+
+- Source changes are under `apps/ios-shell/**` plus this file and `docs/release/**`.
+- `git diff 6e4d580..HEAD -- packages/simulation packages/navigation` is empty.
+- Live unauthenticated `https://pastel.contenthelper.in/` returned HTTP 401 with `WWW-Authenticate: Basic realm="Pastel RTS Hosted Studio"`. The native username constant is the documented non-secret value `studio`. The password was not read, printed, or committed.
+- A disposable WKWebView spike was not executed here: this agent is Linux and does not host the dedicated iPad A16 simulator. Spike-only code was not added. The native shell follows the planned challenge contract (`previousFailureCount`, exact protection space, `URLCredential.Persistence.none`, store-after-launcher-main-frame-2xx).
+- `CURRENT_PROJECT_VERSION` is `2` for TestFlight build `0.0.1 (2)`. Debug/Release compile, simulator acceptance, signed archive, IPA upload, and tester assignment were not performed on this Linux agent and remain Mac/ASC steps.
+
 ## Build and records
 
 Build:
