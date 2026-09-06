@@ -49,8 +49,33 @@ final class DeveloperConfig: ObservableObject {
         renderer = RendererPreference(rawValue: defaults.string(forKey: "renderer") ?? "webgl") ?? .webgl
     }
 
+    func runtimeLaunchQueryItems() -> [URLQueryItem] {
+        [
+            URLQueryItem(name: "mode", value: "interaction-lab"),
+            URLQueryItem(name: "content", value: "bundle"),
+            URLQueryItem(name: "scenario", value: "interaction-lab-alien-fantasy"),
+            URLQueryItem(name: "seed", value: "42"),
+            URLQueryItem(name: "renderer", value: renderer.rawValue),
+        ]
+    }
+
     var viteURL: URL? {
-        URL(string: "http://\(host):5173/?renderer=\(renderer.rawValue)")
+        var components = URLComponents()
+        components.scheme = "http"
+        components.host = host
+        components.port = 5173
+        components.path = "/"
+        components.queryItems = runtimeLaunchQueryItems()
+        return components.url
+    }
+
+    var bundledLaunchURL: URL? {
+        var components = URLComponents()
+        components.scheme = PastelSchemeHandler.scheme
+        components.host = "game"
+        components.path = "/index.html"
+        components.queryItems = runtimeLaunchQueryItems()
+        return components.url
     }
 
     func persist() {

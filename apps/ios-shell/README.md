@@ -28,9 +28,9 @@ npm run build
 npm run ios:sync-web
 ```
 
-2. Release / local-device runs load those files through the `pastel://` URL scheme. No network is required.
+2. Release / local-device runs load those files through the `pastel://` URL scheme with the Milestone 1 Interaction Lab query (`mode=interaction-lab`, `content=bundle`, `scenario=interaction-lab-alien-fantasy`, `seed=42`, and the selected renderer). No network is required.
 
-3. Debug builds can instead load `http://<LAN-IP>:5173` from the Developer gear. Set the host to the Mac running `npm run dev`. If the server is unreachable, the shell shows a concrete error.
+3. Debug builds can instead load `http://<LAN-IP>:5173/` with the same Interaction Lab query from the Developer gear. Set the host to the Mac running `npm run dev`. If the server is unreachable, the shell shows a concrete error.
 
 The Developer sheet includes two external Safari links:
 

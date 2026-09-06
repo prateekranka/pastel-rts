@@ -160,7 +160,7 @@ struct GameWebView: UIViewRepresentable {
         }
 
         private func loadBundled(_ webView: WKWebView) {
-            guard let url = URL(string: "\(PastelSchemeHandler.scheme)://game/index.html") else { return }
+            guard let url = config.bundledLaunchURL else { return }
             webView.load(URLRequest(url: url))
         }
 
