@@ -83,6 +83,10 @@ async function handle(req, res) {
     serveLauncher(res);
     return;
   }
+  if (decodedPath === '/favicon.ico') {
+    redirect(res, '/game/favicon.svg');
+    return;
+  }
   if (decodedPath === '/game') {
     redirect(res, '/game/');
     return;
@@ -170,7 +174,7 @@ function decodePathSafely(pathname) {
 function serveLauncher(res) {
   const external = config.externalStudioUrl && safeExternalUrl(config.externalStudioUrl)
     ? `<a href="${escapeHtml(config.externalStudioUrl)}">External studio</a>` : '';
-  const html = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Pastel RTS Studio</title><style> :root{color-scheme:dark;font-family:system-ui,sans-serif;background:#101820;color:#f4f0e8}body{margin:0;min-height:100vh;display:grid;place-items:center}main{width:min(92vw,30rem);padding:2rem 1rem}h1{font-size:1.6rem;margin:0 0 .4rem}p{color:#b7c5c9;margin:0 0 1.4rem}nav{display:grid;gap:.75rem}a{display:flex;align-items:center;min-height:3.25rem;padding:0 1rem;border:1px solid #3f6971;border-radius:.7rem;background:#18313a;color:#fff;text-decoration:none;font-weight:650}a:focus-visible{outline:3px solid #f5c96b;outline-offset:3px}</style></head><body><main><h1>Pastel RTS Studio</h1><p>Touch-first tools and runtime.</p><nav><a href="/game/?mode=interaction-lab">Game</a><a href="/foundry/#/library">Library</a><a href="/foundry/#/unit/new">Unit editor</a><a href="/foundry/#/building/new">Building editor</a><a href="/dev-content/health">Service status</a>${external}</nav></main></body></html>`;
+  const html = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="icon" href="/game/favicon.svg" type="image/svg+xml"><title>Pastel RTS Studio</title><style> :root{color-scheme:dark;font-family:system-ui,sans-serif;background:#101820;color:#f4f0e8}body{margin:0;min-height:100vh;display:grid;place-items:center}main{width:min(92vw,30rem);padding:2rem 1rem}h1{font-size:1.6rem;margin:0 0 .4rem}p{color:#b7c5c9;margin:0 0 1.4rem}nav{display:grid;gap:.75rem}a{display:flex;align-items:center;min-height:3.25rem;padding:0 1rem;border:1px solid #3f6971;border-radius:.7rem;background:#18313a;color:#fff;text-decoration:none;font-weight:650}a:focus-visible{outline:3px solid #f5c96b;outline-offset:3px}</style></head><body><main><h1>Pastel RTS Studio</h1><p>Touch-first tools and runtime.</p><nav><a href="/game/?mode=interaction-lab">Game</a><a href="/foundry/#/library">Library</a><a href="/foundry/#/unit/new">Unit editor</a><a href="/foundry/#/building/new">Building editor</a><a href="/dev-content/health">Service status</a>${external}</nav></main></body></html>`;
   res.setHeader('content-type', 'text/html; charset=utf-8');
   res.setHeader('cache-control', 'no-store');
   sendBody(res, 200, html);
