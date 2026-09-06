@@ -43,6 +43,8 @@ targets:
     info:
       path: PastelRTS/Info.plist
       properties:
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         CFBundleDisplayName: Pastel RTS
         UILaunchScreen: {}
         UIRequiresFullScreen: true
