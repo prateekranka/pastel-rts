@@ -14,12 +14,19 @@ final class PastelSchemeHandler: NSObject, WKURLSchemeHandler {
             let fileURL = try resolve(url)
             let data = try Data(contentsOf: fileURL)
             let mime = mimeType(for: fileURL)
-            let response = URLResponse(
+            let headers = [
+                "Content-Type": mime,
+                "Content-Length": String(data.count),
+            ]
+            guard let response = HTTPURLResponse(
                 url: url,
-                mimeType: mime,
-                expectedContentLength: data.count,
-                textEncodingName: "utf-8"
-            )
+                statusCode: 200,
+                httpVersion: "HTTP/1.1",
+                headerFields: headers
+            ) else {
+                urlSchemeTask.didFailWithError(URLError(.badServerResponse))
+                return
+            }
             urlSchemeTask.didReceive(response)
             urlSchemeTask.didReceive(data)
             urlSchemeTask.didFinish()
