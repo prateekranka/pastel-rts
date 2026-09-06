@@ -34,6 +34,18 @@ Product commit: `6e4d580`. Native release-shell fixes are at `ff400e3` (`R1.4` a
 - Internal group `Pastel RTS Internal Testers` contains `prateek.ranka@gmail.com`. The build is assigned directly to that tester. The invitation was resent as `cab33f99-fef9-40b8-a5ab-1cf976234775`; ASC now reports the tester state as `INVITED`. Acceptance remains pending.
 - The physical iPad remains unavailable to `devicectl`. Physical touch and target-device frame-time validation remain pending.
 
+## Decision 2026-09-06 — hosted studio inside the app (user direction)
+
+Bobby directed: include the hosted studio as part of the Pastel RTS app so all game dev tools live in one place. No hard blockers were found.
+
+- **UI**: a tab bar with two tabs — Game and Studio. Game keeps the bundled Interaction Lab exactly as it is today. Studio is a separate in-app web surface that loads `https://pastel.contenthelper.in` and gives access to the launcher, browser playtest, Foundry library, unit editor, building editor, and content status inside the app.
+- **Studio login**: the app shows a secure password field when no credential exists. After the user enters the studio password once, the app stores it in iOS Keychain and answers the gateway Basic-auth challenge on later visits. Bobby does not yet know the studio password; he will enter it when he has it. No credential file is bundled and no credential enters Git.
+- **Security invariant**: the Studio webview must use its own WKWebView configuration without the `pastel://` scheme handler and without local file access. The Game webview keeps `allowFileAccessFromFileURLs` and the pastel handler. A remote Studio page must never read bundled files.
+- **Release invariants**: the bundled game remains the primary launch load. Studio use is user-initiated. No remote request joins the game startup or frame loop.
+- **Delivery**: this becomes version `0.0.1` build `2` on the same ASC app `6809144687`. Upload needs the paired Mac online and the ASC web session valid. Internal TestFlight only; no App Store submission.
+
+Implementation scope owner: game-dev profile (bottymcbotface) on this repository, native shell (`apps/ios-shell/**`) plus release docs only.
+
 ## Build and records
 
 Build:
