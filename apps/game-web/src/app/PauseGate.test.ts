@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { PauseGate } from './PauseGate';
+import { PauseGate, shouldResetFrameClock } from './PauseGate';
 
 describe('PauseGate', () => {
   it('native pause then background pause then background resume stays paused until native resume', () => {
@@ -63,6 +63,15 @@ describe('PauseGate', () => {
     gate.resume('native');
     expect(gate.has('native')).toBe(false);
     expect(gate.has('background')).toBe(true);
+  });
+
+  it('resets the frame clock on a true resume and on a held background resume', () => {
+    expect(shouldResetFrameClock('resumed', 'native')).toBe(true);
+    expect(shouldResetFrameClock('resumed', 'background')).toBe(true);
+    expect(shouldResetFrameClock('held', 'background')).toBe(true);
+    expect(shouldResetFrameClock('held', 'native')).toBe(false);
+    expect(shouldResetFrameClock('idle', 'native')).toBe(false);
+    expect(shouldResetFrameClock('idle', 'background')).toBe(true);
   });
 
   it('background then native stays paused until background resume', () => {
