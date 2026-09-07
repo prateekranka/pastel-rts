@@ -44,7 +44,7 @@ import {
   type InteractionLabHapticReason,
 } from '../sandbox/createInteractionLab';
 import type { HapticReason } from '../bridge/messages';
-import { PauseGate, type PauseReason } from './PauseGate';
+import { PauseGate, shouldResetFrameClock, type PauseReason } from './PauseGate';
 
 export class GameApp {
   private adapter: RendererAdapter | null = null;
@@ -197,11 +197,14 @@ export class GameApp {
   }
 
   resume(reason: PauseReason = 'native'): void {
-    if (this.pauseGate.resume(reason) !== 'resumed') {
+    const transition = this.pauseGate.resume(reason);
+    if (shouldResetFrameClock(transition, reason)) {
+      this.lastFrameAt = 0;
+    }
+    if (transition !== 'resumed') {
       return;
     }
     this.pausedDuration += performance.now() - this.pauseStartedAt;
-    this.lastFrameAt = 0;
     this.sim.resume();
     this.lab?.runtime.resume();
     this.soak?.recordPause(reason === 'background' ? 'foreground' : 'resume');
