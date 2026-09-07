@@ -298,6 +298,8 @@ If implementation is explicitly approved, record
 `IMPLEMENTATION_BASE=$(git rev-parse HEAD)` before code and after the owner has
 committed this reviewed plan. Use that value for all feature-scope checks.
 
+Recorded implementation baseline: `c38b23561325225913ca3841ff0ddeb721c27568`.
+
 1. **R4.0 — authentication spike**: on the dedicated simulator, use a minimal
    disposable native surface to confirm the active non-secret username, the
    expected realm, receipt of the WKWebView Basic challenge, correlation of the
@@ -471,10 +473,11 @@ beyond plan review.
 - [x] Decision recorded (R3.4, `f182b2d`)
 - [x] Plan written (this document)
 - [x] Owning game-development review completed; plan amended only
-- [ ] Explicit user approval to implement
-- [ ] Spike: WKWebView Basic-auth challenge verified
-- [ ] Tab structure implemented
-- [ ] Studio web view implemented
-- [ ] Login + Keychain implemented
-- [ ] Acceptance criteria passed on simulator
+- [x] Explicit user approval to implement
+- [ ] Spike: WKWebView Basic-auth challenge verified on simulator (live HTTP 401/realm confirmed; platform challenge deferred)
+- [x] Tab structure implemented
+- [x] Studio web view implemented
+- [x] Login + Keychain implemented
+- [ ] Acceptance criteria passed on dedicated iPad A16 simulator
+- [x] GitHub Actions iOS Simulator Debug compile passed (`20b0096`)
 - [ ] Build 2 uploaded and assigned (app-dev + Mac)

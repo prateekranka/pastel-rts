@@ -53,6 +53,10 @@ struct GameWebView: UIViewRepresentable {
         weak var webView: WKWebView?
         var observedGeneration = 0
         private var phaseObserver: NSObjectProtocol?
+        private var tabObserver: NSObjectProtocol?
+        private var scenePhase: ScenePhase = .active
+        private var selectedTab: AppTab = .game
+        private var gameActive = true
 
         init(config: DeveloperConfig, loading: Binding<Bool>, errorMessage: Binding<String?>) {
             self.config = config
@@ -65,11 +69,17 @@ struct GameWebView: UIViewRepresentable {
                 queue: .main
             ) { [weak self] notification in
                 guard let phase = notification.object as? ScenePhase else { return }
-                if phase == .background || phase == .inactive {
-                    self?.sendToJS(NativeOutbound.pauseJSON())
-                } else if phase == .active {
-                    self?.sendToJS(NativeOutbound.resumeJSON())
-                }
+                self?.scenePhase = phase
+                self?.refreshGameActivity()
+            }
+            tabObserver = NotificationCenter.default.addObserver(
+                forName: .pastelSelectedTab,
+                object: nil,
+                queue: .main
+            ) { [weak self] notification in
+                guard let tab = notification.object as? AppTab else { return }
+                self?.selectedTab = tab
+                self?.refreshGameActivity()
             }
         }
 
@@ -77,6 +87,16 @@ struct GameWebView: UIViewRepresentable {
             if let phaseObserver {
                 NotificationCenter.default.removeObserver(phaseObserver)
             }
+            if let tabObserver {
+                NotificationCenter.default.removeObserver(tabObserver)
+            }
+        }
+
+        private func refreshGameActivity() {
+            let next = scenePhase == .active && selectedTab == .game
+            guard next != gameActive else { return }
+            gameActive = next
+            sendToJS(next ? NativeOutbound.resumeJSON() : NativeOutbound.pauseJSON())
         }
 
         func load() {
@@ -116,6 +136,9 @@ struct GameWebView: UIViewRepresentable {
                         haptics: config.hapticsEnabled,
                         renderer: config.renderer.rawValue
                     ))
+                    if !gameActive {
+                        sendToJS(NativeOutbound.pauseJSON())
+                    }
                 case .requestHaptic:
                     guard config.hapticsEnabled else { return }
                     let style = inbound.payload["style"] as? String ?? "medium"

@@ -32,18 +32,21 @@ npm run ios:sync-web
 
 3. Debug builds can instead load `http://<LAN-IP>:5173/` with the same Interaction Lab query from the Developer gear. Set the host to the Mac running `npm run dev`. If the server is unreachable, the shell shows a concrete error.
 
-The Developer sheet includes two external Safari links:
+The app has two tabs:
+
+- **Game**: the bundled Interaction Lab. Release builds load `pastel://game/index.html` and do not make a network request at startup or in the frame loop.
+- **Studio**: a separate in-app browser for `https://pastel.contenthelper.in`. It is created only after the Studio tab is selected. With no saved password it shows a login form and makes no request until Sign In. The password is stored in the iOS Keychain after a successful launcher sign-in.
+
+The Developer sheet on the Game tab still includes two external Safari links:
 
 - **Open hosted studio**: `https://pastel.contenthelper.in/`
 - **Open browser playtest**: `https://pastel.contenthelper.in/game/?mode=interaction-lab`
-
-These links are user initiated. Release builds still load the bundled `pastel://game/index.html` runtime and do not make a network request at startup or in the frame loop.
 
 WKWebView is inspectable in Debug on iOS 16.4+.
 
 ## App Store release generation
 
-Generate the Xcode project from `project.yml` on macOS. The spec sets team `4JRB53LG5C`, version `0.0.1`, build `1`, automatic signing, iPad-only deployment, and the non-exempt encryption declaration. Use `apps/ios-shell/ExportOptions-AppStore.plist` when exporting an App Store archive with automatic App Store Connect signing.
+Generate the Xcode project from `project.yml` on macOS. The spec sets team `4JRB53LG5C`, version `0.0.1`, build `2`, automatic signing, iPad-only deployment, and the non-exempt encryption declaration. Use `apps/ios-shell/ExportOptions-AppStore.plist` when exporting an App Store archive with automatic App Store Connect signing.
 
 ## Physical iPad
 

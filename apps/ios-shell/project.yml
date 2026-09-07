@@ -13,7 +13,7 @@ settings:
     SUPPORTS_MAC_DESIGNED_FOR_IPAD: NO
     INFOPLIST_FILE: PastelRTS/Info.plist
     SWIFT_VERSION: "5.9"
-    CURRENT_PROJECT_VERSION: 1
+    CURRENT_PROJECT_VERSION: 2
     MARKETING_VERSION: 0.0.1
     DEVELOPMENT_TEAM: 4JRB53LG5C
     CODE_SIGN_STYLE: Automatic
@@ -57,3 +57,5 @@ targets:
         UIStatusBarHidden: true
         UIViewControllerBasedStatusBarAppearance: false
         ITSAppUsesNonExemptEncryption: false
+        NSPhotoLibraryUsageDescription: "Pastel Studio can use a PNG you pick from Photos."
+        NSCameraUsageDescription: "Pastel Studio can capture a PNG with the camera."
