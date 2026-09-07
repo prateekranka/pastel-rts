@@ -28,3 +28,10 @@ export class PauseGate {
     return this.reasons.has(reason);
   }
 }
+
+/** Drop the rAF gap after a true resume, and after a visibility resume that
+ *  stays held by another reason. Browsers freeze rAF while hidden; the next
+ *  tick would otherwise sample a multi-second dt into FrameTracker. */
+export function shouldResetFrameClock(transition: ResumeTransition, reason: PauseReason): boolean {
+  return transition === 'resumed' || reason === 'background';
+}
