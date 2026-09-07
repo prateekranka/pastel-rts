@@ -138,6 +138,73 @@ test.describe('touch debug, WebGPU fallback, pause, soak', () => {
     await page.waitForFunction((tick) => (window.__pastelApp?.getSim().getLatestTick() ?? 0) > tick, paused);
   });
 
+  test('background visibility resume does not clear a native pause', async ({ page }) => {
+    await page.goto('/?benchmark=idle-base&seed=1&renderer=webgl&dpr=1', {
+      waitUntil: 'networkidle',
+    });
+    await page.waitForFunction(() => (window.__pastelApp?.getSim().getLatestTick() ?? 0) > 4);
+    const before = await page.evaluate(() => window.__pastelApp?.getSim().getLatestTick() ?? 0);
+    await page.evaluate(() => {
+      window.__pastelNative?.postMessage({ type: 'pause' });
+    });
+    await expect.poll(async () => page.evaluate(() => window.__pastelApp?.isPaused() ?? false)).toBe(true);
+    await expect
+      .poll(async () =>
+        page.evaluate(() => ({
+          native: window.__pastelApp?.hasPauseReason('native') ?? false,
+          background: window.__pastelApp?.hasPauseReason('background') ?? true,
+        })),
+      )
+      .toEqual({ native: true, background: false });
+    await page.evaluate(() => {
+      Object.defineProperty(document, 'hidden', {
+        configurable: true,
+        get: () => true,
+      });
+      if (!document.hidden) {
+        throw new Error('failed to stub document.hidden=true');
+      }
+      document.dispatchEvent(new Event('visibilitychange'));
+    });
+    await expect
+      .poll(async () =>
+        page.evaluate(() => ({
+          hidden: document.hidden,
+          native: window.__pastelApp?.hasPauseReason('native') ?? false,
+          background: window.__pastelApp?.hasPauseReason('background') ?? false,
+        })),
+      )
+      .toEqual({ hidden: true, native: true, background: true });
+    await page.evaluate(() => {
+      Object.defineProperty(document, 'hidden', {
+        configurable: true,
+        get: () => false,
+      });
+      if (document.hidden) {
+        throw new Error('failed to stub document.hidden=false');
+      }
+      document.dispatchEvent(new Event('visibilitychange'));
+    });
+    await expect
+      .poll(async () =>
+        page.evaluate(() => ({
+          hidden: document.hidden,
+          paused: window.__pastelApp?.isPaused() ?? false,
+          native: window.__pastelApp?.hasPauseReason('native') ?? false,
+          background: window.__pastelApp?.hasPauseReason('background') ?? true,
+        })),
+      )
+      .toEqual({ hidden: false, paused: true, native: true, background: false });
+    await page.waitForTimeout(600);
+    const stillPaused = await page.evaluate(() => window.__pastelApp?.getSim().getLatestTick() ?? 0);
+    expect(stillPaused - before).toBeLessThan(3);
+    await page.evaluate(() => {
+      window.__pastelNative?.postMessage({ type: 'resume' });
+    });
+    await expect.poll(async () => page.evaluate(() => window.__pastelApp?.isPaused() ?? true)).toBe(false);
+    await page.waitForFunction((tick) => (window.__pastelApp?.getSim().getLatestTick() ?? 0) > tick, stillPaused);
+  });
+
   test('matching native developer config does not reload', async ({ page }) => {
     await page.goto('/?benchmark=idle-base&seed=1&renderer=webgl&dpr=1.5', {
       waitUntil: 'networkidle',
