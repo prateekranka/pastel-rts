@@ -62,7 +62,7 @@ Implementation baseline (release plan HEAD before R4 source): `c38b2356132522591
 ### R4 follow-up — pause-reason ownership (Astra review, 2026-09-06)
 
 - Astra review of PR #5 at `566d99a` requested independent pause reasons; a background visibility resume could clear a Studio-tab native pause.
-- Correction: `PauseGate` in game-web with `native` and `background` reasons; `GameApp` pause/resume only actually pause/resume the sim on the first pause / last resume. Native shell still uses combined scene+tab activity and does not change message types.
+- Correction: `PauseGate` in game-web with `native` and `background` reasons; `GameApp` pause/resume only actually pause/resume the sim on the first pause / last resume. Native shell still uses combined scene+tab activity and does not change message types. A visibility resume that stays held also resets the frame clock so the hidden rAF gap is not sampled as a long frame.
 - Allowed source for this follow-up: `apps/game-web/src/app/PauseGate.ts`, `PauseGate.test.ts`, `GameApp.ts`, and one case in `apps/game-web/e2e/battlefield.spec.ts`. Plan native-only scope is explicitly amended in `docs/release/STUDIO-IN-APP-PLAN.md`.
 - Dedicated iPad / Mac runs must `npm run build && npm run ios:sync-web` before simulator acceptance so the bundled `WebGame` includes PauseGate. That copy is gitignored.
 - Local verification on this follow-up: typecheck, lint, 207 unit tests (prior 199 plus 8 `PauseGate` tests), production build, and Chromium battlefield e2e including `background visibility resume does not clear a native pause`. Tick stayed frozen across a visibility resume while native pause remained held.
